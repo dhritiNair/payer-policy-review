@@ -35,9 +35,16 @@ CREATE TABLE IF NOT EXISTS checks (
     checked_at TEXT NOT NULL,
     status TEXT NOT NULL,
     version_id INTEGER,
+    before_version_id INTEGER,
     reason TEXT
 );
 """
+
+
+def history_text(extracted):
+    """Text of the sections excluded from comparison (the Policy History table)."""
+    return "\n".join(re.sub(r"\s+", " ", p["text"]).strip()
+                     for s in extracted["sections"] if s.get("excluded_from_diff") for p in s["paragraphs"])
 
 
 def content_hash(extracted):
@@ -102,12 +109,12 @@ class Store:
                  str(pdf_path) if pdf_path else None, str(extracted_path), int(simulated), _now()))
         return cur.lastrowid
 
-    def record_check(self, source_id, status, reason=None, version_id=None, new_baseline_id=None):
+    def record_check(self, source_id, status, reason=None, version_id=None, new_baseline_id=None, before_version_id=None):
         """Log a check. The baseline only moves when a good version is passed in as new_baseline_id."""
         now = _now()
         with self.db:
-            self.db.execute("INSERT INTO checks (source_id, checked_at, status, version_id, reason) VALUES (?,?,?,?,?)",
-                            (source_id, now, status, version_id, reason))
+            self.db.execute("INSERT INTO checks (source_id, checked_at, status, version_id, before_version_id, reason)"
+                            " VALUES (?,?,?,?,?,?)", (source_id, now, status, version_id, before_version_id, reason))
             state = self.get_state(source_id)
             baseline = new_baseline_id if new_baseline_id is not None else (state["baseline_version_id"] if state else None)
             self.db.execute(
