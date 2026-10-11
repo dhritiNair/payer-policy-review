@@ -10,6 +10,7 @@ FOOTER_Y = 730        # header/footer block sits below this y on every page
 LEVEL1_SIZE = 13.5    # Georgia-Bold 14pt: major sections
 LEVEL2_SIZE = 11.5    # Georgia-Bold 11.9pt: subsections
 SIDEBAR_X = (320, 400)  # front-page "Related Policy" sidebar: kept as its own section
+ARROW = "\uf0dc"
 LINE_GAP = 13         # y-gap above this starts a new paragraph
 
 
@@ -40,12 +41,22 @@ def _lines(page):
         if m["y"] >= FOOTER_Y:
             continue
         spans = sorted(m["spans"], key=lambda s: s["bbox"][0])
-        text = " ".join(s["text"].strip() for s in spans)
-        text = re.sub(r"\s+([®:.,;)])", r"\1", text)
-        text = re.sub(r"\.{4,}", " ... ", text).replace("", "→")
-        size = max(s["size"] for s in spans)
-        bold = "Georgia-Bold" in spans[0]["font"]
-        out.append({"sidebar": SIDEBAR_X[0] <= m["x0"] < SIDEBAR_X[1], "y": m["y"], "text": text.strip(), "size": size, "heading_font": bold})
+        # a Wingdings arrow marks a cross-reference link; drop it and keep what follows as its own line
+        segments = [[]]
+        for sp in spans:
+            if ARROW in sp["text"]:
+                segments.append([])
+            else:
+                segments[-1].append(sp)
+        for i, seg in enumerate(segments):
+            if not seg:
+                continue
+            text = " ".join(sp["text"].strip() for sp in seg)
+            text = re.sub(r"\s+([®:.,;)])", r"\1", text)
+            text = re.sub(r"\.{4,}", " ... ", text)
+            out.append({"sidebar": SIDEBAR_X[0] <= m["x0"] < SIDEBAR_X[1], "y": m["y"], "text": text.strip(),
+                        "size": max(sp["size"] for sp in seg), "heading_font": "Georgia-Bold" in seg[0]["font"],
+                        "break_before": i > 0})
     return out
 
 
@@ -58,8 +69,37 @@ def _parse_date(text):
     return None
 
 
-def extract_policy(pdf_path):
-    doc = pymupdf.open(pdf_path)
+def _join_across_pages(paras):
+    """A paragraph that carries on at the top of the next page (lowercase start) is one paragraph."""
+    out = []
+    for p in paras:
+        if out and p["page"] > out[-1]["page_end"] and p["text"][:1].islower():
+            out[-1]["text"] += " " + p["text"]
+            out[-1]["page_end"] = p["page"]
+        else:
+            out.append(p)
+    return out
+
+
+def _split_code_table(section):
+    """Move 'E0193 description' rows into section['code_table'] as structured rows."""
+    rows, rest = [], []
+    for p in section["paragraphs"]:
+        m = re.match(r"^([A-Z]\d{4})\s+(.+)$", p["text"])
+        if m:
+            rows.append({"code": m.group(1), "description": m.group(2), "page": p["page"]})
+        elif re.fullmatch(r"HCPCS Code\s+Description", p["text"]):
+            continue   # repeated column header
+        else:
+            rest.append(p)
+    section["paragraphs"] = rest
+    if rows:
+        section["code_table"] = rows
+
+
+def extract_policy(pdf):
+    """pdf is a file path or the PDF's bytes."""
+    doc = pymupdf.open(stream=pdf, filetype="pdf") if isinstance(pdf, bytes) else pymupdf.open(pdf)
     sections = [{"heading": "(Front matter)", "level": 0, "page_start": 1, "page_end": 1, "paragraphs": []}]
     sidebar = {"heading": "(Related policies sidebar)", "level": 0, "page_start": 1, "page_end": 1, "paragraphs": []}
     section = sections[0]
@@ -89,7 +129,7 @@ def extract_policy(pdf_path):
                 para = None
                 continue
             starts_item = bool(re.match(r"^(•|o\s|[A-Z]\d{4}\b)", ln["text"]))
-            new_para = (para is None or starts_item or
+            new_para = (para is None or starts_item or ln["break_before"] or
                         ln["y"] - para["last_y"] > LINE_GAP or ln["size"] != para["size"])
             if new_para:
                 para = {"page": pno, "text": ln["text"], "last_y": ln["y"], "size": ln["size"]}
@@ -102,14 +142,18 @@ def extract_policy(pdf_path):
 
     sections.insert(1, sidebar)
     for s in sections:
-        s["paragraphs"] = [{"page": p["page"], "text": p["text"]} for p in s["paragraphs"]]
+        s["paragraphs"] = _join_across_pages(
+            [{"page": p["page"], "page_end": p["page"], "text": p["text"]} for p in s["paragraphs"]])
+        _split_code_table(s)
+        if s["heading"].startswith("Policy History"):
+            s["excluded_from_diff"] = True   # raw text kept for reference; never diffed
     sections = [s for s in sections if s["paragraphs"] or s["level"] > 0]
 
     full = "\n".join(p["text"] for s in sections for p in s["paragraphs"])
     num = re.search(r"Policy Number:\s*([A-Z]{2}\.\d{3}\.\d+)", full)
     eff = re.search(r"Effective Date:\s*([A-Za-z]+ \d{1,2}, \d{4})", full)
     return {
-        "source_file": str(pdf_path),
+        "source_file": None if isinstance(pdf, bytes) else str(pdf),
         "page_count": len(doc),
         "title": title,
         "policy_number": num.group(1) if num else "Unknown",
@@ -125,8 +169,14 @@ def render(result):
         pages = (f"p.{s['page_start']}" if s["page_start"] == s["page_end"]
                  else f"pp.{s['page_start']}-{s['page_end']}")
         lines.append(f"{'  ' * max(s['level'] - 1, 0)}[{'H' + str(s['level']) if s['level'] else 'front'}] {s['heading']}  ({pages})")
+        pad = "  " * max(s["level"], 1)
+        if s.get("excluded_from_diff"):
+            lines.append(f"{pad}(raw text; excluded from diffs)")
         for p in s["paragraphs"]:
-            lines.append(f"{'  ' * max(s['level'], 1)}(p.{p['page']}) {p['text']}")
+            pg = f"p.{p['page']}" if p["page"] == p["page_end"] else f"pp.{p['page']}-{p['page_end']}"
+            lines.append(f"{pad}({pg}) {p['text']}")
+        for r in s.get("code_table", []):
+            lines.append(f"{pad}(p.{r['page']}) [{r['code']}] {r['description']}")
     return "\n".join(lines)
 
 
