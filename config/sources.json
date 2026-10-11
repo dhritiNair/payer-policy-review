@@ -1,0 +1,11 @@
+{
+  "_note": "Real UHC URLs go in 'url'. Null means not configured yet: the source reports failed.",
+  "sources": [
+    {
+      "id": "beds-mattresses",
+      "name": "Beds and Mattresses",
+      "payer": "UnitedHealthcare",
+      "url": null
+    }
+  ]
+}
