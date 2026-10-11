@@ -32,6 +32,11 @@ def apply_edit(doc, edit):
     elif op == "delete_paragraph":
         section = _section(doc, edit["section"])
         section["paragraphs"].remove(_paragraph(section, edit["find"]))
+    elif op == "swap_paragraphs":
+        section = _section(doc, edit["section"])
+        a, b = _paragraph(section, edit["find"]), _paragraph(section, edit["find2"])
+        ia, ib = section["paragraphs"].index(a), section["paragraphs"].index(b)
+        section["paragraphs"][ia], section["paragraphs"][ib] = b, a
     elif op == "delete_code":
         matches = [(s, r) for s in doc["sections"] for r in s.get("code_table", []) if r["code"] == edit["code"]]
         if len(matches) != 1:

@@ -1,0 +1,192 @@
+{
+  "run_at": "2026-10-11T23:06:26+00:00",
+  "note": "Initial run, before any rule tuning. Classifier is rules-only.",
+  "code_commit": "b9a132fbc5b525d4bab8202808e04f9f497b6ac3",
+  "edits_file": "config/simulations/beds-mattresses-blind.json",
+  "results": [
+    {
+      "edit": {
+        "id": "B1",
+        "kind": "unlabeled",
+        "op": "delete_paragraph",
+        "section": "Safety Enclosure with Beds",
+        "find": "Weighted blankets",
+        "description": "The older version had no \"Weighted blankets\" bullet in the list of less intensive alternatives."
+      },
+      "changes": [
+        {
+          "label": "substantive",
+          "rule_id": "SUB-PARAGRAPH",
+          "rule": "A paragraph or criterion was added or removed in a coverage section.",
+          "evidence": "paragraph added in 'Coverage Rationale > Safety Enclosure with Beds'",
+          "change_type": "added",
+          "path": "Coverage Rationale > Safety Enclosure with Beds",
+          "before_text": null,
+          "after_text": "o Weighted blankets",
+          "before_page": null,
+          "after_page": 2
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "B2",
+        "kind": "unlabeled",
+        "op": "delete_code",
+        "code": "E0328",
+        "description": "The older version had no code row for E0328."
+      },
+      "changes": [
+        {
+          "label": "substantive",
+          "rule_id": "SUB-CODE-LIST",
+          "rule": "A procedure code was added to or removed from the code list.",
+          "evidence": "code E0328 added",
+          "change_type": "code_added",
+          "path": "Applicable Codes",
+          "before_text": null,
+          "after_text": "E0328 Hospital bed, pediatric, manual, 360 degree side enclosures, top of headboard, footboard and side rails up to 24 in above the spring, includes mattress",
+          "before_page": null,
+          "after_page": 3
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "B3",
+        "kind": "unlabeled",
+        "op": "replace_text",
+        "section": "Benefit Considerations",
+        "find": "exclusions may apply",
+        "replace": "exclusions apply",
+        "description": "In Benefit Considerations, the older version read \"Additional coverage limitations and exclusions apply.\" (no \"may\")."
+      },
+      "changes": [
+        {
+          "label": "substantive",
+          "rule_id": "SUB-KEYWORD",
+          "rule": "A coverage keyword (all/any/not/must/only...) was added, removed or swapped in a coverage section.",
+          "evidence": "coverage words ['may']; removed: - | added: may",
+          "change_type": "modified",
+          "path": "Benefit Considerations",
+          "before_text": "Additional coverage limitations and exclusions apply. Refer to the member’s specific plan for details.",
+          "after_text": "Additional coverage limitations and exclusions may apply. Refer to the member’s specific plan for details.",
+          "before_page": 3,
+          "after_page": 3
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "B4",
+        "kind": "unlabeled",
+        "op": "swap_paragraphs",
+        "section": "Description of Services",
+        "find": "Support surfaces include",
+        "find2": "Specialty beds are designed",
+        "description": "In Description of Services, the two paragraphs were in the opposite order."
+      },
+      "changes": [
+        {
+          "label": "ambiguous",
+          "rule_id": "AMB-DEFAULT",
+          "rule": "No rule settled it: the wording changed in a way the rules cannot judge.",
+          "evidence": "paragraph added outside the coverage sections ('Description of Services')",
+          "change_type": "added",
+          "path": "Description of Services",
+          "before_text": null,
+          "after_text": "Support surfaces include mattress overlays applied on top of a mattress, mattresses, and specialty beds, and can be preventative or therapeutic. For individuals at risk for skin breakdown, preventive support surfaces are often incorporated into treatment. Therapeutic support surfaces are employed to assist individuals with advanced pressure injuries (i.e., stage 3, stage 4, or unstageable pressure injuries).",
+          "before_page": null,
+          "after_page": 3
+        },
+        {
+          "label": "ambiguous",
+          "rule_id": "AMB-DEFAULT",
+          "rule": "No rule settled it: the wording changed in a way the rules cannot judge.",
+          "evidence": "paragraph removed outside the coverage sections ('Description of Services')",
+          "change_type": "removed",
+          "path": "Description of Services",
+          "before_text": "Support surfaces include mattress overlays applied on top of a mattress, mattresses, and specialty beds, and can be preventative or therapeutic. For individuals at risk for skin breakdown, preventive support surfaces are often incorporated into treatment. Therapeutic support surfaces are employed to assist individuals with advanced pressure injuries (i.e., stage 3, stage 4, or unstageable pressure injuries).",
+          "after_text": null,
+          "before_page": 3,
+          "after_page": null
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "B5",
+        "kind": "unlabeled",
+        "op": "replace_text",
+        "section": "U.S. Food and Drug Administration (FDA)",
+        "find": "Accessed December 19, 2024",
+        "replace": "Accessed December 19, 2023",
+        "description": "In the FDA section, the older version read \"Accessed December 19, 2023\"."
+      },
+      "changes": [
+        {
+          "label": "ambiguous",
+          "rule_id": "AMB-DEFAULT",
+          "rule": "No rule settled it: the wording changed in a way the rules cannot judge.",
+          "evidence": "removed: 2023 | added: 2024 (outside the coverage sections)",
+          "change_type": "modified",
+          "path": "U.S. Food and Drug Administration (FDA)",
+          "before_text": "The collaborative efforts of the FDA and the Hospital Bed Safety Workgroup have led to the release of the Hospital Bed System Dimensional and Assessment Guidance to Reduce Entrapment. This guidance provides recommendations for manufacturers of new hospital beds and for facilities with existing beds (including hospitals, nursing homes, and private residences). Located at: https://www.fda.gov/medical-devices/general-hospital-devices-and-supplies/hospital-beds. ( Accessed December 19, 2023)",
+          "after_text": "The collaborative efforts of the FDA and the Hospital Bed Safety Workgroup have led to the release of the Hospital Bed System Dimensional and Assessment Guidance to Reduce Entrapment. This guidance provides recommendations for manufacturers of new hospital beds and for facilities with existing beds (including hospitals, nursing homes, and private residences). Located at: https://www.fda.gov/medical-devices/general-hospital-devices-and-supplies/hospital-beds. ( Accessed December 19, 2024)",
+          "before_page": 4,
+          "after_page": 4
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "B6",
+        "kind": "unlabeled",
+        "op": "replace_text",
+        "section": "Safety Enclosure with Beds",
+        "find": "individuals that have a risk for safety in bed",
+        "replace": "individuals who have a risk for safety in bed",
+        "description": "In the Safety Enclosure criteria, the older version read \"for individuals who have a risk for safety in bed\" (real text says \"that have\")."
+      },
+      "changes": [
+        {
+          "label": "ambiguous",
+          "rule_id": "AMB-DEFAULT",
+          "rule": "No rule settled it: the wording changed in a way the rules cannot judge.",
+          "evidence": "removed: who | added: that",
+          "change_type": "modified",
+          "path": "Coverage Rationale > Safety Enclosure with Beds",
+          "before_text": "Safety enclosure with beds (e.g., pediatric enclosed bed, adult bed, safety enclosure) are covered as DME for individuals who have a risk for safety in bed when all of the following criteria are met:",
+          "after_text": "Safety enclosure with beds (e.g., pediatric enclosed bed, adult bed, safety enclosure) are covered as DME for individuals that have a risk for safety in bed when all of the following criteria are met:",
+          "before_page": 1,
+          "after_page": 1
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "B7",
+        "kind": "unlabeled",
+        "op": "replace_text",
+        "section": "Safety Enclosure with Beds",
+        "find": "should be coded with HCPCS code E0316",
+        "replace": "should be coded with HCPCS code E0305",
+        "description": "In the Safety Enclosure note, the older version read \"should be coded with HCPCS code E0305\" (real text says E0316)."
+      },
+      "changes": [
+        {
+          "label": "substantive",
+          "rule_id": "SUB-NUMBER",
+          "rule": "A number changed in a coverage section.",
+          "evidence": "removed: e0305 | added: e0316",
+          "change_type": "modified",
+          "path": "Coverage Rationale > Safety Enclosure with Beds",
+          "before_text": "Note: Safety enclosure with beds (e.g., Posey) should be coded with HCPCS code E0305.",
+          "after_text": "Note: Safety enclosure with beds (e.g., Posey) should be coded with HCPCS code E0316.",
+          "before_page": 2,
+          "after_page": 2
+        }
+      ]
+    }
+  ]
+}

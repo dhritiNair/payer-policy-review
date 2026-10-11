@@ -1,0 +1,25 @@
+{
+  "_note": "BLIND edits supplied by the user, run before any tuning. Each edit is applied to the extracted text of the real policy to produce a SIMULATED 'before' text. 'kind' is 'unlabeled': the user gave no ground-truth labels. No PDF is created.",
+  "edits": [
+    {"id": "B1", "kind": "unlabeled", "op": "delete_paragraph", "section": "Safety Enclosure with Beds",
+     "find": "Weighted blankets",
+     "description": "The older version had no \"Weighted blankets\" bullet in the list of less intensive alternatives."},
+    {"id": "B2", "kind": "unlabeled", "op": "delete_code", "code": "E0328",
+     "description": "The older version had no code row for E0328."},
+    {"id": "B3", "kind": "unlabeled", "op": "replace_text", "section": "Benefit Considerations",
+     "find": "exclusions may apply", "replace": "exclusions apply",
+     "description": "In Benefit Considerations, the older version read \"Additional coverage limitations and exclusions apply.\" (no \"may\")."},
+    {"id": "B4", "kind": "unlabeled", "op": "swap_paragraphs", "section": "Description of Services",
+     "find": "Support surfaces include", "find2": "Specialty beds are designed",
+     "description": "In Description of Services, the two paragraphs were in the opposite order."},
+    {"id": "B5", "kind": "unlabeled", "op": "replace_text", "section": "U.S. Food and Drug Administration (FDA)",
+     "find": "Accessed December 19, 2024", "replace": "Accessed December 19, 2023",
+     "description": "In the FDA section, the older version read \"Accessed December 19, 2023\"."},
+    {"id": "B6", "kind": "unlabeled", "op": "replace_text", "section": "Safety Enclosure with Beds",
+     "find": "individuals that have a risk for safety in bed", "replace": "individuals who have a risk for safety in bed",
+     "description": "In the Safety Enclosure criteria, the older version read \"for individuals who have a risk for safety in bed\" (real text says \"that have\")."},
+    {"id": "B7", "kind": "unlabeled", "op": "replace_text", "section": "Safety Enclosure with Beds",
+     "find": "should be coded with HCPCS code E0316", "replace": "should be coded with HCPCS code E0305",
+     "description": "In the Safety Enclosure note, the older version read \"should be coded with HCPCS code E0305\" (real text says E0316)."}
+  ]
+}
