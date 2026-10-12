@@ -146,3 +146,22 @@ def test_selector_shows_both_policies_and_the_knee_page_has_no_beds_demo_button(
     assert not [b for b in at.button if b.label == "Load demo data"]
     assert any("no demo data for this policy yet" in i.value for i in at.info)
     assert Store().get_state("surgery-knee") is None                      # nothing was seeded
+
+
+def test_knee_independent_edit_set_applies_and_builds_a_labelled_simulated_older_version(knee_doc):
+    import hashlib
+    import json
+    from uhc_monitor.classify import compare
+    from uhc_monitor.simulate import SIMULATED_LABEL, load_edits, make_simulated_older
+    path = ROOT / "config" / "simulations" / "surgery-knee-independent.json"
+    data = json.loads(path.read_text())
+    edits = load_edits(path)
+    assert data["source"] == "surgery-knee" and [e["id"] for e in edits] == [f"K{i}" for i in range(1, 13)]
+    assert {e["kind"] for e in edits} == {"unlabeled"}                    # ground truth is held by the user, not in the file
+    older = make_simulated_older(knee_doc, edits)                          # every target is found exactly once, or this raises
+    assert older["simulated"] is True and older["simulation"]["label"] == SIMULATED_LABEL and older["source_file"] is None
+    assert (older["policy_number"], older["effective_date"]) == ("2026T0553II", "2026-06-01")
+    assert len(compare(older, knee_doc)) == 11                              # K12 is a pure reorder: noted, not reported
+    saved = json.loads((ROOT / "results" / "knee-independent-initial-run.json").read_text())
+    assert saved["source"] == "surgery-knee" and len(saved["results"]) == 12
+    assert saved["real_pdf_sha256"] == hashlib.sha256(KNEE_PDF.read_bytes()).hexdigest()    # the run is tied to this exact PDF

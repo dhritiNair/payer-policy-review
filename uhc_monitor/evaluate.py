@@ -192,7 +192,7 @@ def claude_meta(assessor, sets):
             "note": "Claude is advisory and can only escalate an ambiguous change to substantive; it never dismisses one."}
 
 
-def metadata(saved_from=None, saved=None, assessor=None, sets=None):
+def metadata(saved_from=None, saved=None, assessor=None, sets=None, policies=None):
     llm = load_llm_config()
     git = _git()
     if saved:   # describe the run that is being scored, not today's code
@@ -210,7 +210,7 @@ def metadata(saved_from=None, saved=None, assessor=None, sets=None):
                    "effort": llm["effort"], "note": "The probe and the evaluation never call Claude (rules only). For a fresh run the configured "
                    "model and prompt version are logged so a run that does use Claude can be reproduced; for a saved "
                    "run they are 'not recorded' because that run did not log them."},
-        "real_policy_sha256": _sha(ROOT / "sources" / "original" / "beds-mattresses.pdf"),
+        "real_policies_sha256": policies or "not recorded",
         "disclaimer": DISCLAIMER,
     }
 
@@ -340,7 +340,7 @@ def main(argv=None):
     ap.add_argument("--set", dest="only", help="only the edit set with this file name (without .json)")
     a = ap.parse_args(argv)
 
-    sets, files_meta, assessor = [], {}, None
+    sets, files_meta, assessor, policies = [], {}, None, {}
     if a.saved:
         saved = json.loads(Path(a.saved).read_text())
         labels = json.loads(Path(a.labels).read_text())["labels"] if a.labels else {}
@@ -359,7 +359,9 @@ def main(argv=None):
             if a.only and name != a.only:
                 continue
             data = json.loads(edits_path.read_text())
-            _, results = probe_edits(data["edits"], data.get("policy", "beds-mattresses"), assessor)
+            source = data.get("source") or data.get("policy") or "beds-mattresses"
+            _, results = probe_edits(data["edits"], source, assessor)
+            policies[source] = _sha(ROOT / "sources" / "original" / f"{source}.pdf")
             labels = json.loads(labels_path.read_text())["labels"] if labels_path else {}
             sets.append((name, results, labels, {"edits": str(edits_path), "edits_sha256": _sha(edits_path),
                                                  "labels": str(labels_path) if labels_path else None,
@@ -367,7 +369,10 @@ def main(argv=None):
     if not sets:
         sys.exit(f"no edit sets (*.json) found in {a.folder}")
     report = evaluate_sets(sets)
-    meta = metadata(saved_from=a.saved, saved=saved if a.saved else None, assessor=assessor if not a.saved else None, sets=sets)
+    if a.saved and saved.get("real_pdf_sha256"):
+        policies = {saved.get("source", "beds-mattresses"): saved["real_pdf_sha256"]}
+    meta = metadata(saved_from=a.saved, saved=saved if a.saved else None, assessor=assessor if not a.saved else None, sets=sets,
+                    policies=policies)
     if meta["claude"]["used_in_this_run"]:
         meta["classifier"] = {**meta["classifier"], "classifier": "rules, then Claude fallback on ambiguous changes (advisory, escalate-only)"}
     out = a.out or str(ROOT / "results" / f"eval-{Path(a.folder).name}-{datetime.now(timezone.utc):%Y%m%dT%H%M%S}")

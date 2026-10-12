@@ -3,6 +3,7 @@
 Usage: python -m uhc_monitor.edit_probe config/simulations/<file>.json results/<name>.json [note]
 Each edit is applied alone to the real policy text, so every change is attributed to exactly one edit.
 """
+import hashlib
 import json
 import subprocess
 import sys
@@ -43,9 +44,15 @@ def probe_edits(edits, policy="beds-mattresses", assessor=None):
     return real, results
 
 
+def source_of(edits_path):
+    data = json.loads(Path(edits_path).read_text())
+    return data.get("source") or data.get("policy") or "beds-mattresses"
+
+
 def main(edits_path, out_path):
     edits = load_edits(edits_path)
-    real, results = probe_edits(edits)
+    source = source_of(edits_path)
+    real, results = probe_edits(edits, source)
     combined = compare(make_simulated_older(real, edits), real)
 
     for r in results:
@@ -66,7 +73,9 @@ def main(edits_path, out_path):
         "run_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "note": sys.argv[3] if len(sys.argv) > 3 else "",
         "config": rules_config(),
-        "code_commit": head, "edits_file": str(edits_path), "results": results}, indent=2, ensure_ascii=False))
+        "code_commit": head, "edits_file": str(edits_path), "source": source,
+        "real_pdf_sha256": hashlib.sha256((ROOT / "sources" / "original" / f"{source}.pdf").read_bytes()).hexdigest(),
+        "results": results}, indent=2, ensure_ascii=False))
     print(f"saved {out_path}")
 
 

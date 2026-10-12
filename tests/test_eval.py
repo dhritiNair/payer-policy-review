@@ -38,7 +38,8 @@ def test_abstention_is_counted_apart_from_automatic_detection():
 def summaries():
     out = {}
     for name, edits_path, labels_path in evaluate.find_sets(SIMS):
-        _, results = probe_edits(load_edits(edits_path))
+        data = json.loads(edits_path.read_text())
+        _, results = probe_edits(data["edits"], data.get("source", "beds-mattresses"))
         labels = json.loads(labels_path.read_text())["labels"] if labels_path else {}
         out[name] = evaluate.summarize(evaluate.score_results(results, labels))
     return out
@@ -88,7 +89,7 @@ def test_eval_runs_on_any_new_folder_and_logs_how_to_reproduce_it(tmp_path):
     assert out.with_suffix(".txt").exists()
     meta = saved["meta"]
     assert meta["code"]["commit"] and meta["classifier"]["rules"] and meta["claude"]["prompt_version"] == "v2"
-    assert meta["claude"]["model"] and meta["real_policy_sha256"] and meta["run_at"]
+    assert meta["claude"]["model"] and meta["real_policies_sha256"]["beds-mattresses"] and meta["run_at"]
     s = saved["sets"][0]
     assert s["name"] == "examples" and s["files"]["edits_sha256"] and s["files"]["labels_sha256"]
     assert [r["outcome"] for r in s["rows"]] == ["correct", "correct_detection", "correct", "correct_detection"]   # N1-N4 vs the key

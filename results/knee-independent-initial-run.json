@@ -1,0 +1,365 @@
+{
+  "run_at": "2026-10-12T08:15:35+00:00",
+  "note": "Initial run on the Surgery of the Knee independent edit set K1-K12, before any rule tuning. Rules-only. No labels, edit files or rules changed.",
+  "config": {
+    "classifier": "rules-only (no model)",
+    "coverage_sections": [
+      "Applicable Codes",
+      "Application",
+      "Benefit Considerations",
+      "Coverage Rationale",
+      "Medical Records Documentation Used for Reviews"
+    ],
+    "coverage_words": [
+      "all",
+      "any",
+      "authorization",
+      "both",
+      "covered",
+      "either",
+      "except",
+      "exclude",
+      "excluded",
+      "excludes",
+      "exclusion",
+      "exclusions",
+      "experimental",
+      "investigational",
+      "never",
+      "no",
+      "non",
+      "not",
+      "only",
+      "unless",
+      "unproven",
+      "without"
+    ],
+    "modal_words": [
+      "can",
+      "cannot",
+      "may",
+      "might",
+      "must",
+      "require",
+      "required",
+      "requires",
+      "shall",
+      "should",
+      "will"
+    ],
+    "rules": {
+      "COS-TOC": "cosmetic",
+      "COS-FORMAT": "cosmetic",
+      "SUB-CODE-LIST": "substantive",
+      "SUB-PARAGRAPH": "substantive",
+      "SUB-KEYWORD": "substantive",
+      "SUB-NUMBER": "substantive",
+      "AMB-MODAL": "ambiguous",
+      "AMB-MOVED": "ambiguous",
+      "AMB-DEFAULT": "ambiguous"
+    }
+  },
+  "code_commit": "a041b9de6c06e195a6f7bd708b38aae3838f6970",
+  "edits_file": "config/simulations/surgery-knee-independent.json",
+  "source": "surgery-knee",
+  "real_pdf_sha256": "ce887339facae80eb6967da6d7f222a6c0310447fbbf363ae2430e2e82be3048",
+  "results": [
+    {
+      "edit": {
+        "id": "K1",
+        "kind": "unlabeled",
+        "op": "delete_paragraph",
+        "section": "UnitedHealthcare Individual Exchange",
+        "find": "This Medical Policy applies to Individual Exchange benefit plans.",
+        "description": "The older version had no \"UnitedHealthcare Individual Exchange\" heading or its applicability sentence."
+      },
+      "notes": [],
+      "changes": [
+        {
+          "label": "substantive",
+          "rule_id": "SUB-PARAGRAPH",
+          "rule": "A paragraph or criterion was added or removed in a coverage section.",
+          "evidence": "paragraph added in 'Application > UnitedHealthcare Individual Exchange'",
+          "change_type": "added",
+          "path": "Application > UnitedHealthcare Individual Exchange",
+          "before_text": null,
+          "after_text": "This Medical Policy applies to Individual Exchange benefit plans.",
+          "before_page": null,
+          "after_page": 1
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "K2",
+        "kind": "unlabeled",
+        "op": "replace_text",
+        "section": "Coverage Rationale",
+        "find": "is unproven and not medically necessary for treating individuals with any of the following due to insufficient evidence of efficacy:",
+        "replace": "is proven and medically necessary for treating individuals with any of the following:",
+        "description": "In Coverage Rationale, the older version read \"Articular cartilage repair is proven and medically necessary for treating individuals with any of the following:\""
+      },
+      "notes": [],
+      "changes": [
+        {
+          "label": "substantive",
+          "rule_id": "SUB-KEYWORD",
+          "rule": "A coverage keyword (all/any/not/must/only...) was added, removed or swapped in a coverage section.",
+          "evidence": "coverage words ['not', 'unproven']; removed: proven | added: unproven not due to insufficient evidence of efficacy",
+          "change_type": "modified",
+          "path": "Coverage Rationale",
+          "before_text": "Articular cartilage repair is proven and medically necessary for treating individuals with any of the following:",
+          "after_text": "Articular cartilage repair is unproven and not medically necessary for treating individuals with any of the following due to insufficient evidence of efficacy:",
+          "before_page": 1,
+          "after_page": 1
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "K3",
+        "kind": "unlabeled",
+        "op": "replace_text",
+        "section": "(Front matter)",
+        "find": "Clinical Evidence ...  4",
+        "replace": "Clinical Evidence ...  5",
+        "description": "In the Table of Contents, the older version listed Clinical Evidence on page 5."
+      },
+      "notes": [],
+      "changes": [
+        {
+          "label": "cosmetic",
+          "rule_id": "COS-TOC",
+          "rule": "Only the table of contents changed (page numbers or entries); no policy text changed.",
+          "evidence": "change is inside the Table of Contents",
+          "change_type": "modified",
+          "path": "(Front matter)",
+          "before_text": "Table of Contents Page Application ...  1 Coverage Rationale ...  1 Medical Records Documentation Used for Reviews ...  2 Definitions ...  2 Applicable Codes ...  3 Description of Services ...  4 Clinical Evidence ...  5 U.S. Food and Drug Administration ...  8 References ...  8 Policy History/Revision Information ...  9 Instructions for Use ...  9",
+          "after_text": "Table of Contents Page Application ...  1 Coverage Rationale ...  1 Medical Records Documentation Used for Reviews ...  2 Definitions ...  2 Applicable Codes ...  3 Description of Services ...  4 Clinical Evidence ...  4 U.S. Food and Drug Administration ...  8 References ...  8 Policy History/Revision Information ...  9 Instructions for Use ...  9",
+          "before_page": 1,
+          "after_page": 1
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "K4",
+        "kind": "unlabeled",
+        "op": "replace_text",
+        "section": "Coverage Rationale",
+        "find": "Decellularized Osteochondral Allografts (e.g., Chondrofix)",
+        "replace": "Decellularized osteochondral allografts (e.g., Chondrofix)",
+        "description": "In the Coverage Rationale list, the older version read \"Decellularized osteochondral allografts (e.g., Chondrofix)\" (lowercase)."
+      },
+      "notes": [],
+      "changes": [
+        {
+          "label": "cosmetic",
+          "rule_id": "COS-FORMAT",
+          "rule": "Same words after ignoring case, spacing, punctuation and hyphenation.",
+          "evidence": "no word differences",
+          "change_type": "modified",
+          "path": "Coverage Rationale",
+          "before_text": "• Decellularized osteochondral allografts (e.g., Chondrofix)",
+          "after_text": "• Decellularized Osteochondral Allografts (e.g., Chondrofix)",
+          "before_page": 1,
+          "after_page": 1
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "K5",
+        "kind": "unlabeled",
+        "op": "delete_paragraph",
+        "section": "Coverage Rationale",
+        "find": "• Collagen Meniscus Implant",
+        "description": "The older version's list of unproven articular cartilage repair options had no \"Collagen Meniscus Implant\" bullet."
+      },
+      "notes": [],
+      "changes": [
+        {
+          "label": "substantive",
+          "rule_id": "SUB-PARAGRAPH",
+          "rule": "A paragraph or criterion was added or removed in a coverage section.",
+          "evidence": "paragraph added in 'Coverage Rationale'",
+          "change_type": "added",
+          "path": "Coverage Rationale",
+          "before_text": null,
+          "after_text": "• Collagen Meniscus Implant",
+          "before_page": null,
+          "after_page": 1
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "K6",
+        "kind": "unlabeled",
+        "op": "replace_text",
+        "section": "Definitions",
+        "find": "pain domain of > 40",
+        "replace": "pain domain of > 30",
+        "description": "In the Disabling Pain definition, the older version read \"WOMAC pain domain of > 30\" (real text says 40)."
+      },
+      "notes": [],
+      "changes": [
+        {
+          "label": "ambiguous",
+          "rule_id": "AMB-DEFAULT",
+          "rule": "No rule settled it: the wording changed in a way the rules cannot judge.",
+          "evidence": "removed: 30 | added: 40 (outside the coverage sections)",
+          "change_type": "modified",
+          "path": "Definitions",
+          "before_text": "Disabling Pain: Western Ontario and McMaster Universities Arthritis Index (WOMAC) pain domain of > 30 (Quintana et al., 2009).",
+          "after_text": "Disabling Pain: Western Ontario and McMaster Universities Arthritis Index (WOMAC) pain domain of > 40 (Quintana et al., 2009).",
+          "before_page": 2,
+          "after_page": 2
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "K7",
+        "kind": "unlabeled",
+        "op": "replace_text",
+        "section": "Definitions",
+        "find": "UHC will accept three or more",
+        "replace": "UHC will consider three or more",
+        "description": "In the Radiographic Findings of Osteoarthritis note, the older version read \"UHC will consider three or more\" (real text says \"accept\")."
+      },
+      "notes": [],
+      "changes": [
+        {
+          "label": "ambiguous",
+          "rule_id": "AMB-DEFAULT",
+          "rule": "No rule settled it: the wording changed in a way the rules cannot judge.",
+          "evidence": "removed: consider | added: accept (outside the coverage sections)",
+          "change_type": "modified",
+          "path": "Definitions",
+          "before_text": "Radiographic Findings of Osteoarthritis: Narrowing of joint space, osteophyte formation, subchondral sclerosis, subchondral cysts, deformity of bony end plates, and thinning or complete loss of articular cartilage (American College of Radiology, 2025). Note: UHC will consider three or more moderate to severe radiographic findings to be sufficient to support the diagnosis of severe osteoarthritis (American College of Radiology, 2025).",
+          "after_text": "Radiographic Findings of Osteoarthritis: Narrowing of joint space, osteophyte formation, subchondral sclerosis, subchondral cysts, deformity of bony end plates, and thinning or complete loss of articular cartilage (American College of Radiology, 2025). Note: UHC will accept three or more moderate to severe radiographic findings to be sufficient to support the diagnosis of severe osteoarthritis (American College of Radiology, 2025).",
+          "before_page": 2,
+          "after_page": 2
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "K8",
+        "kind": "unlabeled",
+        "op": "delete_code",
+        "code": "0737T",
+        "description": "The older version had no code row for 0737T."
+      },
+      "notes": [],
+      "changes": [
+        {
+          "label": "substantive",
+          "rule_id": "SUB-CODE-LIST",
+          "rule": "A procedure code was added to or removed from the code list.",
+          "evidence": "code 0737T added",
+          "change_type": "code_added",
+          "path": "Applicable Codes",
+          "before_text": null,
+          "after_text": "0737T Xenograft implantation into the articular surface",
+          "before_page": null,
+          "after_page": 3
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "K9",
+        "kind": "unlabeled",
+        "op": "replace_text",
+        "section": "Collagen Meniscus Implant",
+        "find": "at a minimum 10-year follow- up",
+        "replace": "at a minimum 10-year follow-up",
+        "description": "In the Grassi et al. (2021) summary, the older version read \"at a minimum 10-year follow-up\" (no space after the hyphen)."
+      },
+      "notes": [],
+      "changes": [
+        {
+          "label": "cosmetic",
+          "rule_id": "COS-FORMAT",
+          "rule": "Same words after ignoring case, spacing, punctuation and hyphenation.",
+          "evidence": "no word differences",
+          "change_type": "modified",
+          "path": "Clinical Evidence > Collagen Meniscus Implant",
+          "before_text": "Grassi et al. (2021) assessed the clinical outcomes and failures of lateral CMI implantation at a minimum 10-year follow-up. This study included 24 consecutive participants who underwent lateral CMI implantation for partial lateral meniscal defects and who were part of a previous study that had a 2-year follow-up. The outcome measures at the latest follow-up included the Lysholm score, Knee Injury and Osteoarthritis Outcome Score (KOOS), VAS for pain, Tegner activity level, and EuroQol 5-Dimensions score. The authors concluded that lateral CMI implantation for partial lateral meniscal defects provided good long-term results, with a 10-year survival rate of 85% and a 14-year survival rate of 64%. At the final follow- up, 58% of the participants had good or excellent Lysholm scores. However, there was a general decrease in outcome scores between the short- and long-term follow-ups. According to the authors, although this represents the first study to assess the long-term outcome of lateral meniscal replacement using a scaffold, several limitations are present. These include a limited number of participants, which did not allow the performance of sophisticated statistical subanalyses to identify outcomes and failure predictors. According to the authors, additional factors such as a surgical learning curve, the time from meniscectomy to scaffold implantation, the cartilage status, and the time of the index surgery could be relevant and should be investigated in studies with a larger sample size. The study is limited by its small sample size, case-series design, and loss to follow-up, which reduce generalizability and increase the risk of bias.",
+          "after_text": "Grassi et al. (2021) assessed the clinical outcomes and failures of lateral CMI implantation at a minimum 10-year follow- up. This study included 24 consecutive participants who underwent lateral CMI implantation for partial lateral meniscal defects and who were part of a previous study that had a 2-year follow-up. The outcome measures at the latest follow-up included the Lysholm score, Knee Injury and Osteoarthritis Outcome Score (KOOS), VAS for pain, Tegner activity level, and EuroQol 5-Dimensions score. The authors concluded that lateral CMI implantation for partial lateral meniscal defects provided good long-term results, with a 10-year survival rate of 85% and a 14-year survival rate of 64%. At the final follow- up, 58% of the participants had good or excellent Lysholm scores. However, there was a general decrease in outcome scores between the short- and long-term follow-ups. According to the authors, although this represents the first study to assess the long-term outcome of lateral meniscal replacement using a scaffold, several limitations are present. These include a limited number of participants, which did not allow the performance of sophisticated statistical subanalyses to identify outcomes and failure predictors. According to the authors, additional factors such as a surgical learning curve, the time from meniscectomy to scaffold implantation, the cartilage status, and the time of the index surgery could be relevant and should be investigated in studies with a larger sample size. The study is limited by its small sample size, case-series design, and loss to follow-up, which reduce generalizability and increase the risk of bias.",
+          "before_page": 6,
+          "after_page": 6
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "K10",
+        "kind": "unlabeled",
+        "op": "replace_text",
+        "section": "Xenografts",
+        "find": "existing clinical evidence does not support the use of bone xenografts in orthopedic surgery.",
+        "replace": "existing clinical evidence supports the use of bone xenografts in selected orthopedic procedures.",
+        "description": "In the Bracey et al. (2020) summary, the older version said the evidence supports bone xenografts in selected orthopedic procedures."
+      },
+      "notes": [],
+      "changes": [
+        {
+          "label": "ambiguous",
+          "rule_id": "AMB-DEFAULT",
+          "rule": "No rule settled it: the wording changed in a way the rules cannot judge.",
+          "evidence": "removed: supports selected procedures | added: does not support surgery (outside the coverage sections)",
+          "change_type": "modified",
+          "path": "Clinical Evidence > Xenografts",
+          "before_text": "Bracey et al. (2020) conducted the first systematic review of orthopedic clinical studies on bone xenotransplantation and reported outcomes from a single-center case series. The authors reviewed 31 clinical studies, most commonly in spine surgery, and found mixed results overall: 44% reported favorable outcomes, while 47% reported poor outcomes and discouraged use of xenograft bone. In their own case series of bovine bone xenografts used in foot and ankle reconstruction, xenografts failed to integrate with host bone in 58% of cases and persistent pain occurred in 83% of patients. The authors concluded that existing clinical evidence supports the use of bone xenografts in selected orthopedic procedures. The study is limited by the heterogeneity and the lack of robust comparative trials to support meaningful conclusions about xenograft effectiveness.",
+          "after_text": "Bracey et al. (2020) conducted the first systematic review of orthopedic clinical studies on bone xenotransplantation and reported outcomes from a single-center case series. The authors reviewed 31 clinical studies, most commonly in spine surgery, and found mixed results overall: 44% reported favorable outcomes, while 47% reported poor outcomes and discouraged use of xenograft bone. In their own case series of bovine bone xenografts used in foot and ankle reconstruction, xenografts failed to integrate with host bone in 58% of cases and persistent pain occurred in 83% of patients. The authors concluded that existing clinical evidence does not support the use of bone xenografts in orthopedic surgery. The study is limited by the heterogeneity and the lack of robust comparative trials to support meaningful conclusions about xenograft effectiveness.",
+          "before_page": 8,
+          "after_page": 8
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "K11",
+        "kind": "unlabeled",
+        "op": "replace_text",
+        "section": "U.S. Food and Drug Administration (FDA)",
+        "find": "used during the surgery require FDA approval",
+        "replace": "used during the surgery may require FDA approval",
+        "description": "In the FDA section, the older version read \"devices and instruments used during the surgery may require FDA approval\"."
+      },
+      "notes": [],
+      "changes": [
+        {
+          "label": "ambiguous",
+          "rule_id": "AMB-DEFAULT",
+          "rule": "No rule settled it: the wording changed in a way the rules cannot judge.",
+          "evidence": "removed: may | added: - (outside the coverage sections)",
+          "change_type": "modified",
+          "path": "U.S. Food and Drug Administration (FDA)",
+          "before_text": "Surgeries of the knee are procedures and therefore not regulated by the FDA. However, devices and instruments used during the surgery may require FDA approval. Refer to the following website for additional information: http://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfPMN/pmn.cfm. (Accessed January 26, 2026)",
+          "after_text": "Surgeries of the knee are procedures and therefore not regulated by the FDA. However, devices and instruments used during the surgery require FDA approval. Refer to the following website for additional information: http://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfPMN/pmn.cfm. (Accessed January 26, 2026)",
+          "before_page": 8,
+          "after_page": 8
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "K12",
+        "kind": "unlabeled",
+        "op": "swap_paragraphs",
+        "section": "References",
+        "find": "Johnson CC, Johnson DJ, Garcia GH",
+        "find2": "Kohli S, Schwenck J, Barlow I",
+        "description": "In References, the Johnson and Kohli entries were in the opposite order."
+      },
+      "notes": [
+        "1 paragraph(s) reordered within 'References' (wording unchanged; not reported as a change)"
+      ],
+      "changes": []
+    }
+  ]
+}
