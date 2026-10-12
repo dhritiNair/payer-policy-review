@@ -80,9 +80,9 @@ def build_user_message(change, policy):
 
 
 class ClaudeAssessor:
-    def __init__(self, config=None, client=None, log_path=DEFAULT_LOG):
+    def __init__(self, config=None, client=None, log_path=None):
         self.config = config or load_config()
-        self.log_path = Path(log_path)
+        self.log_path = Path(log_path or os.environ.get("UHC_LLM_LOG") or DEFAULT_LOG)   # override with $UHC_LLM_LOG
         self.client = client
         # fill ANTHROPIC_API_KEY from .env if present; override=False so an exported variable wins
         load_dotenv(ROOT / ".env", override=False)

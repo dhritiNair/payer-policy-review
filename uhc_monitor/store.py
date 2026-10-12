@@ -7,7 +7,7 @@ import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 
-DEFAULT_ROOT = Path(os.environ.get("UHC_STORE_ROOT") or Path(__file__).resolve().parent.parent / "data" / "store")
+DEFAULT_ROOT = Path(__file__).resolve().parent.parent / "data" / "store"   # override with $UHC_STORE_ROOT
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS versions (
@@ -78,8 +78,8 @@ def _now():
 
 
 class Store:
-    def __init__(self, root=DEFAULT_ROOT):
-        self.root = Path(root)
+    def __init__(self, root=None):
+        self.root = Path(root or os.environ.get("UHC_STORE_ROOT") or DEFAULT_ROOT)
         (self.root / "snapshots").mkdir(parents=True, exist_ok=True)
         self.db = sqlite3.connect(self.root / "monitor.db")
         self.db.row_factory = sqlite3.Row
