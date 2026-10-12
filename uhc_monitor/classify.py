@@ -1,5 +1,5 @@
 """Rules-based classifier: substantive, cosmetic or ambiguous, with the rule that decided it."""
-from .diff import word_changes
+from .diff import diff_documents_with_notes, word_changes
 
 SUBSTANTIVE, COSMETIC, AMBIGUOUS = "substantive", "cosmetic", "ambiguous"
 AMBIGUOUS_SUBTITLE = "Needs human review"   # shown wherever 'Ambiguous' is shown
@@ -21,6 +21,7 @@ RULES = {
     "SUB-PARAGRAPH": (SUBSTANTIVE, "A paragraph or criterion was added or removed in a coverage section."),
     "SUB-KEYWORD": (SUBSTANTIVE, "A coverage keyword (all/any/not/must/only...) was added, removed or swapped in a coverage section."),
     "SUB-NUMBER": (SUBSTANTIVE, "A number changed in a coverage section."),
+    "AMB-MOVED": (AMBIGUOUS, "A paragraph moved to a different section; the wording is the same but its context changed."),
     "AMB-DEFAULT": (AMBIGUOUS, "No rule settled it: the wording changed in a way the rules cannot judge."),
 }
 
@@ -42,6 +43,9 @@ def classify(change):
         return decide("SUB-CODE-LIST", f"code {change['code']} {verb}") if in_coverage else \
             decide("AMB-DEFAULT", f"code {change['code']} {verb} outside a coverage section")
 
+    if kind == "moved":
+        return decide("AMB-MOVED", f"moved from '{change['from_path']}' to '{change['path']}'")
+
     if kind in ("added", "removed"):
         verb = "added" if kind == "added" else "removed"
         if in_coverage:
@@ -62,7 +66,11 @@ def classify(change):
     return decide("AMB-DEFAULT", changed + where)
 
 
+def compare_with_notes(before, after):
+    """(changes, notes): diff + classify. Each change comes back with its decision merged in."""
+    changes, notes = diff_documents_with_notes(before, after)
+    return [{**c, **classify(c)} for c in changes], notes
+
+
 def compare(before, after):
-    """diff + classify. Each change comes back with its decision merged in."""
-    from .diff import diff_documents
-    return [{**c, **classify(c)} for c in diff_documents(before, after)]
+    return compare_with_notes(before, after)[0]

@@ -51,7 +51,7 @@ def _index_sections(doc):
 def _change(kind, info, before=None, after=None, code=None):
     s = info["section"]
     return {
-        "change_type": kind,                    # modified | added | removed | code_added | code_removed | code_modified
+        "change_type": kind,                    # modified | added | removed | moved | code_added | code_removed | code_modified
         "section": s["heading"],
         "h1": info["h1"],
         "path": s["heading"] if info["h1"] == s["heading"] else f"{info['h1']} > {s['heading']}",
@@ -103,12 +103,44 @@ def _diff_codes(info_b, info_a):
     return out
 
 
-def diff_documents(before, after):
-    """All differences from `before` to `after`, in document order."""
+def _resolve_moves(changes):
+    """Pair a removed paragraph with an identical added one.
+    Same section: a pure reorder, dropped from the changes and returned as a quiet note.
+    Different sections: merged into one 'moved' change."""
+    kept, notes = [], []
+    unmatched_added = [c for c in changes if c["change_type"] == "added"]
+    reordered = {}
+    dropped = set()
+    for c in changes:
+        if c["change_type"] != "removed":
+            continue
+        match = next((a for a in unmatched_added if _norm(a["after_text"]) == _norm(c["before_text"])), None)
+        if match is None:
+            continue
+        unmatched_added.remove(match)
+        dropped.update((id(c), id(match)))
+        if match["section"] == c["section"]:
+            reordered[c["path"]] = reordered.get(c["path"], 0) + 1
+        else:
+            kept.append({**match, "change_type": "moved", "before_text": c["before_text"],
+                         "before_page": c["before_page"], "from_path": c["path"]})
+    kept += [c for c in changes if id(c) not in dropped]
+    for path, n in reordered.items():
+        notes.append(f"{n} paragraph(s) reordered within '{path}' (wording unchanged; not reported as a change)")
+    return kept, notes
+
+
+def diff_documents_with_notes(before, after):
+    """(changes, notes): all differences from `before` to `after`, plus quiet notes (e.g. pure reorders)."""
     sb, sa = _index_sections(before), _index_sections(after)
     keys = list(sa) + [k for k in sb if k not in sa]
     changes = []
     for k in keys:
         changes += _diff_paragraphs(sb.get(k), sa.get(k))
         changes += _diff_codes(sb.get(k), sa.get(k))
-    return changes
+    return _resolve_moves(changes)
+
+
+def diff_documents(before, after):
+    """All differences from `before` to `after`, in document order."""
+    return diff_documents_with_notes(before, after)[0]

@@ -1,0 +1,267 @@
+{
+  "run_at": "2026-10-12T03:34:48+00:00",
+  "note": "Pre-fix baseline (rules-only). Regenerated from commit d9db29f because the original 11-edit run was displayed in step 5 but not saved.",
+  "code_commit": "d9db29fc99e60e2b06a0a363abd2ddb98e8d6748",
+  "edits_file": "config/simulations/beds-mattresses.json",
+  "results": [
+    {
+      "edit": {
+        "id": "S1",
+        "kind": "substantive",
+        "op": "replace_text",
+        "section": "Safety Enclosure with Beds",
+        "find": "when all of the following criteria are met",
+        "replace": "when any of the following criteria are met",
+        "description": "Older version required ANY criterion; current requires ALL (stricter coverage)."
+      },
+      "changes": [
+        {
+          "label": "substantive",
+          "rule_id": "SUB-KEYWORD",
+          "rule": "A coverage keyword (all/any/not/must/only...) was added, removed or swapped in a coverage section.",
+          "evidence": "coverage words ['all', 'any']; removed: any | added: all",
+          "change_type": "modified",
+          "path": "Coverage Rationale > Safety Enclosure with Beds",
+          "before_text": "Safety enclosure with beds (e.g., pediatric enclosed bed, adult bed, safety enclosure) are covered as DME for individuals that have a risk for safety in bed when any of the following criteria are met:",
+          "after_text": "Safety enclosure with beds (e.g., pediatric enclosed bed, adult bed, safety enclosure) are covered as DME for individuals that have a risk for safety in bed when all of the following criteria are met:",
+          "before_page": 1,
+          "after_page": 1
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "S2",
+        "kind": "substantive",
+        "op": "delete_paragraph",
+        "section": "Safety Enclosure with Beds",
+        "find": "Medications to address seizures",
+        "description": "Older version had no medication-optimization criterion; current adds one."
+      },
+      "changes": [
+        {
+          "label": "substantive",
+          "rule_id": "SUB-PARAGRAPH",
+          "rule": "A paragraph or criterion was added or removed in a coverage section.",
+          "evidence": "paragraph added in 'Coverage Rationale > Safety Enclosure with Beds'",
+          "change_type": "added",
+          "path": "Coverage Rationale > Safety Enclosure with Beds",
+          "before_text": null,
+          "after_text": "• Medications to address seizures and/or disruptive or harmful behaviors have been optimized or not appropriate",
+          "before_page": null,
+          "after_page": 1
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "S3",
+        "kind": "substantive",
+        "op": "delete_code",
+        "code": "E0911",
+        "description": "Older version did not list HCPCS E0911; current adds it."
+      },
+      "changes": [
+        {
+          "label": "substantive",
+          "rule_id": "SUB-CODE-LIST",
+          "rule": "A procedure code was added to or removed from the code list.",
+          "evidence": "code E0911 added",
+          "change_type": "code_added",
+          "path": "Applicable Codes",
+          "before_text": null,
+          "after_text": "E0911 Trapeze bar, heavy-duty, for patient weight capacity greater than 250 pounds, attached to bed, with grab bar",
+          "before_page": null,
+          "after_page": 3
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "S4",
+        "kind": "substantive",
+        "op": "replace_text",
+        "section": "Benefit Considerations",
+        "find": "Coverage does not include certain support services (e.g., sheepskin pad).",
+        "replace": "Coverage includes certain support services (e.g., sheepskin pad).",
+        "description": "Older version covered support services; current excludes them."
+      },
+      "changes": [
+        {
+          "label": "substantive",
+          "rule_id": "SUB-KEYWORD",
+          "rule": "A coverage keyword (all/any/not/must/only...) was added, removed or swapped in a coverage section.",
+          "evidence": "coverage words ['not']; removed: includes | added: does not include",
+          "change_type": "modified",
+          "path": "Benefit Considerations",
+          "before_text": "Coverage includes certain support services (e.g., sheepskin pad).",
+          "after_text": "Coverage does not include certain support services (e.g., sheepskin pad).",
+          "before_page": 3,
+          "after_page": 3
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "A1",
+        "kind": "ambiguous",
+        "op": "replace_text",
+        "section": "Benefit Considerations",
+        "find": "Most benefit plans include coverage",
+        "replace": "Many benefit plans include coverage",
+        "description": "Wording shift 'Many' to 'Most'; may or may not change how broadly coverage applies."
+      },
+      "changes": [
+        {
+          "label": "ambiguous",
+          "rule_id": "AMB-DEFAULT",
+          "rule": "No rule settled it: the wording changed in a way the rules cannot judge.",
+          "evidence": "removed: many | added: most",
+          "change_type": "modified",
+          "path": "Benefit Considerations",
+          "before_text": "Many benefit plans include coverage for proven and medically necessary hospital beds and mattresses under the Durable Medical Equipment benefit.",
+          "after_text": "Most benefit plans include coverage for proven and medically necessary hospital beds and mattresses under the Durable Medical Equipment benefit.",
+          "before_page": 3,
+          "after_page": 3
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "A2",
+        "kind": "ambiguous",
+        "op": "replace_text",
+        "section": "Benefit Considerations",
+        "find": "Refer to the member’s specific plan for details.",
+        "replace": "Refer to the plan document for details.",
+        "description": "Rewording of the plan-reference sentence; unclear whether meaning changes."
+      },
+      "changes": [
+        {
+          "label": "ambiguous",
+          "rule_id": "AMB-DEFAULT",
+          "rule": "No rule settled it: the wording changed in a way the rules cannot judge.",
+          "evidence": "removed: document | added: member s specific",
+          "change_type": "modified",
+          "path": "Benefit Considerations",
+          "before_text": "Additional coverage limitations and exclusions may apply. Refer to the plan document for details.",
+          "after_text": "Additional coverage limitations and exclusions may apply. Refer to the member’s specific plan for details.",
+          "before_page": 3,
+          "after_page": 3
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "C1",
+        "kind": "cosmetic",
+        "op": "replace_text",
+        "section": "Safety Enclosure with Beds",
+        "find": "Medical helmet",
+        "replace": "Medical Helmet",
+        "description": "Capitalisation only."
+      },
+      "changes": [
+        {
+          "label": "cosmetic",
+          "rule_id": "COS-FORMAT",
+          "rule": "Same words after ignoring case, spacing, punctuation and hyphenation.",
+          "evidence": "no word differences",
+          "change_type": "modified",
+          "path": "Coverage Rationale > Safety Enclosure with Beds",
+          "before_text": "o Medical Helmet",
+          "after_text": "o Medical helmet",
+          "before_page": 2,
+          "after_page": 2
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "C2",
+        "kind": "cosmetic",
+        "op": "replace_text",
+        "section": "References",
+        "find": "2007 Nov;2(6):385-93",
+        "replace": "2007 Nov; 2(6): 385-93",
+        "description": "Citation spacing only."
+      },
+      "changes": [
+        {
+          "label": "cosmetic",
+          "rule_id": "COS-FORMAT",
+          "rule": "Same words after ignoring case, spacing, punctuation and hyphenation.",
+          "evidence": "no word differences",
+          "change_type": "modified",
+          "path": "References",
+          "before_text": "Nawaz H, Abbas A, Sarfraz A, et al. A randomized clinical trial to compare the use of safety net enclosures with standard restraints in agitated hospitalized patients. J Hosp Med. 2007 Nov; 2(6): 385-93.",
+          "after_text": "Nawaz H, Abbas A, Sarfraz A, et al. A randomized clinical trial to compare the use of safety net enclosures with standard restraints in agitated hospitalized patients. J Hosp Med. 2007 Nov;2(6):385-93.",
+          "before_page": 4,
+          "after_page": 4
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "C3",
+        "kind": "cosmetic",
+        "op": "replace_text",
+        "section": "(Front matter)",
+        "find": "Clinical Evidence ...  3",
+        "replace": "Clinical Evidence ...  4",
+        "description": "Table of contents page number only."
+      },
+      "changes": [
+        {
+          "label": "cosmetic",
+          "rule_id": "COS-TOC",
+          "rule": "Only the table of contents changed (page numbers or entries); no policy text changed.",
+          "evidence": "change is inside the Table of Contents",
+          "change_type": "modified",
+          "path": "(Front matter)",
+          "before_text": "Table of Contents Page Application ...  1 Coverage Rationale ...  1 Medical Records Documentation Used for Reviews ...  2 Applicable Codes ...  2 Description of Services ...  3 Benefit Considerations ...  3 Clinical Evidence ...  4 U.S. Food and Drug Administration ...  4 References ...  4 Policy History/Revision Information ...  4 Instructions for Use ...  4",
+          "after_text": "Table of Contents Page Application ...  1 Coverage Rationale ...  1 Medical Records Documentation Used for Reviews ...  2 Applicable Codes ...  2 Description of Services ...  3 Benefit Considerations ...  3 Clinical Evidence ...  3 U.S. Food and Drug Administration ...  4 References ...  4 Policy History/Revision Information ...  4 Instructions for Use ...  4",
+          "before_page": 1,
+          "after_page": 1
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "C4",
+        "kind": "cosmetic",
+        "op": "replace_text",
+        "section": "Medical Records Documentation Used for Reviews",
+        "find": "member specific benefit plan",
+        "replace": "member-specific benefit plan",
+        "description": "Hyphenation only."
+      },
+      "changes": [
+        {
+          "label": "cosmetic",
+          "rule_id": "COS-FORMAT",
+          "rule": "Same words after ignoring case, spacing, punctuation and hyphenation.",
+          "evidence": "no word differences",
+          "change_type": "modified",
+          "path": "Medical Records Documentation Used for Reviews",
+          "before_text": "Benefit coverage for health services is determined by the member-specific benefit plan document and applicable laws that may require coverage for a specific service. Medical records documentation may be required to assess whether the member meets the clinical criteria for coverage but does not guarantee coverage of the service requested; refer to the guidelines titled Medical Records Documentation Used for Reviews.",
+          "after_text": "Benefit coverage for health services is determined by the member specific benefit plan document and applicable laws that may require coverage for a specific service. Medical records documentation may be required to assess whether the member meets the clinical criteria for coverage but does not guarantee coverage of the service requested; refer to the guidelines titled Medical Records Documentation Used for Reviews.",
+          "before_page": 2,
+          "after_page": 2
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "H1",
+        "kind": "excluded",
+        "op": "replace_text",
+        "section": "Policy History/Revision Information",
+        "find": "Template Update",
+        "replace": "Template update",
+        "description": "Policy History table text; excluded from comparison, must produce no finding."
+      },
+      "changes": []
+    }
+  ]
+}
