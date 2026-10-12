@@ -1,0 +1,7 @@
+{
+  "_note": "Claude fallback for changes the rules label ambiguous. The API key is read from the ANTHROPIC_API_KEY environment variable only. Sampling parameters are not set: claude-sonnet-5-5 rejects non-default values.",
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "max_tokens": 4000,
+  "prompt_version": "v1"
+}
