@@ -4,7 +4,7 @@ from datetime import datetime
 import streamlit as st
 
 from uhc_monitor.classify import AMBIGUOUS, AMBIGUOUS_SUBTITLE, COSMETIC, SUBSTANTIVE
-from uhc_monitor.demo_data import has_demo, seed_demo
+from uhc_monitor.demo_data import SCENARIOS, has_demo, run_demo_check, seed_demo
 from uhc_monitor.findings import all_updates, get_findings, policy_facts
 from uhc_monitor.sources import load_sources
 from uhc_monitor.store import Store
@@ -164,29 +164,54 @@ def render_header(slot, source, facts, state, compared):
 def render_banner(slot, name, state):
     with slot:
         status, when, reason = state["last_status"], fmt_time(state["last_checked_at"]), state["last_reason"]
+        why = f" Reason: {reason}." if reason else ""
         if status == "failed":
-            st.error(f"**{name}: failed** — last check at {when}: {reason}. This is not 'unchanged'. "
-                     "The last good version is kept below.")
+            kept = ("The last good version is kept below." if state["baseline_version_id"]
+                    else "No check has succeeded yet, so there is nothing to compare.")
+            st.error(f"**{name}: failed** — last check at {when}.{why} This is not 'unchanged'. {kept}")
         elif status == "updated":
-            st.warning(f"**{name}: updated** — the document changed since the previous version (checked {when}).")
+            st.warning(f"**{name}: updated** — the document changed since the previous version (checked {when}).{why}")
         elif status == "unchanged":
-            st.success(f"**{name}: unchanged** — same content as the baseline (checked {when}).")
+            st.success(f"**{name}: unchanged** — same content as the baseline (checked {when}).{why}")
         else:
-            st.info(f"**{name}: initialized** — baseline stored, nothing to compare yet (checked {when}).")
+            st.info(f"**{name}: initialized** — baseline stored, nothing to compare yet (checked {when}).{why}")
+
+
+def render_check_panel(slot, source):
+    """Run the real update check for this policy against the local test server; returns True if a check just ran."""
+    ran = False
+    with slot:
+        with st.container(border=True):
+            st.markdown("**Run update check**")
+            left, right = st.columns([3, 1])
+            scenario = left.selectbox("Source for this demo", [label for label, _ in SCENARIOS], key=f"scenario-{source.id}",
+                                      help="What the local test server answers with. The check itself is the real one: it "
+                                           "validates the download, compares it with the stored baseline and sets the status.")
+            right.markdown("&nbsp;", unsafe_allow_html=True)
+            if right.button("Run update check", key=f"run-check-{source.id}", use_container_width=True):
+                run_demo_check(store, source, scenario)
+                ran = True
+            st.caption("Real UHC URLs are not configured (`url` is null in config/sources.json), so this demo checks a local "
+                       "test server instead of uhcprovider.com. The result appears in the banner above.")
+    return ran
 
 
 store = Store()
 sources = load_sources()
-selector_slot, header_slot, banner_slot = st.container(), st.container(), st.container()
+selector_slot, header_slot, banner_slot, check_slot = st.container(), st.container(), st.container(), st.container()
 if len(sources) > 1:
     with selector_slot:
         source = sources[st.selectbox("Policy", range(len(sources)), format_func=lambda i: sources[i].name)]
 else:
     source = sources[0]
 
+render_check_panel(check_slot, source)      # a click runs the check now, so the state read below already reflects it
 state = store.get_state(source.id)
-if state is None:
-    render_header(header_slot, source, None, None, "none yet")
+if state is None or not state["baseline_version_id"]:
+    # nothing good stored yet: either no check has run, or the first check failed
+    render_header(header_slot, source, None, state, "none yet")
+    if state:
+        render_banner(banner_slot, source.name, state)
     if has_demo(source.id):
         st.info("No versions stored yet. The real UHC URL is not configured, so you can load demo data: a SIMULATED "
                 "older version as the baseline, then a check of the real PDF served by a local test server.")

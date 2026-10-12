@@ -46,6 +46,12 @@ Model and settings are in `config/llm.json` (default model `claude-sonnet-5-5`).
 Until the real UHC URL is configured in `config/sources.json`, use the **Load demo data** button: it stores a
 SIMULATED older version as the baseline and checks the real PDF served by a local test server.
 
+The **Run update check** panel runs the real update check for the selected policy. Because the real UHC URLs are not
+configured (`url` is null in `config/sources.json`), it fetches from a local test server instead, and the **Source for
+this demo** selector chooses what that server answers with: the good PDF, an HTML error page (HTTP 200), HTML labelled as
+a PDF, an empty body, a truncated file, a 404 or a 500. The result (initialized, unchanged, updated or failed, with the
+reason) appears in the banner. A failed check never shows as unchanged and keeps the last good version.
+
 ## Running the tests
 
 ```bash

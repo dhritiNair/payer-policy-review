@@ -1,4 +1,5 @@
 """Seed demo data: a SIMULATED older baseline, then an update check of the real PDF via the local test server."""
+from dataclasses import replace
 from pathlib import Path
 
 from . import testserver
@@ -15,12 +16,33 @@ def has_demo(source_id):
     return source_id in DEMO_SOURCES
 
 
+# What the local test server can answer with, in the order the page offers them: (label, route)
+SCENARIOS = [("Good PDF", "/ok.pdf"), ("HTML error page (HTTP 200)", "/html-error"), ("HTML labelled as PDF", "/html-as-pdf"),
+             ("Empty body (HTTP 200)", "/empty"), ("Truncated file", "/truncated.pdf"), ("404 Not found", "/missing"),
+             ("500 Server error", "/server-error")]
+ROUTE_PREFIX = {"beds-mattresses": "", "surgery-knee": testserver.KNEE_PREFIX}
+
+
+def run_demo_check(store, source, scenario):
+    """Run the real update check for `source`, fetching from a throwaway local test server instead of its (unset) URL.
+    `scenario` is one of the SCENARIOS labels. Returns the CheckOutcome."""
+    if source.id not in ROUTE_PREFIX:
+        raise ValueError(f"the test server has no routes for {source.id!r}")
+    route = dict(SCENARIOS)[scenario]
+    server, base = testserver.start()
+    try:
+        return run_check(store, replace(source, url=f"{base}{ROUTE_PREFIX[source.id]}{route}"))
+    finally:
+        server.shutdown()
+
+
 
 def seed_demo(store, source_id="beds-mattresses"):
-    """Returns the check outcome, or None if this source already has stored versions."""
+    """Returns the check outcome, or None if this source already has a stored version."""
     if not has_demo(source_id):
         raise ValueError(f"no demo data for {source_id!r}")
-    if store.get_state(source_id):
+    state = store.get_state(source_id)
+    if state and state["baseline_version_id"]:     # a failed first check leaves a state row but no version
         return None
     real = extract_policy(ROOT / "sources" / "original" / "beds-mattresses.pdf")
     older = make_simulated_older(real, load_edits(ROOT / "config" / "simulations" / "beds-mattresses.json"))
