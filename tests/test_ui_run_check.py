@@ -138,3 +138,41 @@ def test_seed_demo_is_allowed_after_a_failed_first_check_but_not_over_a_stored_v
     s = Store(); run_check(s, BEDS)
     assert seed_demo(s, "beds-mattresses").status == "updated"
     assert seed_demo(s, "beds-mattresses") is None
+
+
+HINT = ("Only one version is stored, so there is nothing to compare. To see findings, press Reset demo, "
+        "then seed an older version before running a check.")
+
+
+def hints(at):
+    return [i.value for i in at.info if i.value == HINT]
+
+
+def test_a_single_stored_version_shows_the_hint_instead_of_findings():
+    at = open_app()
+    assert not hints(at)                                              # nothing stored yet: the seed prompt, not this hint
+    run(at, "Good PDF")                                               # one real version stored, no update to review
+    assert hints(at) == [HINT]
+    assert not any("No update to review yet" in x.value for x in at.markdown)         # the old wording is gone
+    assert not [b for b in at.button if b.key and b.key.startswith("row-")] and not at.metric
+    run(at, "Good PDF")                                               # still one version after an unchanged check
+    assert hints(at) == [HINT]
+    run(at, "404 Not found")                                          # and after a failed check the hint stays beside the banner
+    assert hints(at) == [HINT] and banners(at)[0].startswith("**Beds and Mattresses: failed**")
+
+
+def test_the_hint_does_not_appear_once_there_is_an_update_to_review():
+    at = open_app()
+    at.selectbox(key="demo-variant-beds-mattresses").select("Cosmetic edits only (just the cosmetic ones from that file)")
+    next(b for b in at.button if b.label == "Seed older version").click().run()
+    assert not hints(at) and at.metric                                 # findings page instead
+
+
+def test_the_hint_does_what_it_says_reset_then_seed_then_check_gives_findings():
+    at = open_app()
+    run(at, "Good PDF")
+    assert hints(at) == [HINT]
+    next(b for b in at.button if b.label == "Reset demo").click().run()
+    next(b for b in at.button if b.label == "Yes, delete the demo data for this policy").click().run()
+    next(b for b in at.button if b.label == "Seed older version").click().run()
+    assert not hints(at) and banners(at)[0].startswith("**Beds and Mattresses: updated**") and at.metric[0].value == "4"

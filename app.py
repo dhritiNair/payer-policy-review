@@ -264,7 +264,8 @@ updates = all_updates(store, source.id)
 if not updates:
     render_header(header_slot, source, facts, state,
                   f"v{current_v['id']} {'SIMULATED' if current_v['simulated'] else 'real'} (nothing to compare yet)")
-    st.write("No update to review yet.")
+    st.info("Only one version is stored, so there is nothing to compare. To see findings, press Reset demo, "
+            "then seed an older version before running a check.")
     st.stop()
 if len(updates) > 1:
     names = [f"v{u['before_version_id']} → v{u['version_id']} · checked {fmt_time(u['checked_at'])}" for u in updates]
