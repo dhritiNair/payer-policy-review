@@ -1,12 +1,13 @@
 """Snapshot store: SQLite for state and history, plain files for each saved version."""
 import hashlib
 import json
+import os
 import re
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 
-DEFAULT_ROOT = Path(__file__).resolve().parent.parent / "data" / "store"
+DEFAULT_ROOT = Path(os.environ.get("UHC_STORE_ROOT") or Path(__file__).resolve().parent.parent / "data" / "store")
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS versions (

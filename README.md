@@ -36,3 +36,12 @@ Check that the key and model work (prints only `PASS` or `FAIL`):
 ```
 
 Model and settings are in `config/llm.json` (default model `claude-sonnet-5-5`).
+
+## Run the app
+
+```bash
+.venv/bin/python -m streamlit run app.py
+```
+
+Until the real UHC URL is configured in `config/sources.json`, use the **Load demo data** button: it stores a
+SIMULATED older version as the baseline and checks the real PDF served by a local test server.
