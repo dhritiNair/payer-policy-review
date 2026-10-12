@@ -1,0 +1,34 @@
+UHC policy monitor: evaluation
+
+run at 2026-10-12T08:26:22+00:00 | code commit a041b9d | scoring saved run results/knee-independent-initial-run.json
+classifier: rules-only (no model) | Claude used in this run: no (configured: not recorded, prompt not recorded, effort not recorded)
+
+=== knee-independent-initial-run  (12 edits, 0 scored)
+edit  truth        predicted    rule(s)                    outcome
+K1    None         substantive  SUB-PARAGRAPH              unscored
+K2    None         substantive  SUB-KEYWORD                unscored
+K3    None         cosmetic     COS-TOC                    unscored
+K4    None         cosmetic     COS-FORMAT                 unscored
+K5    None         substantive  SUB-PARAGRAPH              unscored
+K6    None         ambiguous    AMB-DEFAULT                unscored
+K7    None         ambiguous    AMB-DEFAULT                unscored
+K8    None         substantive  SUB-CODE-LIST              unscored
+K9    None         cosmetic     COS-FORMAT                 unscored
+K10   None         ambiguous    AMB-DEFAULT                unscored
+K11   None         ambiguous    AMB-DEFAULT                unscored
+K12   None         none         -                          unscored
+
+  NO KEY YET: 12 edits classified, none scored
+  flagged substantive by the RULES alone : 4
+  (Claude not used)
+  left Ambiguous (needs human review)    : 4
+  cosmetic or quietly ignored            : 4
+
+=== ALL SETS
+  NO KEY YET: 12 edits classified, none scored
+  flagged substantive by the RULES alone : 4
+  (Claude not used)
+  left Ambiguous (needs human review)    : 4
+  cosmetic or quietly ignored            : 4
+
+Small samples: these results are diagnostic only. They show where the rules behave well or badly on these examples, not how accurate the tool is in general.

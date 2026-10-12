@@ -1,0 +1,237 @@
+{
+  "run_at": "2026-10-12T08:26:14+00:00",
+  "note": "After adding 'Definitions' to the coverage sections (commit 761caec). Rules-only. No labels or edit files changed.",
+  "config": {
+    "classifier": "rules-only (no model)",
+    "coverage_sections": [
+      "Applicable Codes",
+      "Application",
+      "Benefit Considerations",
+      "Coverage Rationale",
+      "Definitions",
+      "Medical Records Documentation Used for Reviews"
+    ],
+    "coverage_words": [
+      "all",
+      "any",
+      "authorization",
+      "both",
+      "covered",
+      "either",
+      "except",
+      "exclude",
+      "excluded",
+      "excludes",
+      "exclusion",
+      "exclusions",
+      "experimental",
+      "investigational",
+      "never",
+      "no",
+      "non",
+      "not",
+      "only",
+      "unless",
+      "unproven",
+      "without"
+    ],
+    "modal_words": [
+      "can",
+      "cannot",
+      "may",
+      "might",
+      "must",
+      "require",
+      "required",
+      "requires",
+      "shall",
+      "should",
+      "will"
+    ],
+    "rules": {
+      "COS-TOC": "cosmetic",
+      "COS-FORMAT": "cosmetic",
+      "SUB-CODE-LIST": "substantive",
+      "SUB-PARAGRAPH": "substantive",
+      "SUB-KEYWORD": "substantive",
+      "SUB-NUMBER": "substantive",
+      "AMB-MODAL": "ambiguous",
+      "AMB-MOVED": "ambiguous",
+      "AMB-DEFAULT": "ambiguous"
+    }
+  },
+  "code_commit": "761caecbc6eccb81b404966752878039c5689c5d",
+  "edits_file": "config/simulations/beds-mattresses-blind.json",
+  "source": "beds-mattresses",
+  "real_pdf_sha256": "b75d96a022655310752406ca21a3e9a53452b26ef1aa93cee5f65f8978167568",
+  "results": [
+    {
+      "edit": {
+        "id": "B1",
+        "kind": "unlabeled",
+        "op": "delete_paragraph",
+        "section": "Safety Enclosure with Beds",
+        "find": "Weighted blankets",
+        "description": "The older version had no \"Weighted blankets\" bullet in the list of less intensive alternatives."
+      },
+      "notes": [],
+      "changes": [
+        {
+          "label": "substantive",
+          "rule_id": "SUB-PARAGRAPH",
+          "rule": "A paragraph or criterion was added or removed in a coverage section.",
+          "evidence": "paragraph added in 'Coverage Rationale > Safety Enclosure with Beds'",
+          "change_type": "added",
+          "path": "Coverage Rationale > Safety Enclosure with Beds",
+          "before_text": null,
+          "after_text": "o Weighted blankets",
+          "before_page": null,
+          "after_page": 2
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "B2",
+        "kind": "unlabeled",
+        "op": "delete_code",
+        "code": "E0328",
+        "description": "The older version had no code row for E0328."
+      },
+      "notes": [],
+      "changes": [
+        {
+          "label": "substantive",
+          "rule_id": "SUB-CODE-LIST",
+          "rule": "A procedure code was added to or removed from the code list.",
+          "evidence": "code E0328 added",
+          "change_type": "code_added",
+          "path": "Applicable Codes",
+          "before_text": null,
+          "after_text": "E0328 Hospital bed, pediatric, manual, 360 degree side enclosures, top of headboard, footboard and side rails up to 24 in above the spring, includes mattress",
+          "before_page": null,
+          "after_page": 3
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "B3",
+        "kind": "unlabeled",
+        "op": "replace_text",
+        "section": "Benefit Considerations",
+        "find": "exclusions may apply",
+        "replace": "exclusions apply",
+        "description": "In Benefit Considerations, the older version read \"Additional coverage limitations and exclusions apply.\" (no \"may\")."
+      },
+      "notes": [],
+      "changes": [
+        {
+          "label": "ambiguous",
+          "rule_id": "AMB-MODAL",
+          "rule": "A modal word (may/should/must/will/can...) changed in a coverage section; it may or may not change the obligation.",
+          "evidence": "modal words ['may']; removed: - | added: may",
+          "change_type": "modified",
+          "path": "Benefit Considerations",
+          "before_text": "Additional coverage limitations and exclusions apply. Refer to the member’s specific plan for details.",
+          "after_text": "Additional coverage limitations and exclusions may apply. Refer to the member’s specific plan for details.",
+          "before_page": 3,
+          "after_page": 3
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "B4",
+        "kind": "unlabeled",
+        "op": "swap_paragraphs",
+        "section": "Description of Services",
+        "find": "Support surfaces include",
+        "find2": "Specialty beds are designed",
+        "description": "In Description of Services, the two paragraphs were in the opposite order."
+      },
+      "notes": [
+        "1 paragraph(s) reordered within 'Description of Services' (wording unchanged; not reported as a change)"
+      ],
+      "changes": []
+    },
+    {
+      "edit": {
+        "id": "B5",
+        "kind": "unlabeled",
+        "op": "replace_text",
+        "section": "U.S. Food and Drug Administration (FDA)",
+        "find": "Accessed December 19, 2024",
+        "replace": "Accessed December 19, 2023",
+        "description": "In the FDA section, the older version read \"Accessed December 19, 2023\"."
+      },
+      "notes": [],
+      "changes": [
+        {
+          "label": "ambiguous",
+          "rule_id": "AMB-DEFAULT",
+          "rule": "No rule settled it: the wording changed in a way the rules cannot judge.",
+          "evidence": "removed: 2023 | added: 2024 (outside the coverage sections)",
+          "change_type": "modified",
+          "path": "U.S. Food and Drug Administration (FDA)",
+          "before_text": "The collaborative efforts of the FDA and the Hospital Bed Safety Workgroup have led to the release of the Hospital Bed System Dimensional and Assessment Guidance to Reduce Entrapment. This guidance provides recommendations for manufacturers of new hospital beds and for facilities with existing beds (including hospitals, nursing homes, and private residences). Located at: https://www.fda.gov/medical-devices/general-hospital-devices-and-supplies/hospital-beds. ( Accessed December 19, 2023)",
+          "after_text": "The collaborative efforts of the FDA and the Hospital Bed Safety Workgroup have led to the release of the Hospital Bed System Dimensional and Assessment Guidance to Reduce Entrapment. This guidance provides recommendations for manufacturers of new hospital beds and for facilities with existing beds (including hospitals, nursing homes, and private residences). Located at: https://www.fda.gov/medical-devices/general-hospital-devices-and-supplies/hospital-beds. ( Accessed December 19, 2024)",
+          "before_page": 4,
+          "after_page": 4
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "B6",
+        "kind": "unlabeled",
+        "op": "replace_text",
+        "section": "Safety Enclosure with Beds",
+        "find": "individuals that have a risk for safety in bed",
+        "replace": "individuals who have a risk for safety in bed",
+        "description": "In the Safety Enclosure criteria, the older version read \"for individuals who have a risk for safety in bed\" (real text says \"that have\")."
+      },
+      "notes": [],
+      "changes": [
+        {
+          "label": "ambiguous",
+          "rule_id": "AMB-DEFAULT",
+          "rule": "No rule settled it: the wording changed in a way the rules cannot judge.",
+          "evidence": "removed: who | added: that",
+          "change_type": "modified",
+          "path": "Coverage Rationale > Safety Enclosure with Beds",
+          "before_text": "Safety enclosure with beds (e.g., pediatric enclosed bed, adult bed, safety enclosure) are covered as DME for individuals who have a risk for safety in bed when all of the following criteria are met:",
+          "after_text": "Safety enclosure with beds (e.g., pediatric enclosed bed, adult bed, safety enclosure) are covered as DME for individuals that have a risk for safety in bed when all of the following criteria are met:",
+          "before_page": 1,
+          "after_page": 1
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "B7",
+        "kind": "unlabeled",
+        "op": "replace_text",
+        "section": "Safety Enclosure with Beds",
+        "find": "should be coded with HCPCS code E0316",
+        "replace": "should be coded with HCPCS code E0305",
+        "description": "In the Safety Enclosure note, the older version read \"should be coded with HCPCS code E0305\" (real text says E0316)."
+      },
+      "notes": [],
+      "changes": [
+        {
+          "label": "substantive",
+          "rule_id": "SUB-NUMBER",
+          "rule": "A number changed in a coverage section.",
+          "evidence": "removed: e0305 | added: e0316",
+          "change_type": "modified",
+          "path": "Coverage Rationale > Safety Enclosure with Beds",
+          "before_text": "Note: Safety enclosure with beds (e.g., Posey) should be coded with HCPCS code E0305.",
+          "after_text": "Note: Safety enclosure with beds (e.g., Posey) should be coded with HCPCS code E0316.",
+          "before_page": 2,
+          "after_page": 2
+        }
+      ]
+    }
+  ]
+}

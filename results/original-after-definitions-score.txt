@@ -1,0 +1,33 @@
+UHC policy monitor: evaluation
+
+run at 2026-10-12T08:26:20+00:00 | code commit 761caec | scoring saved run results/original-after-definitions-run.json
+classifier: rules-only (no model) | Claude used in this run: no (configured: not recorded, prompt not recorded, effort not recorded)
+
+=== original-after-definitions-run  (11 edits, 11 scored)
+edit  truth        predicted    rule(s)                    outcome
+S1    substantive  substantive  SUB-KEYWORD                correct_detection
+S2    substantive  substantive  SUB-PARAGRAPH              correct_detection
+S3    substantive  substantive  SUB-CODE-LIST              correct_detection
+S4    substantive  substantive  SUB-KEYWORD                correct_detection
+A1    ambiguous    ambiguous    AMB-DEFAULT                correct
+A2    ambiguous    ambiguous    AMB-DEFAULT                correct
+C1    cosmetic     cosmetic     COS-FORMAT                 correct
+C2    cosmetic     cosmetic     COS-FORMAT                 correct
+C3    cosmetic     cosmetic     COS-TOC                    correct
+C4    cosmetic     cosmetic     COS-FORMAT                 correct
+H1    excluded     none         -                          correct
+
+  automatic detection : 4 of 4 true-substantive edits detected as substantive
+  misses              : 0
+  false positives     : 0
+  human review        : 2 left for a human (2 as intended for genuinely ambiguous edits, 0 true-substantive not auto-detected, 0 true-cosmetic avoidable)
+  correct, no review  : 5
+
+=== ALL SETS
+  automatic detection : 4 of 4 true-substantive edits detected as substantive
+  misses              : 0
+  false positives     : 0
+  human review        : 2 left for a human (2 as intended for genuinely ambiguous edits, 0 true-substantive not auto-detected, 0 true-cosmetic avoidable)
+  correct, no review  : 5
+
+Small samples: these results are diagnostic only. They show where the rules behave well or badly on these examples, not how accurate the tool is in general.
