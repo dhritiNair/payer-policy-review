@@ -8,7 +8,7 @@ from uhc_monitor.demo_data import seed_demo
 from uhc_monitor.findings import all_updates, get_findings, policy_facts
 from uhc_monitor.sources import load_sources
 from uhc_monitor.store import Store
-from uhc_monitor.view import excerpt_pair
+from uhc_monitor.view import changed_summary, excerpt_pair
 
 st.set_page_config(page_title="UHC Policy Monitor", layout="wide")
 
@@ -96,7 +96,7 @@ def render_review(store, f, review, ctx):
 
 def render_finding(n, f, before_sim, facts, review, store, ctx):
     with st.container(border=True):
-        st.markdown(f"#### {n}. {badge(f['final_label'], f['final_source'])} {review_badge(review)}")
+        st.markdown(f"#### P{n} · {badge(f['final_label'], f['final_source'])} {review_badge(review)}")
         st.markdown(f"**{f['path']}** · {pages(f, before_sim)}")
 
         st.markdown("##### Source facts")
@@ -238,13 +238,80 @@ st.caption(f"Claude fallback: {cl['model']}, prompt {cl['prompt_version']} — "
 for note in data["notes"]:
     st.caption(f"Note: {note}")
 
+ROW_CSS = """<style>
+/* finding rows: left-aligned, wrap instead of truncating (the status must stay visible) */
+[class*="st-key-row"] button { justify-content: flex-start; text-align: left; height: auto; min-height: 2.6rem;
+    padding: 0.5rem 0.75rem; white-space: normal; }
+[class*="st-key-row"] button > div, [class*="st-key-row"] button > div > span {
+    justify-content: flex-start; width: 100%; text-align: left; }
+[class*="st-key-row"] button [data-testid="stMarkdownContainer"] { width: 100%; text-align: left; }
+[class*="st-key-row"] button p { display: block; text-align: left; margin: 0; white-space: normal; overflow: visible;
+    text-overflow: clip; overflow-wrap: anywhere; }
+[class*="st-key-rowsel-"] button { border: 2px solid rgba(128,128,128,0.95); background: rgba(128,128,128,0.18); }
+</style>"""
+
+
+def ambiguous_tier(f):
+    """0 = abstained, low confidence, or no usable Claude answer (the reviewer has least to lean on); 1 medium; 2 high."""
+    llm = f["llm"]
+    if not llm or llm["status"] != "ok":
+        return 0
+    ans = llm["answer"]
+    if ans["suggested_label"] == "abstain" or ans["confidence"] == "low":
+        return 0
+    return 1 if ans["confidence"] == "medium" else 2
+
+
+def select_row(key):
+    st.session_state["selected"] = None if st.session_state.get("selected") == key else key
+
+
+def close_detail():
+    st.session_state["selected"] = None
+
+
+def row_label(f, prio, review, selected):
+    arrow = "▼" if selected else "▶"
+    if f["final_label"] == SUBSTANTIVE:
+        label = ":red[**SUBSTANTIVE**]" + (" (raised by Claude)" if f["final_source"] != "rules" else "")
+    else:
+        label = f":orange[**AMBIGUOUS**] *({AMBIGUOUS_SUBTITLE})*"
+    page = f"p.{f['after_page']}" if f["after_page"] else f"p.{f['before_page']} (removed)"
+    status = "OPEN" if review is None else review["status"].upper()
+    return f"{arrow} **P{prio}** · {label} · {f['path']}, {page}\n\n`{changed_summary(f)}` · **{status}**"
+
+
 st.subheader("Findings to review")
-# open findings first; reviewed and dismissed ones stay on the page, marked, so nothing disappears
-ordered = [f for f in to_review if f["key"] not in reviews] + [f for f in to_review if f["key"] in reviews]
-for n, f in enumerate(ordered, 1):
-    render_finding(n, f, before_sim, data["after_facts"], reviews.get(f["key"]), store, ctx)
-if not ordered:
-    st.write("No substantive or ambiguous findings.")
+st.markdown(ROW_CSS, unsafe_allow_html=True)
+order = {f["key"]: i for i, f in enumerate(findings)}
+ranked = {
+    "subst": sorted(subst, key=lambda f: (f["final_source"] == "rules", order[f["key"]])),
+    "amb": sorted(amb, key=lambda f: (ambiguous_tier(f), order[f["key"]])),
+}
+prio = {f["key"]: n for col in ranked.values() for n, f in enumerate(col, 1)}
+selected = st.session_state.get("selected")
+col_s, col_a = st.columns(2)
+for col, name, items in ((col_s, f"Substantive ({len(subst)})", ranked["subst"]),
+                         (col_a, f"Ambiguous — {AMBIGUOUS_SUBTITLE} ({len(amb)})", ranked["amb"])):
+    with col:
+        st.markdown(f"#### {name}")
+        # open before decided, each in priority order; decided findings stay listed, marked, so nothing disappears
+        for f in [f for f in items if f["key"] not in reviews] + [f for f in items if f["key"] in reviews]:
+            is_sel = f["key"] == selected
+            st.button(row_label(f, prio[f["key"]], reviews.get(f["key"]), is_sel), use_container_width=True,
+                      key=f"{'rowsel' if is_sel else 'row'}-{f['key']}", on_click=select_row, args=(f["key"],))
+        if not items:
+            st.caption("None.")
+
+chosen = next((f for f in to_review if f["key"] == selected), None)
+if chosen:
+    st.divider()
+    head, close = st.columns([6, 1])
+    head.subheader("Finding detail")
+    close.button("Close", key="close-detail", on_click=close_detail, use_container_width=True)
+    render_finding(prio[chosen["key"]], chosen, before_sim, data["after_facts"], reviews.get(chosen["key"]), store, ctx)
+else:
+    st.caption("Select a finding above to see its full detail and review it.")
 
 with st.expander(f"Cosmetic changes ({len(cos)}) — listed for transparency"):
     for f in cos:

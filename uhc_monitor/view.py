@@ -50,3 +50,29 @@ def excerpt_pair(before, after):
 
     return (render(b, bf, REMOVED_STYLE, True), render(a, af, ADDED_STYLE, True),
             render(b, bf, REMOVED_STYLE, False), render(a, af, ADDED_STYLE, False))
+
+
+def _clip(text, limit):
+    return text if len(text) <= limit else text[:limit - 1].rstrip() + "…"
+
+
+def changed_summary(change, limit=60):
+    """Short plain text of what changed, for a collapsed row: 'any → all', '+ new text', '− old text'."""
+    kind = change["change_type"]
+    if kind == "code_added":
+        return _clip(f"+ {change['code']}", limit)
+    if kind == "code_removed":
+        return _clip(f"− {change['code']}", limit)
+    if kind == "added":
+        return _clip("+ " + change["after_text"], limit)
+    if kind == "removed":
+        return _clip("− " + change["before_text"], limit)
+    if kind == "moved":
+        return _clip("moved from " + change["from_path"], limit)
+    b, a = change["before_text"].split(), change["after_text"].split()
+    removed, added = [], []
+    for op, i1, i2, j1, j2 in SequenceMatcher(None, b, a, autojunk=False).get_opcodes():
+        if op != "equal":
+            removed += b[i1:i2]
+            added += a[j1:j2]
+    return _clip(f"{' '.join(removed) or '∅'} → {' '.join(added) or '∅'}", limit)
