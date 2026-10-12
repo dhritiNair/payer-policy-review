@@ -64,6 +64,19 @@ LABEL_CHOICES = {"Still unsure": "unsure", "Substantive": "substantive", "Cosmet
 LABEL_NAMES = {v: k for k, v in LABEL_CHOICES.items()}
 
 
+def reviewer_resolution(f, review):
+    """SUBSTANTIVE or COSMETIC when a reviewer settled a change the rules left ambiguous, else None.
+    'Still unsure' (or no review) leaves the finding where the tool put it, so this is always reversible."""
+    if review and f["label"] == AMBIGUOUS and review["reviewer_label"] in (SUBSTANTIVE, COSMETIC):
+        return review["reviewer_label"]
+    return None
+
+
+def resolution_text(resolution):
+    to = ":red[**SUBSTANTIVE**]" if resolution == SUBSTANTIVE else ":gray[**COSMETIC**]"
+    return f":orange[**AMBIGUOUS**] → {to} (reviewer)"
+
+
 def review_badge(review):
     if review is None:
         return "· **OPEN** (not yet reviewed)"
@@ -83,8 +96,10 @@ def render_review(store, f, review, ctx):
         if f["label"] == AMBIGUOUS:   # only changes the rules could not decide get a reviewer label
             names = list(LABEL_CHOICES)
             current = LABEL_NAMES.get(review["reviewer_label"], "Still unsure") if review else "Still unsure"
-            label = LABEL_CHOICES[st.selectbox("Your label", names, index=names.index(current),
-                                               key=f"label-{f['key']}")]
+            label = LABEL_CHOICES[st.selectbox(
+                "Your label", names, index=names.index(current), key=f"label-{f['key']}",
+                help="Substantive or Cosmetic moves this finding to that group, marked reviewer-resolved. "
+                     "Still unsure keeps it where the tool put it.")]
         left, right = st.columns(2)
         reviewed = left.form_submit_button("Mark reviewed")
         dismissed = right.form_submit_button("Dismiss")
@@ -94,9 +109,12 @@ def render_review(store, f, review, ctx):
         st.rerun()
 
 
-def render_finding(n, f, before_sim, facts, review, store, ctx):
+def render_finding(n, f, before_sim, facts, review, store, ctx, resolution=None):
     with st.container(border=True):
-        st.markdown(f"#### P{n} · {badge(f['final_label'], f['final_source'])} {review_badge(review)}")
+        st.markdown(f"#### {f'P{n} · ' if n else ''}{badge(f['final_label'], f['final_source'])} {review_badge(review)}")
+        if resolution:
+            st.markdown(f"**Reviewer-resolved: {resolution_text(resolution)}.** The tool's label above and its "
+                        "classification below are kept. To reverse this, set \"Your label\" to Still unsure and save.")
         st.markdown(f"**{f['path']}** · {pages(f, before_sim)}")
 
         st.markdown("##### Source facts")
@@ -213,16 +231,28 @@ c2.markdown(f"**After:** v{after_v['id']} — real document, stored {after_v['cr
             f"Policy {after_v['policy_number']} · effective date: {data['after_facts']['effective_date']}")
 
 findings = data["findings"]
-subst = [f for f in findings if f["final_label"] == SUBSTANTIVE]
-amb = [f for f in findings if f["final_label"] == AMBIGUOUS]
-cos = [f for f in findings if f["final_label"] == COSMETIC]
-m1, m2, m3 = st.columns(3)
-m1.metric("Substantive", len(subst))
-m2.metric(f"Ambiguous — {AMBIGUOUS_SUBTITLE}", len(amb))
-m3.metric("Cosmetic", len(cos))
-
-to_review = subst + amb
+tool_subst = [f for f in findings if f["final_label"] == SUBSTANTIVE]
+tool_amb = [f for f in findings if f["final_label"] == AMBIGUOUS]
+tool_cos = [f for f in findings if f["final_label"] == COSMETIC]
+to_review = tool_subst + tool_amb   # what the tool put up for review; a reviewer can settle some of these
 reviews = store.get_reviews(f["key"] for f in to_review)
+resolution = {f["key"]: reviewer_resolution(f, reviews.get(f["key"])) for f in to_review}
+res_sub = [f for f in to_review if resolution[f["key"]] == SUBSTANTIVE]
+res_cos = [f for f in to_review if resolution[f["key"]] == COSMETIC]
+# where each finding is shown now: a reviewer's Substantive/Cosmetic label overrides the tool's group
+show_subst = [f for f in tool_subst if resolution[f["key"]] != COSMETIC] + [f for f in tool_amb if resolution[f["key"]] == SUBSTANTIVE]
+show_amb = [f for f in tool_amb if resolution[f["key"]] is None]
+n_cos = len(tool_cos) + len(res_cos)
+
+m1, m2, m3, m4 = st.columns(4)
+m1.metric("Substantive", len(show_subst))
+m2.metric(f"Ambiguous — {AMBIGUOUS_SUBTITLE}", len(show_amb))
+m3.metric("Cosmetic", n_cos)
+m4.metric("Resolved by reviewer", len(res_sub) + len(res_cos))
+if res_sub or res_cos:
+    st.caption(f"Resolved by reviewer: {len(res_sub)} → Substantive, {len(res_cos)} → Cosmetic. "
+               "The tool's own label stays on each finding.")
+
 n_open = sum(f["key"] not in reviews for f in to_review)
 n_rev = sum(r["status"] == "reviewed" for r in reviews.values())
 n_dis = sum(r["status"] == "dismissed" for r in reviews.values())
@@ -270,36 +300,46 @@ def close_detail():
     st.session_state["selected"] = None
 
 
-def row_label(f, prio, review, selected):
+def row_label(f, prio, review, selected, resolved=None):
     arrow = "▼" if selected else "▶"
-    if f["final_label"] == SUBSTANTIVE:
+    if resolved:
+        label = f"{resolution_text(resolved)} · *Reviewer-resolved*"
+    elif f["final_label"] == SUBSTANTIVE:
         label = ":red[**SUBSTANTIVE**]" + (" (raised by Claude)" if f["final_source"] != "rules" else "")
     else:
         label = f":orange[**AMBIGUOUS**] *({AMBIGUOUS_SUBTITLE})*"
     page = f"p.{f['after_page']}" if f["after_page"] else f"p.{f['before_page']} (removed)"
     status = "OPEN" if review is None else review["status"].upper()
-    return f"{arrow} **P{prio}** · {label} · {f['path']}, {page}\n\n`{changed_summary(f)}` · **{status}**"
+    num = f"**P{prio}** · " if prio else ""
+    return f"{arrow} {num}{label} · {f['path']}, {page}\n\n`{changed_summary(f)}` · **{status}**"
+
+
+def finding_row(f, prio, selected):
+    is_sel = f["key"] == selected
+    st.button(row_label(f, prio, reviews.get(f["key"]), is_sel, resolution.get(f["key"])), use_container_width=True,
+              key=f"{'rowsel' if is_sel else 'row'}-{f['key']}", on_click=select_row, args=(f["key"],))
 
 
 st.subheader("Findings to review")
 st.markdown(ROW_CSS, unsafe_allow_html=True)
 order = {f["key"]: i for i, f in enumerate(findings)}
-ranked = {
-    "subst": sorted(subst, key=lambda f: (f["final_source"] == "rules", order[f["key"]])),
-    "amb": sorted(amb, key=lambda f: (ambiguous_tier(f), order[f["key"]])),
-}
-prio = {f["key"]: n for col in ranked.values() for n, f in enumerate(col, 1)}
+# priority numbers come from the tool's own groups (including findings a reviewer has since moved), so they never shift;
+# findings a reviewer moves INTO the Substantive column are numbered after the tool's substantive ones
+rank_sub = sorted(tool_subst, key=lambda f: (f["final_source"] == "rules", order[f["key"]]))
+rank_amb = sorted(tool_amb, key=lambda f: (ambiguous_tier(f), order[f["key"]]))
+prio = {f["key"]: n for col in (rank_sub, rank_amb) for n, f in enumerate(col, 1)}
+for n, f in enumerate([f for f in res_sub if f["final_label"] != SUBSTANTIVE], len(rank_sub) + 1):
+    prio[f["key"]] = n
 selected = st.session_state.get("selected")
 col_s, col_a = st.columns(2)
-for col, name, items in ((col_s, f"Substantive ({len(subst)})", ranked["subst"]),
-                         (col_a, f"Ambiguous — {AMBIGUOUS_SUBTITLE} ({len(amb)})", ranked["amb"])):
+for col, name, items in ((col_s, f"Substantive ({len(show_subst)})", show_subst),
+                         (col_a, f"Ambiguous — {AMBIGUOUS_SUBTITLE} ({len(show_amb)})", show_amb)):
     with col:
         st.markdown(f"#### {name}")
         # open before decided, each in priority order; decided findings stay listed, marked, so nothing disappears
-        for f in [f for f in items if f["key"] not in reviews] + [f for f in items if f["key"] in reviews]:
-            is_sel = f["key"] == selected
-            st.button(row_label(f, prio[f["key"]], reviews.get(f["key"]), is_sel), use_container_width=True,
-                      key=f"{'rowsel' if is_sel else 'row'}-{f['key']}", on_click=select_row, args=(f["key"],))
+        items = sorted(items, key=lambda f: (f["key"] in reviews, prio[f["key"]]))
+        for f in items:
+            finding_row(f, prio[f["key"]], selected)
         if not items:
             st.caption("None.")
 
@@ -309,12 +349,19 @@ if chosen:
     head, close = st.columns([6, 1])
     head.subheader("Finding detail")
     close.button("Close", key="close-detail", on_click=close_detail, use_container_width=True)
-    render_finding(prio[chosen["key"]], chosen, before_sim, data["after_facts"], reviews.get(chosen["key"]), store, ctx)
+    render_finding(prio.get(chosen["key"]) if resolution[chosen["key"]] != COSMETIC else None, chosen, before_sim,
+                   data["after_facts"], reviews.get(chosen["key"]), store, ctx, resolution[chosen["key"]])
 else:
     st.caption("Select a finding above to see its full detail and review it.")
 
-with st.expander(f"Cosmetic changes ({len(cos)}) — listed for transparency"):
-    for f in cos:
+with st.expander(f"Cosmetic changes ({n_cos})" + (f" — {len(res_cos)} reviewer-resolved" if res_cos else "") +
+                 " — listed for transparency", expanded=selected in {f["key"] for f in res_cos}):
+    if res_cos:
+        st.markdown("**Reviewer-resolved** (click a row to reopen its review; the tool labelled these Ambiguous)")
+        for f in res_cos:
+            finding_row(f, None, selected)
+        st.markdown("**Cosmetic by the rules**")
+    for f in tool_cos:
         st.markdown(f"**{f['path']}** · {pages(f, before_sim)} · rule **{f['rule_id']}**: {f['rule']} ({f['evidence']})")
         b, a, _, _ = excerpt_pair(f["before_text"], f["after_text"])
         left, right = st.columns(2)

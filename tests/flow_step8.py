@@ -50,6 +50,9 @@ form_btn(at, "Mark reviewed").click().run(); assert not at.exception, at.excepti
 r = {x["finding_key"]: x for x in rows()}
 check("ambiguous reviewed with reviewer label + note saved", r[amb_key]["status"] == "reviewed" and r[amb_key]["reviewer_label"] == "cosmetic" and "wording only" in r[amb_key]["note"])
 check("tool label recorded next to the reviewer label", r[amb_key]["tool_label"] == "ambiguous")
+m = metrics(at)
+check("reviewer's Cosmetic label takes effect: Substantive 4, Ambiguous 1, Cosmetic 5, Resolved by reviewer 1",
+      (m["Substantive"], m["Ambiguous — Needs human review"], m["Cosmetic"], m["Resolved by reviewer"]) == ("4", "1", "5", "1"))
 check("substantive item has no label picker", f"label-{sub_key}" not in [s.key for s in at.selectbox])
 # 2. substantive item: dismissed with note (opening another row replaces the first detail: one at a time)
 open_row(at, sub_key)
@@ -67,6 +70,7 @@ check("decided findings still listed as rows, marked", any("REVIEWED" in b.label
 at = open_app(); m = metrics(at)
 check("after restart: decisions persisted", (m["Open"], m["Reviewed"], m["Dismissed"]) == ("4", "1", "1"))
 open_row(at, amb_key)
+check("after restart: the reviewer's label still applies", (m["Ambiguous — Needs human review"], m["Cosmetic"], m["Resolved by reviewer"]) == ("1", "5", "1"))
 check("after restart: note prefilled", at.text_area(key=f"note-{amb_key}").value.startswith("wording only"))
 check("ambiguous still labelled Needs human review until decided", "Needs human review" in md(at))
 
