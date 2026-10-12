@@ -11,6 +11,7 @@ from pathlib import Path
 
 from . import classify as rules
 from .classify import AMBIGUOUS, AMBIGUOUS_SUBTITLE, compare, compare_with_notes
+from .llm import apply_assessments
 from .extract import extract_policy
 from .simulate import load_edits, make_simulated_older
 
@@ -23,15 +24,22 @@ def rules_config():
             "rules": {k: v[0] for k, v in rules.RULES.items()}}
 
 
-def probe_edits(edits, policy="beds-mattresses"):
-    """Apply each edit alone to the real policy text and classify what changes. Returns [{edit, notes, changes}]."""
+CHANGE_FIELDS = ("label", "rule_id", "rule", "evidence", "change_type", "path", "before_text", "after_text",
+                 "before_page", "after_page")
+
+
+def probe_edits(edits, policy="beds-mattresses", assessor=None):
+    """Apply each edit alone to the real policy text and classify what changes. Returns [{edit, notes, changes}].
+    With an assessor, each ambiguous change is also sent to Claude (advisory; it can only escalate), and the change
+    records carry final_label, final_source and the full Claude record under 'llm'."""
     real = extract_policy(ROOT / "sources" / "original" / f"{policy}.pdf")
     results = []
     for edit in edits:
         changes, notes = compare_with_notes(make_simulated_older(real, [edit]), real)
-        results.append({"edit": edit, "notes": notes, "changes": [
-            {k: c[k] for k in ("label", "rule_id", "rule", "evidence", "change_type", "path",
-                               "before_text", "after_text", "before_page", "after_page")} for c in changes]})
+        if assessor:
+            changes = apply_assessments(changes, assessor, real)
+        keep = CHANGE_FIELDS + (("final_label", "final_source", "llm") if assessor else ())
+        results.append({"edit": edit, "notes": notes, "changes": [{k: c[k] for k in keep} for c in changes]})
     return real, results
 
 

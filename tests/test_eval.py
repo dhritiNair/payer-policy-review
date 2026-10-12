@@ -119,3 +119,45 @@ def test_errors_show_source_evidence_and_a_likely_cause():
     assert n9["outcome"] == "human_review" and n9["likely_cause"]
     c = n9["changes"][0]
     assert c["before_text"] and c["after_text"] and c["before_page"] == 2 and c["rule_id"] == "AMB-MODAL"
+
+
+def fake_assessor(tmp_path):
+    from types import SimpleNamespace
+    from uhc_monitor.llm import ClaudeAssessor
+
+    def answer(label, conf):
+        return json.dumps({"suggested_label": label, "confidence": conf, "what_changed": "quotes", "interpretation": "reading",
+                           "uncertainty": "unknown", "suggested_next_step": "check"})
+
+    def create(**kw):
+        text = answer("substantive", "medium") if "may be" in kw["messages"][0]["content"] else answer("cosmetic", "high")
+        return SimpleNamespace(content=[SimpleNamespace(type="text", text=text)], stop_reason="end_turn", model="served-by-fake",
+                               usage=SimpleNamespace(input_tokens=100, output_tokens=50), _request_id="req_T")
+    return ClaudeAssessor(client=SimpleNamespace(messages=SimpleNamespace(create=create)), log_path=tmp_path / "calls.jsonl")
+
+
+def test_rules_plus_claude_reports_escalations_apart_from_rule_detections(tmp_path):
+    a = fake_assessor(tmp_path)
+    _, results = probe_edits(load_edits(SIMS / "beds-mattresses-independent.json"), assessor=a)
+    labels = json.loads((SIMS / "beds-mattresses-independent.labels.json").read_text())["labels"]
+    sets = [("independent", results, labels, {})]
+    report = evaluate.evaluate_sets(sets)
+    m = report["total"]
+    assert (m["detected_by_rules"], m["claude_escalations"], m["claude_escalations_correct"]) == (5, 1, 1)   # N9 raised by Claude
+    assert m["correct_substantive_detections"] == 6 and m["misses"] == 0 and m["false_positives"] == 0
+    n9 = next(r for r in report["sets"][0]["rows"] if r["id"] == "N9")
+    assert (n9["rules_predicted"], n9["predicted"], n9["via"]) == ("ambiguous", "substantive", "claude")
+    # Claude never dismisses: cosmetic advice on genuinely ambiguous edits leaves them ambiguous
+    assert all(r["predicted"] == "ambiguous" for r in report["sets"][0]["rows"] if r["id"] in ("N3", "N8", "N12"))
+    meta = evaluate.metadata(assessor=a, sets=sets)
+    assert meta["claude"]["used_in_this_run"] and meta["claude"]["prompt_version"] == "v2" and meta["claude"]["calls"] == 4
+    text = evaluate.render(report, meta)
+    for needle in ("rules + Claude", "Claude escalations", "detected by the RULES alone", "ESCALATED to substantive",
+                   "self-reported confidence", "interpretation", "effort medium", "served by served-by-fake"):
+        assert needle in text
+
+
+def test_claude_mode_without_a_key_refuses_to_run(tmp_path):
+    with pytest.raises(SystemExit) as e:
+        evaluate.main([str(SIMS), "--claude", "--set", "beds-mattresses-independent", "--out", str(tmp_path / "r")])
+    assert "needs an API key" in str(e.value)
