@@ -10,7 +10,7 @@ from uhc_monitor.sources import load_sources
 from uhc_monitor.store import Store
 from uhc_monitor.view import changed_summary, excerpt_pair
 
-st.set_page_config(page_title="UHC Policy Monitor", layout="wide")
+st.set_page_config(page_title="Payer Policy Review", layout="wide")
 
 
 def badge(label, source="rules"):
@@ -151,7 +151,7 @@ def fmt_time(iso):
 def render_header(slot, source, facts, state, compared):
     """Policy header: what policy is under review, which versions, and when it was last checked."""
     with slot:
-        st.caption("UHC policy change monitor")
+        st.caption("Payer Policy Review")
         st.title(facts["title"] if facts else source.name)
         st.markdown(f"**{(facts and facts['product_line']) or source.payer}**")
         c1, c2, c3, c4 = st.columns(4)
