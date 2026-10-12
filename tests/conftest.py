@@ -31,3 +31,8 @@ def real_doc():
 @pytest.fixture(scope="session")
 def real_pdf_bytes():
     return (ROOT / "sources" / "original" / "beds-mattresses.pdf").read_bytes()
+
+
+@pytest.fixture(scope="session")
+def knee_doc():
+    return extract_policy(ROOT / "sources" / "original" / "surgery-knee.pdf")

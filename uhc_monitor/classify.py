@@ -6,7 +6,8 @@ AMBIGUOUS_SUBTITLE = "Needs human review"   # shown wherever 'Ambiguous' is show
 
 # Sections (top-level headings) where a wording change can alter coverage or billing.
 COVERAGE_SECTIONS = {"Application", "Coverage Rationale", "Medical Records Documentation Used for Reviews",
-                     "Applicable Codes", "Benefit Considerations"}
+                     "Applicable Codes", "Benefit Considerations",
+                     "Definitions"}   # defines the terms and thresholds the criteria use (e.g. WOMAC pain > 40)
 
 # Words that flip whether, when or for whom something is covered: a change is substantive.
 COVERAGE_WORDS = {"all", "any", "both", "either", "only", "not", "no", "never", "non", "without", "except",

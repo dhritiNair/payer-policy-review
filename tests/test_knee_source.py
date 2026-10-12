@@ -17,11 +17,6 @@ from uhc_monitor.store import Store
 KNEE_PDF = ROOT / "sources" / "original" / "surgery-knee.pdf"
 
 
-@pytest.fixture(scope="module")
-def knee_doc():
-    return extract_policy(KNEE_PDF)
-
-
 @pytest.fixture
 def server():
     srv, base = testserver.start()

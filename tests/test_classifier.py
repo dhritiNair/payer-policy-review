@@ -137,3 +137,37 @@ def test_every_decision_names_its_rule_and_evidence(real_doc):
 
 def test_ambiguous_subtitle_wording():
     assert AMBIGUOUS_SUBTITLE == "Needs human review"
+
+
+# --- Definitions is a coverage section (so the number and keyword rules apply there) -------------------------------
+
+def test_a_threshold_changed_in_a_definitions_paragraph_is_substantive_by_number(knee_doc):
+    """K6's pattern: the WOMAC pain-domain threshold in the Disabling Pain definition changed from > 30 to > 40."""
+    c = only(knee_doc, rep("Definitions", "pain domain of > 40", "pain domain of > 30"))
+    assert c["h1"] == "Definitions" and c["rule_id"] == "SUB-NUMBER" and c["label"] == SUBSTANTIVE
+    assert "30" in c["evidence"] and "40" in c["evidence"]
+
+
+def test_the_keyword_rule_applies_in_definitions_too(knee_doc):
+    c = only(knee_doc, rep("Definitions", "Implant that functions as a scaffold", "Implant that does not function as a scaffold"))
+    assert c["rule_id"] == "SUB-KEYWORD" and c["label"] == SUBSTANTIVE
+
+
+def test_a_verb_swap_in_definitions_is_still_left_to_a_human(knee_doc):
+    """K7's pattern: 'consider' -> 'accept' contains no coverage keyword, number or modal word, so it stays Ambiguous."""
+    c = only(knee_doc, rep("Definitions", "UHC will accept three or more", "UHC will consider three or more"))
+    assert c["rule_id"] == "AMB-DEFAULT" and c["label"] == AMBIGUOUS
+
+
+def test_clinical_evidence_and_fda_are_deliberately_not_coverage_sections(knee_doc):
+    from uhc_monitor.classify import COVERAGE_SECTIONS
+    assert "Clinical Evidence" not in COVERAGE_SECTIONS and "U.S. Food and Drug Administration (FDA)" not in COVERAGE_SECTIONS
+    k10 = only(knee_doc, rep("Xenografts", "existing clinical evidence does not support the use of bone xenografts in orthopedic surgery.",
+                             "existing clinical evidence supports the use of bone xenografts in selected orthopedic procedures."))
+    k11 = only(knee_doc, rep("U.S. Food and Drug Administration (FDA)", "used during the surgery require FDA approval",
+                             "used during the surgery may require FDA approval"))
+    assert (k10["rule_id"], k10["label"]) == ("AMB-DEFAULT", AMBIGUOUS) and (k11["rule_id"], k11["label"]) == ("AMB-DEFAULT", AMBIGUOUS)
+
+
+def test_beds_and_mattresses_has_no_definitions_section(real_doc):
+    assert "Definitions" not in [s["heading"] for s in real_doc["sections"]]      # so this change cannot move any Beds decision
