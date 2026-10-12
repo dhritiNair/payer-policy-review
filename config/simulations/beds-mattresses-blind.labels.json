@@ -1,0 +1,5 @@
+{
+  "_note": "Ground-truth labels for the blind edits B1-B7, supplied by the user. Kept apart from the edit file, which stays unchanged.",
+  "labels": {"B1": "substantive", "B2": "substantive", "B3": "ambiguous", "B4": "cosmetic",
+             "B5": "cosmetic", "B6": "cosmetic", "B7": "substantive"}
+}
