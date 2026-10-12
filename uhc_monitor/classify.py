@@ -8,11 +8,15 @@ AMBIGUOUS_SUBTITLE = "Needs human review"   # shown wherever 'Ambiguous' is show
 COVERAGE_SECTIONS = {"Application", "Coverage Rationale", "Medical Records Documentation Used for Reviews",
                      "Applicable Codes", "Benefit Considerations"}
 
-# Words that decide whether, when or for whom something is covered.
-COVERAGE_WORDS = {"all", "any", "both", "either", "only", "must", "shall", "should", "may", "not", "no", "never",
-                  "non", "without", "except", "unless", "exclude", "excludes", "excluded", "exclusion",
-                  "exclusions", "require", "requires", "required", "covered", "unproven", "experimental",
-                  "investigational", "authorization"}
+# Words that flip whether, when or for whom something is covered: a change is substantive.
+COVERAGE_WORDS = {"all", "any", "both", "either", "only", "not", "no", "never", "non", "without", "except",
+                  "unless", "exclude", "excludes", "excluded", "exclusion", "exclusions", "covered", "unproven",
+                  "experimental", "investigational", "authorization"}
+
+# Modal words: a change can be a real shift in obligation (should -> must) or harmless (may -> might).
+# The rules cannot tell which, so these go to a human and are never auto-dismissed.
+MODAL_WORDS = {"may", "might", "should", "must", "shall", "will", "can", "cannot",
+               "require", "requires", "required"}
 
 RULES = {
     "COS-TOC": (COSMETIC, "Only the table of contents changed (page numbers or entries); no policy text changed."),
@@ -21,6 +25,7 @@ RULES = {
     "SUB-PARAGRAPH": (SUBSTANTIVE, "A paragraph or criterion was added or removed in a coverage section."),
     "SUB-KEYWORD": (SUBSTANTIVE, "A coverage keyword (all/any/not/must/only...) was added, removed or swapped in a coverage section."),
     "SUB-NUMBER": (SUBSTANTIVE, "A number changed in a coverage section."),
+    "AMB-MODAL": (AMBIGUOUS, "A modal word (may/should/must/will/can...) changed in a coverage section; it may or may not change the obligation."),
     "AMB-MOVED": (AMBIGUOUS, "A paragraph moved to a different section; the wording is the same but its context changed."),
     "AMB-DEFAULT": (AMBIGUOUS, "No rule settled it: the wording changed in a way the rules cannot judge."),
 }
@@ -62,6 +67,9 @@ def classify(change):
             return decide("SUB-KEYWORD", f"coverage words {hits}; {changed}")
         if any(any(c.isdigit() for c in w) for w in removed + added):
             return decide("SUB-NUMBER", changed)
+        modal = sorted({w for w in removed + added if w in MODAL_WORDS})
+        if modal:
+            return decide("AMB-MODAL", f"modal words {modal}; {changed}")
     where = "" if in_coverage else " (outside the coverage sections)"
     return decide("AMB-DEFAULT", changed + where)
 
