@@ -1,0 +1,363 @@
+{
+  "run_at": "2026-10-12T07:29:52+00:00",
+  "note": "Initial run on the independent edit set N1-N12, before any rule tuning. Rules-only. No labels, edit files or rules changed.",
+  "config": {
+    "classifier": "rules-only (no model)",
+    "coverage_sections": [
+      "Applicable Codes",
+      "Application",
+      "Benefit Considerations",
+      "Coverage Rationale",
+      "Medical Records Documentation Used for Reviews"
+    ],
+    "coverage_words": [
+      "all",
+      "any",
+      "authorization",
+      "both",
+      "covered",
+      "either",
+      "except",
+      "exclude",
+      "excluded",
+      "excludes",
+      "exclusion",
+      "exclusions",
+      "experimental",
+      "investigational",
+      "never",
+      "no",
+      "non",
+      "not",
+      "only",
+      "unless",
+      "unproven",
+      "without"
+    ],
+    "modal_words": [
+      "can",
+      "cannot",
+      "may",
+      "might",
+      "must",
+      "require",
+      "required",
+      "requires",
+      "shall",
+      "should",
+      "will"
+    ],
+    "rules": {
+      "COS-TOC": "cosmetic",
+      "COS-FORMAT": "cosmetic",
+      "SUB-CODE-LIST": "substantive",
+      "SUB-PARAGRAPH": "substantive",
+      "SUB-KEYWORD": "substantive",
+      "SUB-NUMBER": "substantive",
+      "AMB-MODAL": "ambiguous",
+      "AMB-MOVED": "ambiguous",
+      "AMB-DEFAULT": "ambiguous"
+    }
+  },
+  "code_commit": "7c2cdbaeff8b46e5d7db2a5d621c72d3b56ef497",
+  "edits_file": "config/simulations/beds-mattresses-independent.json",
+  "results": [
+    {
+      "edit": {
+        "id": "N1",
+        "kind": "unlabeled",
+        "op": "replace_text",
+        "section": "Applicable Codes",
+        "find": "non- covered",
+        "replace": "non-covered",
+        "description": "In the Applicable Codes intro, the older version read \"is a covered or non-covered health service\" (no space after the hyphen)."
+      },
+      "notes": [],
+      "changes": [
+        {
+          "label": "cosmetic",
+          "rule_id": "COS-FORMAT",
+          "rule": "Same words after ignoring case, spacing, punctuation and hyphenation.",
+          "evidence": "no word differences",
+          "change_type": "modified",
+          "path": "Applicable Codes",
+          "before_text": "The following list(s) of procedure and/or diagnosis codes is provided for reference purposes only and may not be all inclusive. Listing of a code in this guideline does not imply that the service described by the code is a covered or non-covered health service. Benefit coverage for health services is determined by the member specific benefit plan document and applicable laws that may require coverage for a specific service. The inclusion of a code does not imply any right to reimbursement or guarantee claim payment. Other Policies and Guidelines may apply.",
+          "after_text": "The following list(s) of procedure and/or diagnosis codes is provided for reference purposes only and may not be all inclusive. Listing of a code in this guideline does not imply that the service described by the code is a covered or non- covered health service. Benefit coverage for health services is determined by the member specific benefit plan document and applicable laws that may require coverage for a specific service. The inclusion of a code does not imply any right to reimbursement or guarantee claim payment. Other Policies and Guidelines may apply.",
+          "before_page": 2,
+          "after_page": 2
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "N2",
+        "kind": "unlabeled",
+        "op": "delete_code",
+        "code": "E0911",
+        "description": "The older version had no code row for E0911."
+      },
+      "notes": [],
+      "changes": [
+        {
+          "label": "substantive",
+          "rule_id": "SUB-CODE-LIST",
+          "rule": "A procedure code was added to or removed from the code list.",
+          "evidence": "code E0911 added",
+          "change_type": "code_added",
+          "path": "Applicable Codes",
+          "before_text": null,
+          "after_text": "E0911 Trapeze bar, heavy-duty, for patient weight capacity greater than 250 pounds, attached to bed, with grab bar",
+          "before_page": null,
+          "after_page": 3
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "N3",
+        "kind": "unlabeled",
+        "op": "replace_text",
+        "section": "Description of Services",
+        "find": "For individuals at risk for skin breakdown",
+        "replace": "For members at risk for skin breakdown",
+        "description": "In Description of Services, the older version read \"For members at risk for skin breakdown\" (real text says \"individuals\")."
+      },
+      "notes": [],
+      "changes": [
+        {
+          "label": "ambiguous",
+          "rule_id": "AMB-DEFAULT",
+          "rule": "No rule settled it: the wording changed in a way the rules cannot judge.",
+          "evidence": "removed: members | added: individuals (outside the coverage sections)",
+          "change_type": "modified",
+          "path": "Description of Services",
+          "before_text": "Support surfaces include mattress overlays applied on top of a mattress, mattresses, and specialty beds, and can be preventative or therapeutic. For members at risk for skin breakdown, preventive support surfaces are often incorporated into treatment. Therapeutic support surfaces are employed to assist individuals with advanced pressure injuries (i.e., stage 3, stage 4, or unstageable pressure injuries).",
+          "after_text": "Support surfaces include mattress overlays applied on top of a mattress, mattresses, and specialty beds, and can be preventative or therapeutic. For individuals at risk for skin breakdown, preventive support surfaces are often incorporated into treatment. Therapeutic support surfaces are employed to assist individuals with advanced pressure injuries (i.e., stage 3, stage 4, or unstageable pressure injuries).",
+          "before_page": 3,
+          "after_page": 3
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "N4",
+        "kind": "unlabeled",
+        "op": "replace_text",
+        "section": "Indications for Coverage",
+        "find": "Hospital beds and accessories are proven and medically necessary in certain circumstances.",
+        "replace": "Hospital beds and accessories are unproven and not medically necessary.",
+        "description": "In Indications for Coverage, the older version read \"Hospital beds and accessories are unproven and not medically necessary.\""
+      },
+      "notes": [],
+      "changes": [
+        {
+          "label": "substantive",
+          "rule_id": "SUB-KEYWORD",
+          "rule": "A coverage keyword (all/any/not/must/only...) was added, removed or swapped in a coverage section.",
+          "evidence": "coverage words ['not', 'unproven']; removed: unproven not | added: proven in certain circumstances",
+          "change_type": "modified",
+          "path": "Coverage Rationale > Indications for Coverage",
+          "before_text": "Hospital beds and accessories are unproven and not medically necessary. For medical necessity clinical coverage criteria, refer to the InterQual® CP: Durable Medical Equipment: Support Surfaces Hospital Beds, Cribs, and Accessories",
+          "after_text": "Hospital beds and accessories are proven and medically necessary in certain circumstances. For medical necessity clinical coverage criteria, refer to the InterQual® CP: Durable Medical Equipment: Support Surfaces Hospital Beds, Cribs, and Accessories",
+          "before_page": 1,
+          "after_page": 1
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "N5",
+        "kind": "unlabeled",
+        "op": "delete_paragraph",
+        "section": "UnitedHealthcare Individual Exchange",
+        "find": "This Medical Policy applies to Individual Exchange benefit plans.",
+        "description": "The older version had no \"UnitedHealthcare Individual Exchange\" heading or its applicability sentence."
+      },
+      "notes": [],
+      "changes": [
+        {
+          "label": "substantive",
+          "rule_id": "SUB-PARAGRAPH",
+          "rule": "A paragraph or criterion was added or removed in a coverage section.",
+          "evidence": "paragraph added in 'Application > UnitedHealthcare Individual Exchange'",
+          "change_type": "added",
+          "path": "Application > UnitedHealthcare Individual Exchange",
+          "before_text": null,
+          "after_text": "This Medical Policy applies to Individual Exchange benefit plans.",
+          "before_page": null,
+          "after_page": 1
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "N6",
+        "kind": "unlabeled",
+        "op": "replace_text",
+        "section": "Benefit Considerations",
+        "find": "under the Durable Medical Equipment benefit",
+        "replace": "under the durable medical equipment benefit",
+        "description": "In Benefit Considerations, the older version read \"under the durable medical equipment benefit\" (lowercase)."
+      },
+      "notes": [],
+      "changes": [
+        {
+          "label": "cosmetic",
+          "rule_id": "COS-FORMAT",
+          "rule": "Same words after ignoring case, spacing, punctuation and hyphenation.",
+          "evidence": "no word differences",
+          "change_type": "modified",
+          "path": "Benefit Considerations",
+          "before_text": "Most benefit plans include coverage for proven and medically necessary hospital beds and mattresses under the durable medical equipment benefit.",
+          "after_text": "Most benefit plans include coverage for proven and medically necessary hospital beds and mattresses under the Durable Medical Equipment benefit.",
+          "before_page": 3,
+          "after_page": 3
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "N7",
+        "kind": "unlabeled",
+        "op": "replace_text",
+        "section": "Applicable Codes",
+        "code": "E0301",
+        "find": "greater than 350 pounds",
+        "replace": "greater than 300 pounds",
+        "description": "In the E0301 row, the older version read \"weight capacity greater than 300 pounds\" (real text says 350)."
+      },
+      "notes": [],
+      "changes": [
+        {
+          "label": "substantive",
+          "rule_id": "SUB-NUMBER",
+          "rule": "A number changed in a coverage section.",
+          "evidence": "removed: 300 | added: 350",
+          "change_type": "code_modified",
+          "path": "Applicable Codes",
+          "before_text": "E0301 Hospital bed, heavy-duty, extra wide, with weight capacity greater than 300 pounds, but less than or equal to 600 pounds, with any type side rails, without mattress",
+          "after_text": "E0301 Hospital bed, heavy-duty, extra wide, with weight capacity greater than 350 pounds, but less than or equal to 600 pounds, with any type side rails, without mattress",
+          "before_page": 2,
+          "after_page": 2
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "N8",
+        "kind": "unlabeled",
+        "op": "replace_text",
+        "section": "Description of Services",
+        "find": "preventive support surfaces are often incorporated into treatment",
+        "replace": "preventive support surfaces are generally incorporated into treatment",
+        "description": "In Description of Services, the older version read \"preventive support surfaces are generally incorporated into treatment\" (real text says \"often\")."
+      },
+      "notes": [],
+      "changes": [
+        {
+          "label": "ambiguous",
+          "rule_id": "AMB-DEFAULT",
+          "rule": "No rule settled it: the wording changed in a way the rules cannot judge.",
+          "evidence": "removed: generally | added: often (outside the coverage sections)",
+          "change_type": "modified",
+          "path": "Description of Services",
+          "before_text": "Support surfaces include mattress overlays applied on top of a mattress, mattresses, and specialty beds, and can be preventative or therapeutic. For individuals at risk for skin breakdown, preventive support surfaces are generally incorporated into treatment. Therapeutic support surfaces are employed to assist individuals with advanced pressure injuries (i.e., stage 3, stage 4, or unstageable pressure injuries).",
+          "after_text": "Support surfaces include mattress overlays applied on top of a mattress, mattresses, and specialty beds, and can be preventative or therapeutic. For individuals at risk for skin breakdown, preventive support surfaces are often incorporated into treatment. Therapeutic support surfaces are employed to assist individuals with advanced pressure injuries (i.e., stage 3, stage 4, or unstageable pressure injuries).",
+          "before_page": 3,
+          "after_page": 3
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "N9",
+        "kind": "unlabeled",
+        "op": "replace_text",
+        "section": "Medical Records Documentation Used for Reviews",
+        "find": "Medical records documentation may be required to assess whether the member meets the clinical criteria",
+        "replace": "Medical records documentation is required to assess whether the member meets the clinical criteria",
+        "description": "In Medical Records Documentation, the older version read \"Medical records documentation is required to assess whether the member meets the clinical criteria\" (no \"may be\")."
+      },
+      "notes": [],
+      "changes": [
+        {
+          "label": "ambiguous",
+          "rule_id": "AMB-MODAL",
+          "rule": "A modal word (may/should/must/will/can...) changed in a coverage section; it may or may not change the obligation.",
+          "evidence": "modal words ['may']; removed: is | added: may be",
+          "change_type": "modified",
+          "path": "Medical Records Documentation Used for Reviews",
+          "before_text": "Benefit coverage for health services is determined by the member specific benefit plan document and applicable laws that may require coverage for a specific service. Medical records documentation is required to assess whether the member meets the clinical criteria for coverage but does not guarantee coverage of the service requested; refer to the guidelines titled Medical Records Documentation Used for Reviews.",
+          "after_text": "Benefit coverage for health services is determined by the member specific benefit plan document and applicable laws that may require coverage for a specific service. Medical records documentation may be required to assess whether the member meets the clinical criteria for coverage but does not guarantee coverage of the service requested; refer to the guidelines titled Medical Records Documentation Used for Reviews.",
+          "before_page": 2,
+          "after_page": 2
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "N10",
+        "kind": "unlabeled",
+        "op": "swap_paragraphs",
+        "section": "References",
+        "find": "Nawaz H, Abbas A, Sarfraz A",
+        "find2": "Sherburne E, Snethen JA, Kelber S",
+        "description": "In References, the Nawaz and Sherburne entries were in the opposite order."
+      },
+      "notes": [
+        "1 paragraph(s) reordered within 'References' (wording unchanged; not reported as a change)"
+      ],
+      "changes": []
+    },
+    {
+      "edit": {
+        "id": "N11",
+        "kind": "unlabeled",
+        "op": "delete_paragraph",
+        "section": "Benefit Considerations",
+        "find": "Coverage does not include certain support services (e.g., sheepskin pad).",
+        "description": "The older version had no sentence excluding support services such as sheepskin pads."
+      },
+      "notes": [],
+      "changes": [
+        {
+          "label": "substantive",
+          "rule_id": "SUB-PARAGRAPH",
+          "rule": "A paragraph or criterion was added or removed in a coverage section.",
+          "evidence": "paragraph added in 'Benefit Considerations'",
+          "change_type": "added",
+          "path": "Benefit Considerations",
+          "before_text": null,
+          "after_text": "Coverage does not include certain support services (e.g., sheepskin pad).",
+          "before_page": null,
+          "after_page": 3
+        }
+      ]
+    },
+    {
+      "edit": {
+        "id": "N12",
+        "kind": "unlabeled",
+        "op": "delete_paragraph",
+        "section": "Instructions for Use",
+        "find": "This Medical Policy may also be applied to Medicare Advantage plans in certain instances.",
+        "description": "The older version had no paragraph about applying the policy to Medicare Advantage plans."
+      },
+      "notes": [],
+      "changes": [
+        {
+          "label": "ambiguous",
+          "rule_id": "AMB-DEFAULT",
+          "rule": "No rule settled it: the wording changed in a way the rules cannot judge.",
+          "evidence": "paragraph added outside the coverage sections ('Instructions for Use')",
+          "change_type": "added",
+          "path": "Instructions for Use",
+          "before_text": null,
+          "after_text": "This Medical Policy may also be applied to Medicare Advantage plans in certain instances. In the absence of a Medicare National Coverage Determination (NCD), Local Coverage Determination (LCD), or other Medicare coverage guidance, CMS allows a Medicare Advantage Organization (MAO) to create its own coverage determinations, using objective evidence-based rationale relying on authoritative evidence ( Medicare IOM Pub. No. 100-16, Ch. 4, §90.5).",
+          "before_page": null,
+          "after_page": 4
+        }
+      ]
+    }
+  ]
+}

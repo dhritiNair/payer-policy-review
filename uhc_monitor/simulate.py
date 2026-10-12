@@ -26,7 +26,13 @@ def _paragraph(section, needle):
 
 def apply_edit(doc, edit):
     op = edit["op"]
-    if op == "replace_text":
+    if op == "replace_text" and "code" in edit:
+        # edit the description of one row of the structured code table
+        rows = [r for s in doc["sections"] for r in s.get("code_table", []) if r["code"] == edit["code"]]
+        if len(rows) != 1 or edit["find"] not in rows[0]["description"]:
+            raise ValueError(f"expected code row {edit['code']!r} to contain {edit['find']!r} exactly once")
+        rows[0]["description"] = rows[0]["description"].replace(edit["find"], edit["replace"], 1)
+    elif op == "replace_text":
         p = _paragraph(_section(doc, edit["section"]), edit["find"])
         p["text"] = p["text"].replace(edit["find"], edit["replace"], 1)
     elif op == "delete_paragraph":
