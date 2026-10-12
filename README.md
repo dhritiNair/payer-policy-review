@@ -1,7 +1,7 @@
 # Payer Policy Review
 
-A Streamlit app that helps a revenue-cycle reviewer monitor changes to UnitedHealthcare policy documents.
-Work in progress, built step by step; this section covers setup only.
+A Streamlit app for revenue-cycle reviewers: it checks UnitedHealthcare policy PDFs (Beds and Mattresses, Surgery of the Knee) for changes, classifies each as substantive, cosmetic or ambiguous (rules first, Claude only for ambiguous ones), and lets the reviewer inspect it against the source text and save a decision.
+Below: [Setup](#setup), [Run the app](#run-the-app), [Running the tests](#running-the-tests) and [Running the evaluation](#running-the-evaluation).
 
 ## Setup
 
