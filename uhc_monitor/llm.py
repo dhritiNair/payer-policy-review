@@ -29,6 +29,11 @@ Decide whether the change is SUBSTANTIVE (it could change what is covered, for w
 it is billed or documented) or COSMETIC (wording, formatting, grammar or citation changes with no effect on \
 meaning). If you cannot tell from the text shown, abstain. Abstaining is a good answer; do not guess.
 
+Report how sure you are about your suggested label in 'confidence':
+- high: the excerpt itself settles the question.
+- medium: your label is likely, but it depends on a reasonable reading of the excerpt.
+- low: it depends on context outside the excerpt, or on information the text does not state.
+
 Keep facts and interpretation apart. 'what_changed' must only restate what the two texts literally say, quoting \
 them. 'interpretation' is your reading of what it might mean and must be hedged accordingly. 'uncertainty' says what \
 you cannot know from this text alone. Never invent an effective date, plan type or population: if the text does not \
