@@ -1,0 +1,20 @@
+{
+  "_note": "Ground-truth labels for the independent edits N1-N12, supplied by the user AFTER the initial run was saved. Kept apart from the edit file, which stays unchanged.",
+  "labels": {"N1": "cosmetic", "N2": "substantive", "N3": "ambiguous", "N4": "substantive", "N5": "substantive",
+             "N6": "cosmetic", "N7": "substantive", "N8": "ambiguous", "N9": "substantive", "N10": "cosmetic",
+             "N11": "substantive", "N12": "ambiguous"},
+  "reasons": {
+    "N1": "Spacing/hyphenation fix only; meaning unchanged.",
+    "N2": "A billing code (E0911 heavy-duty trapeze) was added to the policy.",
+    "N3": "Synonym swap (members to individuals); meaning likely unchanged, but 'members' can imply plan enrollees only.",
+    "N4": "Coverage flip: hospital beds go from unproven/not medically necessary to proven in certain circumstances.",
+    "N5": "Missing information: Individual Exchange plans newly brought into the policy's scope.",
+    "N6": "Capitalization of the benefit name only.",
+    "N7": "Numeric limit changed: E0301 weight threshold 300 to 350 lb.",
+    "N8": "Hedge-word swap (generally to often); arguably softer, arguably the same.",
+    "N9": "Documentation requirement loosened from mandatory to 'may be required'.",
+    "N10": "Reference list reordered (now alphabetical); no content change.",
+    "N11": "New exclusion added for support services such as sheepskin pads.",
+    "N12": "Missing information: Medicare Advantage paragraph added; boilerplate template text, but it widens where the policy may be applied."
+  }
+}
