@@ -11,6 +11,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import anthropic
+from dotenv import load_dotenv
 
 from .classify import AMBIGUOUS, SUBSTANTIVE
 from .diff import word_changes
@@ -78,6 +79,8 @@ class ClaudeAssessor:
         self.config = config or load_config()
         self.log_path = Path(log_path)
         self.client = client
+        # fill ANTHROPIC_API_KEY from .env if present; override=False so an exported variable wins
+        load_dotenv(ROOT / ".env", override=False)
         if self.client is None and os.environ.get(KEY_ENV_VAR):
             self.client = anthropic.Anthropic(api_key=os.environ[KEY_ENV_VAR])
         self.prompt_sha256 = hashlib.sha256(
