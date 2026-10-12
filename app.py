@@ -4,7 +4,7 @@ from datetime import datetime
 import streamlit as st
 
 from uhc_monitor.classify import AMBIGUOUS, AMBIGUOUS_SUBTITLE, COSMETIC, SUBSTANTIVE
-from uhc_monitor.demo_data import SCENARIOS, has_demo, run_demo_check, seed_demo
+from uhc_monitor.demo_data import DEMO_VARIANTS, SCENARIOS, has_demo, run_demo_check, seed_demo
 from uhc_monitor.findings import all_updates, get_findings, policy_facts
 from uhc_monitor.sources import load_sources
 from uhc_monitor.store import Store
@@ -177,11 +177,30 @@ def render_banner(slot, name, state):
             st.info(f"**{name}: initialized** — baseline stored, nothing to compare yet (checked {when}).{why}")
 
 
+def ask_to_reset(key):
+    st.session_state[key] = True
+
+
+def cancel_reset(key):
+    st.session_state[key] = False
+
+
+def do_reset(key, source):
+    removed = store.reset_source(source.id)
+    st.session_state[key] = False
+    st.session_state["selected"] = None
+    st.session_state["flash"] = (f"Cleared the demo data for {source.name} (removed: versions {removed['versions']}, "
+                                 f"checks {removed['checks']}, saved reviews {removed['reviews']}).")
+
+
 def render_check_panel(slot, source):
     """Run the real update check for this policy against the local test server; returns True if a check just ran."""
     ran = False
     with slot:
         with st.container(border=True):
+            flash = st.session_state.pop("flash", None)
+            if flash:
+                st.success(flash)
             st.markdown("**Run update check**")
             left, right = st.columns([3, 1])
             scenario = left.selectbox("Source for this demo", [label for label, _ in SCENARIOS], key=f"scenario-{source.id}",
@@ -193,6 +212,17 @@ def render_check_panel(slot, source):
                 ran = True
             st.caption("Real UHC URLs are not configured (`url` is null in config/sources.json), so this demo checks a local "
                        "test server instead of uhcprovider.com. The result appears in the banner above.")
+            if store.get_state(source.id):
+                key = f"confirm-reset-{source.id}"
+                if not st.session_state.get(key):
+                    st.button("Reset demo", key=f"reset-{source.id}", on_click=ask_to_reset, args=(key,))
+                else:
+                    st.warning(f"This deletes everything stored for **{source.name}**: its versions, checks, saved reviews and "
+                               "cached findings. The other policy is not touched. It cannot be undone.")
+                    yes, no = st.columns(2)
+                    yes.button("Yes, delete the demo data for this policy", key=f"reset-yes-{source.id}", on_click=do_reset,
+                               args=(key, source))
+                    no.button("Cancel", key=f"reset-no-{source.id}", on_click=cancel_reset, args=(key,))
     return ran
 
 
@@ -213,10 +243,13 @@ if state is None or not state["baseline_version_id"]:
     if state:
         render_banner(banner_slot, source.name, state)
     if has_demo(source.id):
-        st.info("No versions stored yet. The real UHC URL is not configured, so you can load demo data: a SIMULATED "
-                "older version as the baseline, then a check of the real PDF served by a local test server.")
-        if st.button("Load demo data"):
-            seed_demo(store, source.id)
+        st.info("No versions stored yet. The real UHC URL is not configured, so choose a SIMULATED older version to seed "
+                "as the baseline (built from the policy's extracted text, no new PDF). The real PDF, served by the local "
+                "test server, is then checked against it.")
+        labels = [label for label, _ in DEMO_VARIANTS]
+        choice = st.selectbox("Older (simulated) version to seed", labels, key=f"demo-variant-{source.id}")
+        if st.button("Seed older version", key=f"seed-{source.id}"):
+            seed_demo(store, source.id, dict(DEMO_VARIANTS)[choice])
             st.rerun()
     else:
         st.info("No versions stored yet. The real UHC URL is not configured, and there is no demo data for this policy yet.")
@@ -351,6 +384,8 @@ def finding_row(f, prio, selected):
 
 
 st.subheader("Findings to review")
+if not to_review and tool_cos:
+    st.info(f"No findings need review: all {len(tool_cos)} changes in this update are cosmetic. They are listed below.")
 st.markdown(ROW_CSS, unsafe_allow_html=True)
 order = {f["key"]: i for i, f in enumerate(findings)}
 # priority numbers come from the tool's own groups (including findings a reviewer has since moved), so they never shift;
@@ -381,11 +416,12 @@ if chosen:
     close.button("Close", key="close-detail", on_click=close_detail, use_container_width=True)
     render_finding(prio.get(chosen["key"]) if resolution[chosen["key"]] != COSMETIC else None, chosen, before_sim,
                    data["after_facts"], reviews.get(chosen["key"]), store, ctx, resolution[chosen["key"]])
-else:
+elif to_review:
     st.caption("Select a finding above to see its full detail and review it.")
 
 with st.expander(f"Cosmetic changes ({n_cos})" + (f" — {len(res_cos)} reviewer-resolved" if res_cos else "") +
-                 " — listed for transparency", expanded=selected in {f["key"] for f in res_cos}):
+                 " — listed for transparency",
+                 expanded=(not to_review) or selected in {f["key"] for f in res_cos}):
     if res_cos:
         st.markdown("**Reviewer-resolved** (click a row to reopen its review; the tool labelled these Ambiguous)")
         for f in res_cos:

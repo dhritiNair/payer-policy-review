@@ -28,7 +28,7 @@ def test_review_flow_persists_across_restart_rerun_and_new_revision(app_env):
     def rows(): 
         s = Store(root); r = s.db.execute("SELECT finding_key,status,note,reviewer_label,tool_label FROM reviews ORDER BY finding_key").fetchall(); s.db.close(); return r
 
-    at = open_app(); next(b for b in at.button if b.label == "Load demo data").click().run()                       # seed demo
+    at = open_app(); next(b for b in at.button if b.label == "Seed older version").click().run()                       # seed demo
     m = metrics(at); print("metrics after seed:", m)
     check("fresh: 6 open, 0 reviewed, 0 dismissed", (m["Open"], m["Reviewed"], m["Dismissed"]) == ("6", "0", "0"))
 

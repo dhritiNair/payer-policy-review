@@ -43,7 +43,7 @@ def test_a_first_check_that_failed_no_longer_crashes_the_page():
     assert "not 'unchanged'" in banner and "No check has succeeded yet, so there is nothing to compare" in banner
     assert "last good version is kept" not in banner                                  # there is none to keep
     assert [t.value for t in at.title] == ["Beds and Mattresses"]
-    assert {b.label for b in at.button} >= {"Run update check", "Load demo data"}      # still usable from the page
+    assert {b.label for b in at.button} >= {"Run update check", "Seed older version"}      # still usable from the page
 
 
 def test_the_source_selector_lists_the_seven_test_server_scenarios():
@@ -84,10 +84,10 @@ def test_status_sequence_initialized_unchanged_failed_recovered():
 
 
 @pytest.mark.ui
-def test_load_demo_data_works_after_a_failed_first_check_and_a_rerun_is_unchanged():
+def test_seeding_works_after_a_failed_first_check_and_a_rerun_is_unchanged():
     at = open_app()
     run(at, "404 Not found")
-    next(b for b in at.button if b.label == "Load demo data").click().run()
+    next(b for b in at.button if b.label == "Seed older version").click().run()
     assert not at.exception, [e.value for e in at.exception]
     assert banners(at)[0].startswith("**Beds and Mattresses: updated**") and "SIMULATED baseline" in banners(at)[0]
     assert [m.label for m in at.metric][:3] == ["Substantive", "Ambiguous — Needs human review", "Cosmetic"] and at.metric[0].value == "4"

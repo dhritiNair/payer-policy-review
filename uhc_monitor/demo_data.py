@@ -37,17 +37,37 @@ def run_demo_check(store, source, scenario):
 
 
 
-def seed_demo(store, source_id="beds-mattresses"):
-    """Returns the check outcome, or None if this source already has a stored version."""
+# Which SIMULATED older version to seed: (label shown on the page, key). Both are built from the existing edit file.
+DEMO_VARIANTS = [("Substantive and other changes (the 11 edits)", "all"),
+                 ("Cosmetic edits only (just the cosmetic ones from that file)", "cosmetic")]
+EDITS_FILE = ROOT / "config" / "simulations" / "beds-mattresses.json"
+
+
+def variant_edits(variant):
+    """The edits of the existing file that make up a variant: every edit, or only those whose kind is 'cosmetic'.
+    The edits themselves (and their labels) are never changed."""
+    edits = load_edits(EDITS_FILE)
+    if variant == "all":
+        return edits
+    if variant == "cosmetic":
+        return [e for e in edits if e["kind"] == "cosmetic"]
+    raise ValueError(f"unknown demo variant {variant!r}")
+
+
+def seed_demo(store, source_id="beds-mattresses", variant="all"):
+    """Seed a SIMULATED older version (from extracted text, no PDF) as the baseline, then check the real PDF against it.
+    Returns the check outcome ('updated'), or None if this source already has a stored version."""
     if not has_demo(source_id):
         raise ValueError(f"no demo data for {source_id!r}")
     state = store.get_state(source_id)
     if state and state["baseline_version_id"]:     # a failed first check leaves a state row but no version
         return None
+    edits = variant_edits(variant)
     real = extract_policy(ROOT / "sources" / "original" / "beds-mattresses.pdf")
-    older = make_simulated_older(real, load_edits(ROOT / "config" / "simulations" / "beds-mattresses.json"))
+    older = make_simulated_older(real, edits)
     vid = store.save_version(source_id, older, simulated=True)
-    store.record_check(source_id, INITIALIZED, reason="SIMULATED baseline seeded", version_id=vid, new_baseline_id=vid)
+    store.record_check(source_id, INITIALIZED, reason=f"SIMULATED baseline seeded ({variant}: {len(edits)} edits)",
+                       version_id=vid, new_baseline_id=vid)
     server, base = testserver.start()
     try:
         return run_check(store, Source(source_id, "Beds and Mattresses", "UnitedHealthcare", f"{base}/ok.pdf"))

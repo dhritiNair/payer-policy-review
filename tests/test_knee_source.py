@@ -138,7 +138,7 @@ def test_selector_shows_both_policies_and_the_knee_page_has_no_beds_demo_button(
     assert sel.options == ["Beds and Mattresses", "Surgery of the Knee"] and [t.value for t in at.title] == ["Beds and Mattresses"]
     sel.select_index(1).run(); assert not at.exception, at.exception
     assert [t.value for t in at.title] == ["Surgery of the Knee"]
-    assert not [b for b in at.button if b.label == "Load demo data"]
+    assert not [b for b in at.button if b.label == "Seed older version"]
     assert any("no demo data for this policy yet" in i.value for i in at.info)
     assert Store().get_state("surgery-knee") is None                      # nothing was seeded
 

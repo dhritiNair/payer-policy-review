@@ -3,6 +3,7 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
@@ -158,3 +159,20 @@ class Store:
                 " updated_at=excluded.updated_at",
                 (finding_key, source_id, before_version_id, after_version_id, status, note.strip(),
                  reviewer_label, tool_label, now, now))
+
+    def reset_source(self, source_id):
+        """Delete everything stored for one policy: versions, checks, status, saved reviews, snapshot files and cached
+        findings. Other policies are untouched. Returns what was removed."""
+        q = lambda sql: self.db.execute(sql, (source_id,)).fetchone()[0]
+        removed = {"versions": q("SELECT COUNT(*) FROM versions WHERE source_id=?"),
+                   "checks": q("SELECT COUNT(*) FROM checks WHERE source_id=?"),
+                   "reviews": q("SELECT COUNT(*) FROM reviews WHERE source_id=?")}
+        with self.db:
+            for table in ("reviews", "checks", "source_state", "versions"):       # status before versions it points at
+                self.db.execute(f"DELETE FROM {table} WHERE source_id=?", (source_id,))
+        shutil.rmtree(self.root / "snapshots" / source_id, ignore_errors=True)
+        own = re.compile(rf"^{re.escape(source_id)}_\d+_\d+\.json$")           # findings cache: <source>_<before>_<after>.json
+        for f in (self.root / "findings").glob("*.json") if (self.root / "findings").exists() else []:
+            if own.match(f.name):
+                f.unlink()
+        return removed

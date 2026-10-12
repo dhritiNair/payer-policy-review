@@ -20,7 +20,7 @@ def page(at):
 def test_header_banner_selector_and_summary(app_env):
     at = AppTest.from_file(APP, default_timeout=60).run(); assert not at.exception
     check("no data: heading falls back to the source name", page(at)[1] == ["Beds and Mattresses"])
-    next(b for b in at.button if b.label == "Load demo data").click().run(); assert not at.exception
+    next(b for b in at.button if b.label == "Seed older version").click().run(); assert not at.exception
     md, titles, errs, warns = page(at)
     check("large heading is the policy title", titles == ["Beds and Mattresses"])
     check("product line, number, effective date, versions", all(x in md for x in (
