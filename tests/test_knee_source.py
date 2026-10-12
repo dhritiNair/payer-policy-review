@@ -58,7 +58,7 @@ def test_unknown_is_the_fallback(tmp_path):
 
 def test_structure_counts(knee_doc):
     assert knee_doc["page_count"] == 10 and len(knee_doc["sections"]) == 21
-    assert sum(len(s["paragraphs"]) for s in knee_doc["sections"]) == 141
+    assert sum(len(s["paragraphs"]) for s in knee_doc["sections"]) == 95
     h1 = [s["heading"] for s in knee_doc["sections"] if s["level"] == 1]
     assert h1 == ["Application", "Coverage Rationale", "Medical Records Documentation Used for Reviews", "Definitions",
                   "Applicable Codes", "Description of Services", "Clinical Evidence", "U.S. Food and Drug Administration (FDA)",
@@ -76,32 +76,36 @@ def test_history_table_is_raw_text_and_excluded(knee_doc):
     assert hist["excluded_from_diff"] and any("06/01/2026" in p["text"] for p in hist["paragraphs"])
 
 
-def test_every_code_in_the_pdf_metadata_is_in_the_extraction(knee_doc):
-    """43 codes listed in the PDF's own metadata: 3 structured HCPCS rows + 40 CPT rows that stay paragraphs (see xfail).
-    One discrepancy, in the PDF itself: the metadata says 27568/27569 where the body table lists 27658/27659 (flexor
-    tendon repair; the descriptions match those codes), so the body text is taken as the source of truth."""
+def test_cpt_and_hcpcs_codes_are_structured_code_rows(knee_doc):
+    """43 codes: 40 CPT (numeric and 0737T-style) + 3 HCPCS, all structured; column headers dropped; footnote kept.
+    The PDF's own metadata has a typo (27568/27569) where the body table lists 27658/27659 (flexor tendon repair; the
+    descriptions match those codes), so the body text is taken as the source of truth."""
+    ac = next(s for s in knee_doc["sections"] if s["heading"] == "Applicable Codes")
+    rows = ac["code_table"]
+    assert len(rows) == 43 and len({r["code"] for r in rows}) == 43
+    assert [r["code"] for r in rows if r["code"][0].isalpha()] == ["G0428", "J7330", "S2112"]
+    assert sum(1 for r in rows if re.fullmatch(r"\d{5}|\d{4}T", r["code"])) == 40
+    assert all(r["description"] and r["page"] in (3, 4) for r in rows)
+    assert rows[0] == {"code": "0737T", "description": "Xenograft implantation into the articular surface", "page": 3}
+    assert len(ac["paragraphs"]) == 2 and ac["paragraphs"][0]["text"].startswith("The following list(s) of procedure")
+    assert ac["paragraphs"][1]["text"].startswith("CPT® is a registered trademark")
+    assert not any(re.fullmatch(r"(CPT|HCPCS) Code\s+Description", p["text"]) for s in knee_doc["sections"] for p in s["paragraphs"])
     meta = pymupdf.open(KNEE_PDF).metadata["subject"].split("Applicable Procedure Codes:")[-1]
     expected = set(re.findall(r"\b(?:[A-Z]\d{4}|\d{5}|\d{4}[A-Z])\b", meta))
-    structured = {r["code"] for s in knee_doc["sections"] for r in s.get("code_table", [])}
-    paras = [p["text"] for s in knee_doc["sections"] if s["heading"] == "Applicable Codes" for p in s["paragraphs"]]
-    in_paragraphs = {m.group(1) for t in paras if (m := re.match(r"^(\d{5}|\d{4}T)\s+\S", t))}
-    assert structured == {"G0428", "J7330", "S2112"} and len(in_paragraphs) == 40
-    assert len(expected) == 43
-    assert expected - (structured | in_paragraphs) == {"27568", "27569"}          # metadata typo (digits transposed)
-    assert (structured | in_paragraphs) - expected == {"27658", "27659"}          # what the body table actually lists
+    got = {r["code"] for r in rows}
+    assert len(expected) == 43 and expected - got == {"27568", "27569"} and got - expected == {"27658", "27659"}
 
 
-@pytest.mark.xfail(reason="known gap: the code-table split only recognises letter+4-digit codes, so the 40 CPT rows stay paragraphs "
-                          "and the repeated 'CPT Code Description' header is kept", strict=True)
-def test_cpt_rows_become_structured_code_rows(knee_doc):
-    assert sum(len(s.get("code_table", [])) for s in knee_doc["sections"]) == 43
-
-
-@pytest.mark.xfail(reason="known gap: irregular line spacing splits 4 clinical-evidence paragraphs mid-sentence", strict=True)
-def test_no_paragraph_is_split_mid_sentence(knee_doc):
+def test_paragraphs_are_not_split_mid_sentence(knee_doc):
     for s in knee_doc["sections"]:
         for p in s["paragraphs"][1:]:
             assert not p["text"][:1].islower(), p["text"][:60]
+    text = " ".join(p["text"] for s in knee_doc["sections"] for p in s["paragraphs"])
+    for joined in ("are needed before meniscal scaffolds can be recommended",
+                   "its reliance on predominantly low-level evidence",
+                   "limited by its short follow-up duration and very high early failure rate",
+                   "to support meaningful conclusions about xenograft effectiveness."):
+        assert joined in text
 
 
 def test_the_test_server_serves_the_knee_and_its_failure_scenarios(server):

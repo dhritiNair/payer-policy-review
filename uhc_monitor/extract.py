@@ -69,11 +69,24 @@ def _parse_date(text):
     return None
 
 
-def _join_across_pages(paras):
-    """A paragraph that carries on at the top of the next page (lowercase start) is one paragraph."""
+_LIST_MARKER = re.compile(r"^(•|o\s)")
+_SENTENCE_END = (".", ":", ";", "?", "!", ")", "]", '"', "”")
+_COLUMN_HEADER = re.compile(r"(HCPCS|CPT) Code\s+Description")
+_CODE_ROW = re.compile(r"^([A-Z]\d{4})\s+(.+)$")                       # HCPCS: E0193, G0428
+_CODE_ROW_IN_CODE_SECTION = re.compile(r"^([A-Z]\d{4}|\d{5}|\d{4}[TF])\s+(.+)$")   # also CPT: 27412, 0737T, 0001F
+
+
+def _join_split_paragraphs(paras):
+    """Join a paragraph that is really the continuation of the one before it (it starts in lowercase):
+    at the top of the next page, always; on the same page, only when the previous paragraph stops mid-sentence
+    (irregular line spacing can split one paragraph in two) and the lowercase start is not a list marker."""
     out = []
     for p in paras:
-        if out and p["page"] > out[-1]["page_end"] and p["text"][:1].islower():
+        lower = p["text"][:1].islower()
+        next_page = out and p["page"] > out[-1]["page_end"] and lower
+        same_page = (out and p["page"] == out[-1]["page_end"] and lower and not _LIST_MARKER.match(p["text"])
+                     and not out[-1]["text"].rstrip().endswith(_SENTENCE_END))
+        if next_page or same_page:
             out[-1]["text"] += " " + p["text"]
             out[-1]["page_end"] = p["page"]
         else:
@@ -82,13 +95,15 @@ def _join_across_pages(paras):
 
 
 def _split_code_table(section):
-    """Move 'E0193 description' rows into section['code_table'] as structured rows."""
+    """Move 'E0193 description' rows into section['code_table'] as structured rows. In an Applicable Codes section
+    CPT rows ('27412 ...', '0737T ...') count too. Repeated column headers are dropped."""
+    row = _CODE_ROW_IN_CODE_SECTION if section["heading"].startswith("Applicable Codes") else _CODE_ROW
     rows, rest = [], []
     for p in section["paragraphs"]:
-        m = re.match(r"^([A-Z]\d{4})\s+(.+)$", p["text"])
+        m = row.match(p["text"])
         if m:
             rows.append({"code": m.group(1), "description": m.group(2), "page": p["page"]})
-        elif re.fullmatch(r"HCPCS Code\s+Description", p["text"]):
+        elif _COLUMN_HEADER.fullmatch(p["text"]):
             continue   # repeated column header
         else:
             rest.append(p)
@@ -142,7 +157,7 @@ def extract_policy(pdf):
 
     sections.insert(1, sidebar)
     for s in sections:
-        s["paragraphs"] = _join_across_pages(
+        s["paragraphs"] = _join_split_paragraphs(
             [{"page": p["page"], "page_end": p["page"], "text": p["text"]} for p in s["paragraphs"]])
         _split_code_table(s)
         if s["heading"].startswith("Policy History"):
