@@ -2,7 +2,6 @@
 import pytest
 from streamlit.testing.v1 import AppTest
 
-import uhc_monitor.sources as sources
 from tests.conftest import ROOT
 from tests.helpers import check
 from uhc_monitor import testserver
@@ -18,7 +17,7 @@ def page(at):
 
 
 @pytest.mark.ui
-def test_header_banner_selector_and_summary(app_env, monkeypatch):
+def test_header_banner_selector_and_summary(app_env):
     at = AppTest.from_file(APP, default_timeout=60).run(); assert not at.exception
     check("no data: heading falls back to the source name", page(at)[1] == ["Beds and Mattresses"])
     at.button[0].click().run(); assert not at.exception
@@ -41,10 +40,8 @@ def test_header_banner_selector_and_summary(app_env, monkeypatch):
     check("failed banner names the policy and says not unchanged", any(e.startswith("**Beds and Mattresses: failed**") and "not 'unchanged'" in e for e in errs))
     check("header still shows the last good versions", "v1 SIMULATED → v2 real" in md)
 
-    original = sources.load_sources                    # a second policy: selector at the top
-    monkeypatch.setattr(sources, "load_sources", lambda *a, **k: original(*a, **k) + [Source("surgery-knee", "Surgery of the Knee", "UnitedHealthcare", None)])
-    at = AppTest.from_file(APP, default_timeout=60).run(); assert not at.exception
+    at = AppTest.from_file(APP, default_timeout=60).run(); assert not at.exception   # the registry now lists two policies
     sel = [s for s in at.selectbox if s.label == "Policy"]
-    check("selector shown with more than one policy", len(sel) == 1 and sel[0].options == ["Beds and Mattresses", "Surgery of the Knee"])
+    check("selector shown with both policies", len(sel) == 1 and sel[0].options == ["Beds and Mattresses", "Surgery of the Knee"])
     sel[0].select_index(1).run()
     check("switching policy changes the heading", page(at)[1] == ["Surgery of the Knee"])

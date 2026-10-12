@@ -8,10 +8,18 @@ from .simulate import load_edits, make_simulated_older
 from .sources import INITIALIZED, Source
 
 ROOT = Path(__file__).resolve().parent.parent
+DEMO_SOURCES = {"beds-mattresses"}   # policies that have a simulated older version to seed (the knee's comes later)
+
+
+def has_demo(source_id):
+    return source_id in DEMO_SOURCES
+
 
 
 def seed_demo(store, source_id="beds-mattresses"):
     """Returns the check outcome, or None if this source already has stored versions."""
+    if not has_demo(source_id):
+        raise ValueError(f"no demo data for {source_id!r}")
     if store.get_state(source_id):
         return None
     real = extract_policy(ROOT / "sources" / "original" / "beds-mattresses.pdf")

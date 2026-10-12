@@ -150,7 +150,8 @@ def extract_policy(pdf):
     sections = [s for s in sections if s["paragraphs"] or s["level"] > 0]
 
     full = "\n".join(p["text"] for s in sections for p in s["paragraphs"])
-    num = re.search(r"Policy Number:\s*([A-Z]{2}\.\d{3}\.\d+)", full)
+    # two number styles seen so far: MP.028.14 (Beds and Mattresses) and 2026T0553II (Surgery of the Knee); else Unknown
+    num = re.search(r"Policy Number:\s*([A-Z]{2}\.\d{3}\.\d+|\d{4}[A-Z]\d{4}[A-Z]*)", full)
     eff = re.search(r"Effective Date:\s*([A-Za-z]+ \d{1,2}, \d{4})", full)
     return {
         "source_file": None if isinstance(pdf, bytes) else str(pdf),

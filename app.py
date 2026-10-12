@@ -4,7 +4,7 @@ from datetime import datetime
 import streamlit as st
 
 from uhc_monitor.classify import AMBIGUOUS, AMBIGUOUS_SUBTITLE, COSMETIC, SUBSTANTIVE
-from uhc_monitor.demo_data import seed_demo
+from uhc_monitor.demo_data import has_demo, seed_demo
 from uhc_monitor.findings import all_updates, get_findings, policy_facts
 from uhc_monitor.sources import load_sources
 from uhc_monitor.store import Store
@@ -187,11 +187,14 @@ else:
 state = store.get_state(source.id)
 if state is None:
     render_header(header_slot, source, None, None, "none yet")
-    st.info("No versions stored yet. The real UHC URL is not configured, so you can load demo data: a SIMULATED "
-            "older version as the baseline, then a check of the real PDF served by a local test server.")
-    if st.button("Load demo data"):
-        seed_demo(store, source.id)
-        st.rerun()
+    if has_demo(source.id):
+        st.info("No versions stored yet. The real UHC URL is not configured, so you can load demo data: a SIMULATED "
+                "older version as the baseline, then a check of the real PDF served by a local test server.")
+        if st.button("Load demo data"):
+            seed_demo(store, source.id)
+            st.rerun()
+    else:
+        st.info("No versions stored yet. The real UHC URL is not configured, and there is no demo data for this policy yet.")
     st.stop()
 
 current_v = store.get_version(state["baseline_version_id"])

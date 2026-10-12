@@ -5,12 +5,14 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 PDF_PATH = ROOT / "sources" / "original" / "beds-mattresses.pdf"
+KNEE_PDF_PATH = ROOT / "sources" / "original" / "surgery-knee.pdf"
+KNEE_PREFIX = "/surgery-knee"   # Surgery of the Knee is served under this prefix; Beds and Mattresses keeps the bare paths
 
 
-def routes(pdf_bytes):
-    """path -> (status code, content type, body)"""
+def routes(pdf_bytes, prefix=""):
+    """path -> (status code, content type, body); every path starts with `prefix`"""
     html = b"<html><body><h1>Service temporarily unavailable</h1></body></html>"
-    return {
+    table = {
         "/ok.pdf": (200, "application/pdf", pdf_bytes),
         "/html-error": (200, "text/html", html),
         "/html-as-pdf": (200, "application/pdf", html),   # lies about its content type
@@ -19,11 +21,13 @@ def routes(pdf_bytes):
         "/missing": (404, "text/html", b"Not found"),
         "/server-error": (500, "text/html", b"Internal error"),
     }
+    return {prefix + path: v for path, v in table.items()}
 
 
 def start(pdf_bytes=None):
     """Start the server on a free port in a background thread. Returns (server, base_url)."""
     table = routes(pdf_bytes if pdf_bytes is not None else PDF_PATH.read_bytes())
+    table.update(routes(KNEE_PDF_PATH.read_bytes(), KNEE_PREFIX))
 
     class Handler(BaseHTTPRequestHandler):
         def do_GET(self):
