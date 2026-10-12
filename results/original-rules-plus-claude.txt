@@ -1,0 +1,66 @@
+UHC policy monitor: evaluation (rules + Claude)
+
+run at 2026-10-12T07:52:37+00:00 | code commit 980eaa1
+classifier: rules, then Claude on ambiguous changes only (advisory; it can escalate to substantive, never dismiss)
+Claude: model claude-sonnet-5-5 (served by claude-sonnet-5-5) | prompt v2 (sha256 ea2bb30cbd16) | effort medium | max_tokens 4000 | no temperature/thinking set
+calls: 2 (2 usable answers) | tokens: 2080 in, 846 out
+
+=== beds-mattresses  (11 edits, 11 scored)
+edit  truth        rules said   final        rule(s)                outcome
+S1    substantive  substantive  substantive  SUB-KEYWORD            correct_detection [rules]
+S2    substantive  substantive  substantive  SUB-PARAGRAPH          correct_detection [rules]
+S3    substantive  substantive  substantive  SUB-CODE-LIST          correct_detection [rules]
+S4    substantive  substantive  substantive  SUB-KEYWORD            correct_detection [rules]
+A1    ambiguous    ambiguous    substantive  AMB-DEFAULT            false_positive [Claude escalation]
+A2    ambiguous    ambiguous    ambiguous    AMB-DEFAULT            correct
+C1    cosmetic     cosmetic     cosmetic     COS-FORMAT             correct
+C2    cosmetic     cosmetic     cosmetic     COS-FORMAT             correct
+C3    cosmetic     cosmetic     cosmetic     COS-TOC                correct
+C4    cosmetic     cosmetic     cosmetic     COS-FORMAT             correct
+H1    excluded     none         none         -                      correct
+
+  detected by the RULES alone : 4 of 4 true-substantive edits
+  Claude escalations          : 1 (ambiguous -> substantive by Claude): 0 correct per the key, 1 not substantive per the key
+  total detected as substantive: 4 of 4 (4 rules + 0 Claude)
+  misses              : 0
+  false positives     : 1 (0 from rules, 1 from Claude escalations)
+  human review        : 1 left for a human (1 as intended for genuinely ambiguous edits, 0 true-substantive not auto-detected, 0 true-cosmetic avoidable)
+  correct, no review  : 5
+  Claude's suggestions: 2 calls, 2 usable: 1 substantive, 1 cosmetic, 0 abstain
+
+Claude on the ambiguous items (reasoning and confidence):
+
+  A1  key says: ambiguous | rules: ambiguous (AMB-DEFAULT) | final: substantive | false_positive
+     Claude suggests: SUBSTANTIVE | Claude's self-reported confidence: medium -> ESCALATED to substantive
+     what the texts say : The sentence changed from "Many benefit plans include coverage for proven and medically necessary hospital beds and mattresses under the Durable Medical Equipment benefit." to "Most benefit plans include coverage for proven and medically necessary hospital beds and mattresses under the Durable Medical Equipment benefit." The only change is "Many" replaced by "Most".
+     interpretation     : The change may signal that a larger share of plans cover hospital beds and mattresses under the DME benefit. It is a general statement, not a coverage rule, so it may not alter coverage determinations. Still, it is a change in a descriptive claim about coverage prevalence, so a reviewer might want to look at it. It could also be an editorial refinement with no operational effect.
+     uncertainty        : The text does not say whether any actual coverage criteria changed. Whether individual plans were affected is unknown. Other sections of the policy are not shown. Whether this reflects a real change in plan coverage or just a rewording is unknown. Plan types and populations are not stated.
+     suggested next step: Check the rest of the Benefit Considerations section and the coverage rationale for any accompanying changes. Confirm that member benefit plan documents still govern coverage, and take no billing action based on this sentence alone.
+
+  A2  key says: ambiguous | rules: ambiguous (AMB-DEFAULT) | final: ambiguous | correct
+     Claude suggests: COSMETIC | Claude's self-reported confidence: medium -> stays Ambiguous (advice only)
+     what the texts say : Before: "Refer to the plan document for details." After: "Refer to the member’s specific plan for details." The words "plan document" became "member’s specific plan". The sentence "Additional coverage limitations and exclusions may apply." is unchanged.
+     interpretation     : This likely clarifies wording to say that the member's own plan governs coverage, rather than a generic plan document. It does not appear to add, remove or alter any coverage criterion, limitation, billing rule or documentation requirement. It reads as a boilerplate rephrasing, though it could be read as slightly emphasizing individual plan variation.
+     uncertainty        : I cannot tell from this excerpt whether the change was meant to alter how reviewers locate plan terms, or whether other sections changed in ways that interact with it. The text does not state plan types or populations affected, so these are unknown.
+     suggested next step: Treat as a low-priority wording change. No action is needed unless other changes in this version of MP.028.14 affect coverage, and confirm members' plan-specific terms are still checked during verification as usual.
+
+Errors and avoidable review (source evidence and likely cause):
+
+  A1 [false_positive] truth=ambiguous final=substantive: Wording shift 'Many' to 'Most'; may or may not change how broadly coverage applies.
+     (modified, Benefit Considerations, before p.3 -> after p.3)
+        before: [[Many]] benefit plans include coverage for proven and medically necessary hospital …
+        after:  [[Most]] benefit plans include coverage for proven and medically necessary hospital …
+        rule AMB-DEFAULT: removed: many | added: most
+     likely cause: no rule recognises this kind of wording change, so it falls through to human review. Labelled substantive with confidence on a change the key says is genuinely unclear. The rules left it Ambiguous; Claude raised it to substantive (Claude suggested substantive (confidence medium)).
+
+=== ALL SETS
+  detected by the RULES alone : 4 of 4 true-substantive edits
+  Claude escalations          : 1 (ambiguous -> substantive by Claude): 0 correct per the key, 1 not substantive per the key
+  total detected as substantive: 4 of 4 (4 rules + 0 Claude)
+  misses              : 0
+  false positives     : 1 (0 from rules, 1 from Claude escalations)
+  human review        : 1 left for a human (1 as intended for genuinely ambiguous edits, 0 true-substantive not auto-detected, 0 true-cosmetic avoidable)
+  correct, no review  : 5
+  Claude's suggestions: 2 calls, 2 usable: 1 substantive, 1 cosmetic, 0 abstain
+
+Small samples: these results are diagnostic only. They show where the rules behave well or badly on these examples, not how accurate the tool is in general.

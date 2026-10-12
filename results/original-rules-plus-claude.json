@@ -1,0 +1,506 @@
+{
+  "meta": {
+    "run_at": "2026-10-12T07:52:37+00:00",
+    "code": {
+      "commit": "980eaa175623a9445c831e0fa96516dfd5badd37",
+      "uncommitted_changes": false
+    },
+    "scored_saved_run": null,
+    "classifier": {
+      "classifier": "rules, then Claude fallback on ambiguous changes (advisory, escalate-only)",
+      "coverage_sections": [
+        "Applicable Codes",
+        "Application",
+        "Benefit Considerations",
+        "Coverage Rationale",
+        "Medical Records Documentation Used for Reviews"
+      ],
+      "coverage_words": [
+        "all",
+        "any",
+        "authorization",
+        "both",
+        "covered",
+        "either",
+        "except",
+        "exclude",
+        "excluded",
+        "excludes",
+        "exclusion",
+        "exclusions",
+        "experimental",
+        "investigational",
+        "never",
+        "no",
+        "non",
+        "not",
+        "only",
+        "unless",
+        "unproven",
+        "without"
+      ],
+      "modal_words": [
+        "can",
+        "cannot",
+        "may",
+        "might",
+        "must",
+        "require",
+        "required",
+        "requires",
+        "shall",
+        "should",
+        "will"
+      ],
+      "rules": {
+        "COS-TOC": "cosmetic",
+        "COS-FORMAT": "cosmetic",
+        "SUB-CODE-LIST": "substantive",
+        "SUB-PARAGRAPH": "substantive",
+        "SUB-KEYWORD": "substantive",
+        "SUB-NUMBER": "substantive",
+        "AMB-MODAL": "ambiguous",
+        "AMB-MOVED": "ambiguous",
+        "AMB-DEFAULT": "ambiguous"
+      }
+    },
+    "claude": {
+      "used_in_this_run": true,
+      "model": "claude-sonnet-5-5",
+      "prompt_version": "v2",
+      "effort": "medium",
+      "max_tokens": 4000,
+      "prompt_sha256": "ea2bb30cbd16eb0134707322b08414f4ff7a7c1f3c2aca819ea1bf61a9a8ce42",
+      "calls": 2,
+      "answers_ok": 2,
+      "response_models": [
+        "claude-sonnet-5-5"
+      ],
+      "input_tokens": 2080,
+      "output_tokens": 846,
+      "request_ids": [
+        "req_011CfwyowCi7jcsPeQGogJoB",
+        "req_011CfwypFH9GeHfQz2LsAfUM"
+      ],
+      "note": "Claude is advisory and can only escalate an ambiguous change to substantive; it never dismisses one."
+    },
+    "real_policy_sha256": "b75d96a022655310752406ca21a3e9a53452b26ef1aa93cee5f65f8978167568",
+    "disclaimer": "Small samples: these results are diagnostic only. They show where the rules behave well or badly on these examples, not how accurate the tool is in general."
+  },
+  "sets": [
+    {
+      "name": "beds-mattresses",
+      "files": {
+        "edits": "config/simulations/beds-mattresses.json",
+        "edits_sha256": "55f44943773967ed9b6f21765e69760c337004b5195b0ca5f37e4fd41d542b61",
+        "labels": null,
+        "labels_sha256": null
+      },
+      "summary": {
+        "edits": 11,
+        "scored": 11,
+        "true_substantive": 4,
+        "correct_substantive_detections": 4,
+        "detected_by_rules": 4,
+        "claude_escalations": 1,
+        "claude_escalations_correct": 0,
+        "claude_escalations_not_substantive_per_key": 1,
+        "misses": 0,
+        "false_positives": 1,
+        "false_positives_from_rules": 0,
+        "false_positives_from_claude": 1,
+        "human_review_as_intended": 1,
+        "human_review_for_true_substantive": 0,
+        "human_review_for_true_cosmetic": 0,
+        "correct_without_review": 5,
+        "claude_calls": 2,
+        "claude_answers_ok": 2,
+        "claude_suggested": {
+          "substantive": 1,
+          "cosmetic": 1,
+          "abstain": 0
+        }
+      },
+      "rows": [
+        {
+          "id": "S1",
+          "description": "Older version required ANY criterion; current requires ALL (stricter coverage).",
+          "truth": "substantive",
+          "predicted": "substantive",
+          "rules_predicted": "substantive",
+          "via": "rules",
+          "rule_ids": [
+            "SUB-KEYWORD"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "substantive",
+              "rule_id": "SUB-KEYWORD",
+              "evidence": "coverage words ['all', 'any']; removed: any | added: all",
+              "change_type": "modified",
+              "path": "Coverage Rationale > Safety Enclosure with Beds",
+              "before_text": "Safety enclosure with beds (e.g., pediatric enclosed bed, adult bed, safety enclosure) are covered as DME for individuals that have a risk for safety in bed when any of the following criteria are met:",
+              "after_text": "Safety enclosure with beds (e.g., pediatric enclosed bed, adult bed, safety enclosure) are covered as DME for individuals that have a risk for safety in bed when all of the following criteria are met:",
+              "before_page": 1,
+              "after_page": 1,
+              "final_label": "substantive",
+              "final_source": "rules",
+              "llm": null
+            }
+          ],
+          "outcome": "correct_detection"
+        },
+        {
+          "id": "S2",
+          "description": "Older version had no medication-optimization criterion; current adds one.",
+          "truth": "substantive",
+          "predicted": "substantive",
+          "rules_predicted": "substantive",
+          "via": "rules",
+          "rule_ids": [
+            "SUB-PARAGRAPH"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "substantive",
+              "rule_id": "SUB-PARAGRAPH",
+              "evidence": "paragraph added in 'Coverage Rationale > Safety Enclosure with Beds'",
+              "change_type": "added",
+              "path": "Coverage Rationale > Safety Enclosure with Beds",
+              "before_text": null,
+              "after_text": "• Medications to address seizures and/or disruptive or harmful behaviors have been optimized or not appropriate",
+              "before_page": null,
+              "after_page": 1,
+              "final_label": "substantive",
+              "final_source": "rules",
+              "llm": null
+            }
+          ],
+          "outcome": "correct_detection"
+        },
+        {
+          "id": "S3",
+          "description": "Older version did not list HCPCS E0911; current adds it.",
+          "truth": "substantive",
+          "predicted": "substantive",
+          "rules_predicted": "substantive",
+          "via": "rules",
+          "rule_ids": [
+            "SUB-CODE-LIST"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "substantive",
+              "rule_id": "SUB-CODE-LIST",
+              "evidence": "code E0911 added",
+              "change_type": "code_added",
+              "path": "Applicable Codes",
+              "before_text": null,
+              "after_text": "E0911 Trapeze bar, heavy-duty, for patient weight capacity greater than 250 pounds, attached to bed, with grab bar",
+              "before_page": null,
+              "after_page": 3,
+              "final_label": "substantive",
+              "final_source": "rules",
+              "llm": null
+            }
+          ],
+          "outcome": "correct_detection"
+        },
+        {
+          "id": "S4",
+          "description": "Older version covered support services; current excludes them.",
+          "truth": "substantive",
+          "predicted": "substantive",
+          "rules_predicted": "substantive",
+          "via": "rules",
+          "rule_ids": [
+            "SUB-KEYWORD"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "substantive",
+              "rule_id": "SUB-KEYWORD",
+              "evidence": "coverage words ['not']; removed: includes | added: does not include",
+              "change_type": "modified",
+              "path": "Benefit Considerations",
+              "before_text": "Coverage includes certain support services (e.g., sheepskin pad).",
+              "after_text": "Coverage does not include certain support services (e.g., sheepskin pad).",
+              "before_page": 3,
+              "after_page": 3,
+              "final_label": "substantive",
+              "final_source": "rules",
+              "llm": null
+            }
+          ],
+          "outcome": "correct_detection"
+        },
+        {
+          "id": "A1",
+          "description": "Wording shift 'Many' to 'Most'; may or may not change how broadly coverage applies.",
+          "truth": "ambiguous",
+          "predicted": "substantive",
+          "rules_predicted": "ambiguous",
+          "via": "claude",
+          "rule_ids": [
+            "AMB-DEFAULT"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "ambiguous",
+              "rule_id": "AMB-DEFAULT",
+              "evidence": "removed: many | added: most",
+              "change_type": "modified",
+              "path": "Benefit Considerations",
+              "before_text": "Many benefit plans include coverage for proven and medically necessary hospital beds and mattresses under the Durable Medical Equipment benefit.",
+              "after_text": "Most benefit plans include coverage for proven and medically necessary hospital beds and mattresses under the Durable Medical Equipment benefit.",
+              "before_page": 3,
+              "after_page": 3,
+              "final_label": "substantive",
+              "final_source": "claude (escalated from ambiguous)",
+              "llm": {
+                "at": "2026-10-12T07:52:28+00:00",
+                "path": "Benefit Considerations",
+                "change_type": "modified",
+                "model": "claude-sonnet-5-5",
+                "effort": "medium",
+                "max_tokens": 4000,
+                "prompt_version": "v2",
+                "prompt_sha256": "ea2bb30cbd16eb0134707322b08414f4ff7a7c1f3c2aca819ea1bf61a9a8ce42",
+                "request_id": "req_011CfwyowCi7jcsPeQGogJoB",
+                "response_model": "claude-sonnet-5-5",
+                "stop_reason": "end_turn",
+                "usage": {
+                  "input_tokens": 1052,
+                  "output_tokens": 453
+                },
+                "status": "ok",
+                "answer": {
+                  "suggested_label": "substantive",
+                  "confidence": "medium",
+                  "what_changed": "The sentence changed from \"Many benefit plans include coverage for proven and medically necessary hospital beds and mattresses under the Durable Medical Equipment benefit.\" to \"Most benefit plans include coverage for proven and medically necessary hospital beds and mattresses under the Durable Medical Equipment benefit.\" The only change is \"Many\" replaced by \"Most\".",
+                  "interpretation": "The change may signal that a larger share of plans cover hospital beds and mattresses under the DME benefit. It is a general statement, not a coverage rule, so it may not alter coverage determinations. Still, it is a change in a descriptive claim about coverage prevalence, so a reviewer might want to look at it. It could also be an editorial refinement with no operational effect.",
+                  "uncertainty": "The text does not say whether any actual coverage criteria changed. Whether individual plans were affected is unknown. Other sections of the policy are not shown. Whether this reflects a real change in plan coverage or just a rewording is unknown. Plan types and populations are not stated.",
+                  "suggested_next_step": "Check the rest of the Benefit Considerations section and the coverage rationale for any accompanying changes. Confirm that member benefit plan documents still govern coverage, and take no billing action based on this sentence alone."
+                }
+              }
+            }
+          ],
+          "outcome": "false_positive",
+          "likely_cause": "no rule recognises this kind of wording change, so it falls through to human review. Labelled substantive with confidence on a change the key says is genuinely unclear. The rules left it Ambiguous; Claude raised it to substantive (Claude suggested substantive (confidence medium))."
+        },
+        {
+          "id": "A2",
+          "description": "Rewording of the plan-reference sentence; unclear whether meaning changes.",
+          "truth": "ambiguous",
+          "predicted": "ambiguous",
+          "rules_predicted": "ambiguous",
+          "via": null,
+          "rule_ids": [
+            "AMB-DEFAULT"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "ambiguous",
+              "rule_id": "AMB-DEFAULT",
+              "evidence": "removed: document | added: member s specific",
+              "change_type": "modified",
+              "path": "Benefit Considerations",
+              "before_text": "Additional coverage limitations and exclusions may apply. Refer to the plan document for details.",
+              "after_text": "Additional coverage limitations and exclusions may apply. Refer to the member’s specific plan for details.",
+              "before_page": 3,
+              "after_page": 3,
+              "final_label": "ambiguous",
+              "final_source": "rules",
+              "llm": {
+                "at": "2026-10-12T07:52:33+00:00",
+                "path": "Benefit Considerations",
+                "change_type": "modified",
+                "model": "claude-sonnet-5-5",
+                "effort": "medium",
+                "max_tokens": 4000,
+                "prompt_version": "v2",
+                "prompt_sha256": "ea2bb30cbd16eb0134707322b08414f4ff7a7c1f3c2aca819ea1bf61a9a8ce42",
+                "request_id": "req_011CfwypFH9GeHfQz2LsAfUM",
+                "response_model": "claude-sonnet-5-5",
+                "stop_reason": "end_turn",
+                "usage": {
+                  "input_tokens": 1028,
+                  "output_tokens": 393
+                },
+                "status": "ok",
+                "answer": {
+                  "suggested_label": "cosmetic",
+                  "confidence": "medium",
+                  "what_changed": "Before: \"Refer to the plan document for details.\" After: \"Refer to the member’s specific plan for details.\" The words \"plan document\" became \"member’s specific plan\". The sentence \"Additional coverage limitations and exclusions may apply.\" is unchanged.",
+                  "interpretation": "This likely clarifies wording to say that the member's own plan governs coverage, rather than a generic plan document. It does not appear to add, remove or alter any coverage criterion, limitation, billing rule or documentation requirement. It reads as a boilerplate rephrasing, though it could be read as slightly emphasizing individual plan variation.",
+                  "uncertainty": "I cannot tell from this excerpt whether the change was meant to alter how reviewers locate plan terms, or whether other sections changed in ways that interact with it. The text does not state plan types or populations affected, so these are unknown.",
+                  "suggested_next_step": "Treat as a low-priority wording change. No action is needed unless other changes in this version of MP.028.14 affect coverage, and confirm members' plan-specific terms are still checked during verification as usual."
+                }
+              }
+            }
+          ],
+          "outcome": "correct"
+        },
+        {
+          "id": "C1",
+          "description": "Capitalisation only.",
+          "truth": "cosmetic",
+          "predicted": "cosmetic",
+          "rules_predicted": "cosmetic",
+          "via": null,
+          "rule_ids": [
+            "COS-FORMAT"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "cosmetic",
+              "rule_id": "COS-FORMAT",
+              "evidence": "no word differences",
+              "change_type": "modified",
+              "path": "Coverage Rationale > Safety Enclosure with Beds",
+              "before_text": "o Medical Helmet",
+              "after_text": "o Medical helmet",
+              "before_page": 2,
+              "after_page": 2,
+              "final_label": "cosmetic",
+              "final_source": "rules",
+              "llm": null
+            }
+          ],
+          "outcome": "correct"
+        },
+        {
+          "id": "C2",
+          "description": "Citation spacing only.",
+          "truth": "cosmetic",
+          "predicted": "cosmetic",
+          "rules_predicted": "cosmetic",
+          "via": null,
+          "rule_ids": [
+            "COS-FORMAT"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "cosmetic",
+              "rule_id": "COS-FORMAT",
+              "evidence": "no word differences",
+              "change_type": "modified",
+              "path": "References",
+              "before_text": "Nawaz H, Abbas A, Sarfraz A, et al. A randomized clinical trial to compare the use of safety net enclosures with standard restraints in agitated hospitalized patients. J Hosp Med. 2007 Nov; 2(6): 385-93.",
+              "after_text": "Nawaz H, Abbas A, Sarfraz A, et al. A randomized clinical trial to compare the use of safety net enclosures with standard restraints in agitated hospitalized patients. J Hosp Med. 2007 Nov;2(6):385-93.",
+              "before_page": 4,
+              "after_page": 4,
+              "final_label": "cosmetic",
+              "final_source": "rules",
+              "llm": null
+            }
+          ],
+          "outcome": "correct"
+        },
+        {
+          "id": "C3",
+          "description": "Table of contents page number only.",
+          "truth": "cosmetic",
+          "predicted": "cosmetic",
+          "rules_predicted": "cosmetic",
+          "via": null,
+          "rule_ids": [
+            "COS-TOC"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "cosmetic",
+              "rule_id": "COS-TOC",
+              "evidence": "change is inside the Table of Contents",
+              "change_type": "modified",
+              "path": "(Front matter)",
+              "before_text": "Table of Contents Page Application ...  1 Coverage Rationale ...  1 Medical Records Documentation Used for Reviews ...  2 Applicable Codes ...  2 Description of Services ...  3 Benefit Considerations ...  3 Clinical Evidence ...  4 U.S. Food and Drug Administration ...  4 References ...  4 Policy History/Revision Information ...  4 Instructions for Use ...  4",
+              "after_text": "Table of Contents Page Application ...  1 Coverage Rationale ...  1 Medical Records Documentation Used for Reviews ...  2 Applicable Codes ...  2 Description of Services ...  3 Benefit Considerations ...  3 Clinical Evidence ...  3 U.S. Food and Drug Administration ...  4 References ...  4 Policy History/Revision Information ...  4 Instructions for Use ...  4",
+              "before_page": 1,
+              "after_page": 1,
+              "final_label": "cosmetic",
+              "final_source": "rules",
+              "llm": null
+            }
+          ],
+          "outcome": "correct"
+        },
+        {
+          "id": "C4",
+          "description": "Hyphenation only.",
+          "truth": "cosmetic",
+          "predicted": "cosmetic",
+          "rules_predicted": "cosmetic",
+          "via": null,
+          "rule_ids": [
+            "COS-FORMAT"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "cosmetic",
+              "rule_id": "COS-FORMAT",
+              "evidence": "no word differences",
+              "change_type": "modified",
+              "path": "Medical Records Documentation Used for Reviews",
+              "before_text": "Benefit coverage for health services is determined by the member-specific benefit plan document and applicable laws that may require coverage for a specific service. Medical records documentation may be required to assess whether the member meets the clinical criteria for coverage but does not guarantee coverage of the service requested; refer to the guidelines titled Medical Records Documentation Used for Reviews.",
+              "after_text": "Benefit coverage for health services is determined by the member specific benefit plan document and applicable laws that may require coverage for a specific service. Medical records documentation may be required to assess whether the member meets the clinical criteria for coverage but does not guarantee coverage of the service requested; refer to the guidelines titled Medical Records Documentation Used for Reviews.",
+              "before_page": 2,
+              "after_page": 2,
+              "final_label": "cosmetic",
+              "final_source": "rules",
+              "llm": null
+            }
+          ],
+          "outcome": "correct"
+        },
+        {
+          "id": "H1",
+          "description": "Policy History table text; excluded from comparison, must produce no finding.",
+          "truth": "excluded",
+          "predicted": "none",
+          "rules_predicted": "none",
+          "via": null,
+          "rule_ids": [],
+          "notes": [],
+          "changes": [],
+          "outcome": "correct"
+        }
+      ]
+    }
+  ],
+  "total": {
+    "edits": 11,
+    "scored": 11,
+    "true_substantive": 4,
+    "correct_substantive_detections": 4,
+    "detected_by_rules": 4,
+    "claude_escalations": 1,
+    "claude_escalations_correct": 0,
+    "claude_escalations_not_substantive_per_key": 1,
+    "misses": 0,
+    "false_positives": 1,
+    "false_positives_from_rules": 0,
+    "false_positives_from_claude": 1,
+    "human_review_as_intended": 1,
+    "human_review_for_true_substantive": 0,
+    "human_review_for_true_cosmetic": 0,
+    "correct_without_review": 5,
+    "claude_calls": 2,
+    "claude_answers_ok": 2,
+    "claude_suggested": {
+      "substantive": 1,
+      "cosmetic": 1,
+      "abstain": 0
+    }
+  }
+}

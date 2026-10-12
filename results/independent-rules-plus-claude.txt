@@ -1,0 +1,81 @@
+UHC policy monitor: evaluation (rules + Claude)
+
+run at 2026-10-12T07:52:15+00:00 | code commit 980eaa1
+classifier: rules, then Claude on ambiguous changes only (advisory; it can escalate to substantive, never dismiss)
+Claude: model claude-sonnet-5-5 (served by claude-sonnet-5-5) | prompt v2 (sha256 ea2bb30cbd16) | effort medium | max_tokens 4000 | no temperature/thinking set
+calls: 4 (4 usable answers) | tokens: 4977 in, 1746 out
+
+=== beds-mattresses-independent  (12 edits, 12 scored)
+edit  truth        rules said   final        rule(s)                outcome
+N1    cosmetic     cosmetic     cosmetic     COS-FORMAT             correct
+N2    substantive  substantive  substantive  SUB-CODE-LIST          correct_detection [rules]
+N3    ambiguous    ambiguous    ambiguous    AMB-DEFAULT            correct
+N4    substantive  substantive  substantive  SUB-KEYWORD            correct_detection [rules]
+N5    substantive  substantive  substantive  SUB-PARAGRAPH          correct_detection [rules]
+N6    cosmetic     cosmetic     cosmetic     COS-FORMAT             correct
+N7    substantive  substantive  substantive  SUB-NUMBER             correct_detection [rules]
+N8    ambiguous    ambiguous    ambiguous    AMB-DEFAULT            correct
+N9    substantive  ambiguous    substantive  AMB-MODAL              correct_detection [Claude escalation]
+N10   cosmetic     none         none         -                      correct
+N11   substantive  substantive  substantive  SUB-PARAGRAPH          correct_detection [rules]
+N12   ambiguous    ambiguous    substantive  AMB-DEFAULT            false_positive [Claude escalation]
+
+  detected by the RULES alone : 5 of 6 true-substantive edits
+  Claude escalations          : 2 (ambiguous -> substantive by Claude): 1 correct per the key, 1 not substantive per the key
+  total detected as substantive: 6 of 6 (5 rules + 1 Claude)
+  misses              : 0
+  false positives     : 1 (0 from rules, 1 from Claude escalations)
+  human review        : 2 left for a human (2 as intended for genuinely ambiguous edits, 0 true-substantive not auto-detected, 0 true-cosmetic avoidable)
+  correct, no review  : 3
+  Claude's suggestions: 4 calls, 4 usable: 2 substantive, 2 cosmetic, 0 abstain
+
+Claude on the ambiguous items (reasoning and confidence):
+
+  N3  key says: ambiguous | rules: ambiguous (AMB-DEFAULT) | final: ambiguous | correct
+     Claude suggests: COSMETIC | Claude's self-reported confidence: high -> stays Ambiguous (advice only)
+     what the texts say : In the Description of Services section, "For members at risk for skin breakdown" became "For individuals at risk for skin breakdown". The word "members" was removed and "individuals" was added. The rest of the paragraph is identical.
+     interpretation     : This looks like a terminology or wording harmonization. The sentence is descriptive background about support surfaces, and the next sentence already uses "individuals". It does not appear to alter coverage criteria, the eligible population, or billing or documentation requirements.
+     uncertainty        : The excerpt does not show whether the policy's coverage sections changed elsewhere. It also does not show whether "members" was used in a defined sense (for example, plan enrollees) that "individuals" might broaden. Because this is a narrative description section, that effect seems unlikely.
+     suggested next step: No action is needed beyond noting the wording change. If desired, check that the coverage and criteria sections of MP.028.14 have no substantive edits in the same revision.
+
+  N8  key says: ambiguous | rules: ambiguous (AMB-DEFAULT) | final: ambiguous | correct
+     Claude suggests: COSMETIC | Claude's self-reported confidence: medium -> stays Ambiguous (advice only)
+     what the texts say : In the Description of Services section, "preventive support surfaces are generally incorporated into treatment" became "preventive support surfaces are often incorporated into treatment". The only change is "generally" replaced by "often". The rest of the excerpt is identical.
+     interpretation     : This looks like a near-synonymous wording change in a descriptive passage. It does not appear to add or remove a coverage criterion, population, documentation requirement or billing instruction. "Often" may be slightly weaker than "generally", but the sentence describes typical clinical practice rather than setting a rule.
+     uncertainty        : The excerpt does not show how the coverage sections of this policy use or rely on this description. It also does not show whether reviewers or payers treat this descriptive language as supporting medical necessity. Any intended change in emphasis by the policy authors is unknown.
+     suggested next step: Treat as cosmetic unless the coverage rules or clinical criteria sections of MP.028.14 also changed. If they did, check whether those changes relate to preventive support surfaces.
+
+  N9  key says: substantive | rules: ambiguous (AMB-MODAL) | final: substantive | correct_detection
+     Claude suggests: SUBSTANTIVE | Claude's self-reported confidence: medium -> ESCALATED to substantive
+     what the texts say : Before: "Medical records documentation is required to assess whether the member meets the clinical criteria for coverage". After: "Medical records documentation may be required to assess whether the member meets the clinical criteria for coverage". The words "is" were removed and "may be" added; the rest of the section text is identical.
+     interpretation     : The change moves medical records documentation from a firm requirement to a conditional one. This could mean documentation is no longer always needed for coverage review, or that it is only requested in some cases. That might affect what providers must submit or retain. It could also be a softening of boilerplate with no practical change in how reviews are run.
+     uncertainty        : The text does not say when or under what conditions documentation would be required, nor whether review practice actually changes. It does not state which plan types, products or populations this applies to. The referenced guidelines, Medical Records Documentation Used for Reviews, are not shown and may define the actual requirements.
+     suggested next step: Check the referenced Medical Records Documentation Used for Reviews guidelines and the policy's change summary to see whether documentation requirements actually changed. Then confirm with the payer or the plan's documentation rules before relaxing any internal documentation practices.
+
+  N12  key says: ambiguous | rules: ambiguous (AMB-DEFAULT) | final: substantive | false_positive
+     Claude suggests: SUBSTANTIVE | Claude's self-reported confidence: medium -> ESCALATED to substantive
+     what the texts say : A new paragraph was added to 'Instructions for Use' (no prior text): "This Medical Policy may also be applied to Medicare Advantage plans in certain instances. In the absence of a Medicare National Coverage Determination (NCD), Local Coverage Determination (LCD), or other Medicare coverage guidance, CMS allows a Medicare Advantage Organization (MAO) to create its own coverage determinations, using objective evidence-based rationale relying on authoritative evidence ( Medicare IOM Pub. No. 100-16, Ch. 4, §90.5)."
+     interpretation     : The addition may extend the policy's criteria to Medicare Advantage members when no NCD, LCD or other Medicare guidance exists. If so, it could affect coverage determinations and documentation expectations for beds and mattresses for that population. It may also only restate how the policy was already applied, which would make it clarifying boilerplate.
+     uncertainty        : The text does not say which Medicare Advantage plans are affected or what 'certain instances' means. It does not show whether this wording is standard across UnitedHealthcare policies or whether it changes actual practice. It also does not show whether Medicare guidance on beds and mattresses already exists, which would determine whether this paragraph applies. The effective date of the change is unknown beyond the document's stated 2026-01-01.
+     suggested next step: Check whether the same paragraph appears in other recent UnitedHealthcare medical policies, and confirm with the payer or the Medicare Advantage plan documents whether it changes how beds and mattresses claims for MA members are reviewed. Also check for an applicable NCD or LCD.
+
+Errors and avoidable review (source evidence and likely cause):
+
+  N12 [false_positive] truth=ambiguous final=substantive: The older version had no paragraph about applying the policy to Medicare Advantage plans.
+     (added, Instructions for Use, before p.None -> after p.4)
+        before: (nothing)
+        after:  [[This]] [[Medical]] [[Policy]] [[may]] [[also]] [[be]] [[applied]] [[to]] [[Medicare]] [[Advantage]] [[plans]] [[in]] [[certain]] [[instances.]] [[In]] [[the]] [[absence]] [[of]] [[a]] [[Medicare]] [[National]] [[Coverage]] [[Determination]] [[(NCD),]] [[Local]] [[Coverage]] [[Determination]] [[(LCD),]] [[or]] [[other]] [[Medicare]] [[coverage]] [[guidance,]] [[CMS]] [[allows]] [[a]] [[Medicare]] [[Advantage]] [[Organization]] [[(MAO)]] [[to]] [[create]] [[its]] [[own]] [[coverage]] [[determinations,]] [[using]] [[objective]] [[evidence-based]] [[rationale]] [[relying]] [[on]] [[authoritative]] [[evidence]] [[(]] [[Medicare]] [[IOM]] [[Pub.]] [[No.]] [[100-16,]] [[Ch.]] [[4,]] [[§90.5).]]
+        rule AMB-DEFAULT: paragraph added outside the coverage sections ('Instructions for Use')
+     likely cause: no rule recognises this kind of wording change, so it falls through to human review. Labelled substantive with confidence on a change the key says is genuinely unclear. The rules left it Ambiguous; Claude raised it to substantive (Claude suggested substantive (confidence medium)).
+
+=== ALL SETS
+  detected by the RULES alone : 5 of 6 true-substantive edits
+  Claude escalations          : 2 (ambiguous -> substantive by Claude): 1 correct per the key, 1 not substantive per the key
+  total detected as substantive: 6 of 6 (5 rules + 1 Claude)
+  misses              : 0
+  false positives     : 1 (0 from rules, 1 from Claude escalations)
+  human review        : 2 left for a human (2 as intended for genuinely ambiguous edits, 0 true-substantive not auto-detected, 0 true-cosmetic avoidable)
+  correct, no review  : 3
+  Claude's suggestions: 4 calls, 4 usable: 2 substantive, 2 cosmetic, 0 abstain
+
+Small samples: these results are diagnostic only. They show where the rules behave well or badly on these examples, not how accurate the tool is in general.

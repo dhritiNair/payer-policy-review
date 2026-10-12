@@ -1,0 +1,76 @@
+UHC policy monitor: evaluation (rules + Claude)
+
+run at 2026-10-12T07:52:27+00:00 | code commit 980eaa1
+classifier: rules, then Claude on ambiguous changes only (advisory; it can escalate to substantive, never dismiss)
+Claude: model claude-sonnet-5-5 (served by claude-sonnet-5-5) | prompt v2 (sha256 ea2bb30cbd16) | effort medium | max_tokens 4000 | no temperature/thinking set
+calls: 3 (3 usable answers) | tokens: 3490 in, 996 out
+
+=== beds-mattresses-blind  (7 edits, 7 scored)
+edit  truth        rules said   final        rule(s)                outcome
+B1    substantive  substantive  substantive  SUB-PARAGRAPH          correct_detection [rules]
+B2    substantive  substantive  substantive  SUB-CODE-LIST          correct_detection [rules]
+B3    ambiguous    ambiguous    ambiguous    AMB-MODAL              correct
+B4    cosmetic     none         none         -                      correct
+B5    cosmetic     ambiguous    ambiguous    AMB-DEFAULT            human_review
+B6    cosmetic     ambiguous    ambiguous    AMB-DEFAULT            human_review
+B7    substantive  substantive  substantive  SUB-NUMBER             correct_detection [rules]
+
+  detected by the RULES alone : 3 of 3 true-substantive edits
+  Claude escalations          : 0 (ambiguous -> substantive by Claude): 0 correct per the key, 0 not substantive per the key
+  total detected as substantive: 3 of 3 (3 rules + 0 Claude)
+  misses              : 0
+  false positives     : 0 (0 from rules, 0 from Claude escalations)
+  human review        : 3 left for a human (1 as intended for genuinely ambiguous edits, 0 true-substantive not auto-detected, 2 true-cosmetic avoidable)
+  correct, no review  : 1
+  Claude's suggestions: 3 calls, 3 usable: 0 substantive, 3 cosmetic, 0 abstain
+
+Claude on the ambiguous items (reasoning and confidence):
+
+  B3  key says: ambiguous | rules: ambiguous (AMB-MODAL) | final: ambiguous | correct
+     Claude suggests: COSMETIC | Claude's self-reported confidence: medium -> stays Ambiguous (advice only)
+     what the texts say : Before: "Additional coverage limitations and exclusions apply." After: "Additional coverage limitations and exclusions may apply." The word "may" was added. The next sentence, "Refer to the member’s specific plan for details.", is unchanged.
+     interpretation     : The change softens a general statement from definite to possible. This reads as a generic disclaimer pointing the reader to the member's plan, so it probably does not alter coverage criteria, covered populations, billing or documentation. It could be read as a slight weakening of the assertion that further limitations exist, but the instruction to check the member's plan stays the same.
+     uncertainty        : The excerpt does not show whether the change was made for a specific reason, or whether other sections of the policy changed coverage criteria. It does not say which plans or populations are affected. The practical effect depends on how individual plan documents are written, which is unknown from this text.
+     suggested next step: Treat as low priority. Continue to verify the member's specific plan for limitations and exclusions. Optionally check whether other sections of MP.028.14 changed in the same revision.
+
+  B5  key says: cosmetic | rules: ambiguous (AMB-DEFAULT) | final: ambiguous | human_review
+     Claude suggests: COSMETIC | Claude's self-reported confidence: high -> stays Ambiguous (advice only)
+     what the texts say : The only difference is the citation access date: "( Accessed December 19, 2023)" became "( Accessed December 19, 2024)". The rest of the paragraph, including the FDA URL, is identical.
+     interpretation     : This looks like a routine refresh of a reference citation's access date in the FDA background section. It does not appear to alter coverage, eligibility, conditions, billing or documentation requirements.
+     uncertainty        : The text does not show whether the linked FDA page content changed, or whether other parts of the policy were revised at the same time. Only this one excerpt is visible.
+     suggested next step: No action needed for this change. If desired, check other sections of the policy version for substantive edits.
+
+  B6  key says: cosmetic | rules: ambiguous (AMB-DEFAULT) | final: ambiguous | human_review
+     Claude suggests: COSMETIC | Claude's self-reported confidence: high -> stays Ambiguous (advice only)
+     what the texts say : Before: "covered as DME for individuals who have a risk for safety in bed when all of the following criteria are met:". After: "covered as DME for individuals that have a risk for safety in bed when all of the following criteria are met:". The only difference is the word "who" replaced by "that".
+     interpretation     : This looks like a grammatical or stylistic substitution of a relative pronoun. The population (individuals with a risk for safety in bed), the DME coverage statement, and the 'all of the following criteria' condition appear unchanged, so it likely has no effect on coverage.
+     uncertainty        : The excerpt shows only this sentence, not the criteria list that follows, so any changes there are unknown. Effective date of this specific wording and plan types affected are not stated beyond the document's 2026-01-01 date.
+     suggested next step: No action needed for this change; the reviewer may log it as cosmetic and check the separate criteria list for any substantive changes.
+
+Errors and avoidable review (source evidence and likely cause):
+
+  B5 [human_review] truth=cosmetic final=ambiguous: In the FDA section, the older version read "Accessed December 19, 2023".
+     (modified, U.S. Food and Drug Administration (FDA), before p.4 -> after p.4)
+        before: … and private residences). Located at: https://www.fda.gov/medical-devices/general-hospital-devices-and-supplies/hospital-beds. ( Accessed December 19, [[2023)]]
+        after:  … and private residences). Located at: https://www.fda.gov/medical-devices/general-hospital-devices-and-supplies/hospital-beds. ( Accessed December 19, [[2024)]]
+        rule AMB-DEFAULT: removed: 2023 | added: 2024 (outside the coverage sections)
+     likely cause: no rule recognises this kind of wording change, so it falls through to human review. Sent to a human although the key says it is cosmetic: avoidable review work, no rule recognises it as harmless. Claude suggested cosmetic (confidence high), which is advice only: it stays Ambiguous.
+
+  B6 [human_review] truth=cosmetic final=ambiguous: In the Safety Enclosure criteria, the older version read "for individuals who have a risk for safety in bed" (real text says "that have").
+     (modified, Coverage Rationale > Safety Enclosure with Beds, before p.1 -> after p.1)
+        before: … adult bed, safety enclosure) are covered as DME for individuals [[who]] have a risk for safety in bed when all of …
+        after:  … adult bed, safety enclosure) are covered as DME for individuals [[that]] have a risk for safety in bed when all of …
+        rule AMB-DEFAULT: removed: who | added: that
+     likely cause: no rule recognises this kind of wording change, so it falls through to human review. Sent to a human although the key says it is cosmetic: avoidable review work, no rule recognises it as harmless. Claude suggested cosmetic (confidence high), which is advice only: it stays Ambiguous.
+
+=== ALL SETS
+  detected by the RULES alone : 3 of 3 true-substantive edits
+  Claude escalations          : 0 (ambiguous -> substantive by Claude): 0 correct per the key, 0 not substantive per the key
+  total detected as substantive: 3 of 3 (3 rules + 0 Claude)
+  misses              : 0
+  false positives     : 0 (0 from rules, 0 from Claude escalations)
+  human review        : 3 left for a human (1 as intended for genuinely ambiguous edits, 0 true-substantive not auto-detected, 2 true-cosmetic avoidable)
+  correct, no review  : 1
+  Claude's suggestions: 3 calls, 3 usable: 0 substantive, 3 cosmetic, 0 abstain
+
+Small samples: these results are diagnostic only. They show where the rules behave well or badly on these examples, not how accurate the tool is in general.

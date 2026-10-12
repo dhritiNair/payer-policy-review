@@ -1,0 +1,419 @@
+{
+  "meta": {
+    "run_at": "2026-10-12T07:52:27+00:00",
+    "code": {
+      "commit": "980eaa175623a9445c831e0fa96516dfd5badd37",
+      "uncommitted_changes": false
+    },
+    "scored_saved_run": null,
+    "classifier": {
+      "classifier": "rules, then Claude fallback on ambiguous changes (advisory, escalate-only)",
+      "coverage_sections": [
+        "Applicable Codes",
+        "Application",
+        "Benefit Considerations",
+        "Coverage Rationale",
+        "Medical Records Documentation Used for Reviews"
+      ],
+      "coverage_words": [
+        "all",
+        "any",
+        "authorization",
+        "both",
+        "covered",
+        "either",
+        "except",
+        "exclude",
+        "excluded",
+        "excludes",
+        "exclusion",
+        "exclusions",
+        "experimental",
+        "investigational",
+        "never",
+        "no",
+        "non",
+        "not",
+        "only",
+        "unless",
+        "unproven",
+        "without"
+      ],
+      "modal_words": [
+        "can",
+        "cannot",
+        "may",
+        "might",
+        "must",
+        "require",
+        "required",
+        "requires",
+        "shall",
+        "should",
+        "will"
+      ],
+      "rules": {
+        "COS-TOC": "cosmetic",
+        "COS-FORMAT": "cosmetic",
+        "SUB-CODE-LIST": "substantive",
+        "SUB-PARAGRAPH": "substantive",
+        "SUB-KEYWORD": "substantive",
+        "SUB-NUMBER": "substantive",
+        "AMB-MODAL": "ambiguous",
+        "AMB-MOVED": "ambiguous",
+        "AMB-DEFAULT": "ambiguous"
+      }
+    },
+    "claude": {
+      "used_in_this_run": true,
+      "model": "claude-sonnet-5-5",
+      "prompt_version": "v2",
+      "effort": "medium",
+      "max_tokens": 4000,
+      "prompt_sha256": "ea2bb30cbd16eb0134707322b08414f4ff7a7c1f3c2aca819ea1bf61a9a8ce42",
+      "calls": 3,
+      "answers_ok": 3,
+      "response_models": [
+        "claude-sonnet-5-5"
+      ],
+      "input_tokens": 3490,
+      "output_tokens": 996,
+      "request_ids": [
+        "req_011Cfwyo43wbHqnDQFtAXwJs",
+        "req_011CfwyoLFWy4S3MRdF4E3ir",
+        "req_011CfwyoZUVjcMYL6yaDCSEK"
+      ],
+      "note": "Claude is advisory and can only escalate an ambiguous change to substantive; it never dismisses one."
+    },
+    "real_policy_sha256": "b75d96a022655310752406ca21a3e9a53452b26ef1aa93cee5f65f8978167568",
+    "disclaimer": "Small samples: these results are diagnostic only. They show where the rules behave well or badly on these examples, not how accurate the tool is in general."
+  },
+  "sets": [
+    {
+      "name": "beds-mattresses-blind",
+      "files": {
+        "edits": "config/simulations/beds-mattresses-blind.json",
+        "edits_sha256": "374dbbe75132aa911832205cfaf35216a03c35a74364dd1689e708e7b47449e3",
+        "labels": "config/simulations/beds-mattresses-blind.labels.json",
+        "labels_sha256": "d2995dd9dfc7ca53402c186b9bc981a3506faf1491ffbb4141d9e67023e0e83d"
+      },
+      "summary": {
+        "edits": 7,
+        "scored": 7,
+        "true_substantive": 3,
+        "correct_substantive_detections": 3,
+        "detected_by_rules": 3,
+        "claude_escalations": 0,
+        "claude_escalations_correct": 0,
+        "claude_escalations_not_substantive_per_key": 0,
+        "misses": 0,
+        "false_positives": 0,
+        "false_positives_from_rules": 0,
+        "false_positives_from_claude": 0,
+        "human_review_as_intended": 1,
+        "human_review_for_true_substantive": 0,
+        "human_review_for_true_cosmetic": 2,
+        "correct_without_review": 1,
+        "claude_calls": 3,
+        "claude_answers_ok": 3,
+        "claude_suggested": {
+          "substantive": 0,
+          "cosmetic": 3,
+          "abstain": 0
+        }
+      },
+      "rows": [
+        {
+          "id": "B1",
+          "description": "The older version had no \"Weighted blankets\" bullet in the list of less intensive alternatives.",
+          "truth": "substantive",
+          "predicted": "substantive",
+          "rules_predicted": "substantive",
+          "via": "rules",
+          "rule_ids": [
+            "SUB-PARAGRAPH"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "substantive",
+              "rule_id": "SUB-PARAGRAPH",
+              "evidence": "paragraph added in 'Coverage Rationale > Safety Enclosure with Beds'",
+              "change_type": "added",
+              "path": "Coverage Rationale > Safety Enclosure with Beds",
+              "before_text": null,
+              "after_text": "o Weighted blankets",
+              "before_page": null,
+              "after_page": 2,
+              "final_label": "substantive",
+              "final_source": "rules",
+              "llm": null
+            }
+          ],
+          "outcome": "correct_detection"
+        },
+        {
+          "id": "B2",
+          "description": "The older version had no code row for E0328.",
+          "truth": "substantive",
+          "predicted": "substantive",
+          "rules_predicted": "substantive",
+          "via": "rules",
+          "rule_ids": [
+            "SUB-CODE-LIST"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "substantive",
+              "rule_id": "SUB-CODE-LIST",
+              "evidence": "code E0328 added",
+              "change_type": "code_added",
+              "path": "Applicable Codes",
+              "before_text": null,
+              "after_text": "E0328 Hospital bed, pediatric, manual, 360 degree side enclosures, top of headboard, footboard and side rails up to 24 in above the spring, includes mattress",
+              "before_page": null,
+              "after_page": 3,
+              "final_label": "substantive",
+              "final_source": "rules",
+              "llm": null
+            }
+          ],
+          "outcome": "correct_detection"
+        },
+        {
+          "id": "B3",
+          "description": "In Benefit Considerations, the older version read \"Additional coverage limitations and exclusions apply.\" (no \"may\").",
+          "truth": "ambiguous",
+          "predicted": "ambiguous",
+          "rules_predicted": "ambiguous",
+          "via": null,
+          "rule_ids": [
+            "AMB-MODAL"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "ambiguous",
+              "rule_id": "AMB-MODAL",
+              "evidence": "modal words ['may']; removed: - | added: may",
+              "change_type": "modified",
+              "path": "Benefit Considerations",
+              "before_text": "Additional coverage limitations and exclusions apply. Refer to the member’s specific plan for details.",
+              "after_text": "Additional coverage limitations and exclusions may apply. Refer to the member’s specific plan for details.",
+              "before_page": 3,
+              "after_page": 3,
+              "final_label": "ambiguous",
+              "final_source": "rules",
+              "llm": {
+                "at": "2026-10-12T07:52:17+00:00",
+                "path": "Benefit Considerations",
+                "change_type": "modified",
+                "model": "claude-sonnet-5-5",
+                "effort": "medium",
+                "max_tokens": 4000,
+                "prompt_version": "v2",
+                "prompt_sha256": "ea2bb30cbd16eb0134707322b08414f4ff7a7c1f3c2aca819ea1bf61a9a8ce42",
+                "request_id": "req_011Cfwyo43wbHqnDQFtAXwJs",
+                "response_model": "claude-sonnet-5-5",
+                "stop_reason": "end_turn",
+                "usage": {
+                  "input_tokens": 1033,
+                  "output_tokens": 392
+                },
+                "status": "ok",
+                "answer": {
+                  "suggested_label": "cosmetic",
+                  "confidence": "medium",
+                  "what_changed": "Before: \"Additional coverage limitations and exclusions apply.\" After: \"Additional coverage limitations and exclusions may apply.\" The word \"may\" was added. The next sentence, \"Refer to the member’s specific plan for details.\", is unchanged.",
+                  "interpretation": "The change softens a general statement from definite to possible. This reads as a generic disclaimer pointing the reader to the member's plan, so it probably does not alter coverage criteria, covered populations, billing or documentation. It could be read as a slight weakening of the assertion that further limitations exist, but the instruction to check the member's plan stays the same.",
+                  "uncertainty": "The excerpt does not show whether the change was made for a specific reason, or whether other sections of the policy changed coverage criteria. It does not say which plans or populations are affected. The practical effect depends on how individual plan documents are written, which is unknown from this text.",
+                  "suggested_next_step": "Treat as low priority. Continue to verify the member's specific plan for limitations and exclusions. Optionally check whether other sections of MP.028.14 changed in the same revision."
+                }
+              }
+            }
+          ],
+          "outcome": "correct"
+        },
+        {
+          "id": "B4",
+          "description": "In Description of Services, the two paragraphs were in the opposite order.",
+          "truth": "cosmetic",
+          "predicted": "none",
+          "rules_predicted": "none",
+          "via": null,
+          "rule_ids": [],
+          "notes": [
+            "1 paragraph(s) reordered within 'Description of Services' (wording unchanged; not reported as a change)"
+          ],
+          "changes": [],
+          "outcome": "correct"
+        },
+        {
+          "id": "B5",
+          "description": "In the FDA section, the older version read \"Accessed December 19, 2023\".",
+          "truth": "cosmetic",
+          "predicted": "ambiguous",
+          "rules_predicted": "ambiguous",
+          "via": null,
+          "rule_ids": [
+            "AMB-DEFAULT"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "ambiguous",
+              "rule_id": "AMB-DEFAULT",
+              "evidence": "removed: 2023 | added: 2024 (outside the coverage sections)",
+              "change_type": "modified",
+              "path": "U.S. Food and Drug Administration (FDA)",
+              "before_text": "The collaborative efforts of the FDA and the Hospital Bed Safety Workgroup have led to the release of the Hospital Bed System Dimensional and Assessment Guidance to Reduce Entrapment. This guidance provides recommendations for manufacturers of new hospital beds and for facilities with existing beds (including hospitals, nursing homes, and private residences). Located at: https://www.fda.gov/medical-devices/general-hospital-devices-and-supplies/hospital-beds. ( Accessed December 19, 2023)",
+              "after_text": "The collaborative efforts of the FDA and the Hospital Bed Safety Workgroup have led to the release of the Hospital Bed System Dimensional and Assessment Guidance to Reduce Entrapment. This guidance provides recommendations for manufacturers of new hospital beds and for facilities with existing beds (including hospitals, nursing homes, and private residences). Located at: https://www.fda.gov/medical-devices/general-hospital-devices-and-supplies/hospital-beds. ( Accessed December 19, 2024)",
+              "before_page": 4,
+              "after_page": 4,
+              "final_label": "ambiguous",
+              "final_source": "rules",
+              "llm": {
+                "at": "2026-10-12T07:52:20+00:00",
+                "path": "U.S. Food and Drug Administration (FDA)",
+                "change_type": "modified",
+                "model": "claude-sonnet-5-5",
+                "effort": "medium",
+                "max_tokens": 4000,
+                "prompt_version": "v2",
+                "prompt_sha256": "ea2bb30cbd16eb0134707322b08414f4ff7a7c1f3c2aca819ea1bf61a9a8ce42",
+                "request_id": "req_011CfwyoLFWy4S3MRdF4E3ir",
+                "response_model": "claude-sonnet-5-5",
+                "stop_reason": "end_turn",
+                "usage": {
+                  "input_tokens": 1344,
+                  "output_tokens": 258
+                },
+                "status": "ok",
+                "answer": {
+                  "suggested_label": "cosmetic",
+                  "confidence": "high",
+                  "what_changed": "The only difference is the citation access date: \"( Accessed December 19, 2023)\" became \"( Accessed December 19, 2024)\". The rest of the paragraph, including the FDA URL, is identical.",
+                  "interpretation": "This looks like a routine refresh of a reference citation's access date in the FDA background section. It does not appear to alter coverage, eligibility, conditions, billing or documentation requirements.",
+                  "uncertainty": "The text does not show whether the linked FDA page content changed, or whether other parts of the policy were revised at the same time. Only this one excerpt is visible.",
+                  "suggested_next_step": "No action needed for this change. If desired, check other sections of the policy version for substantive edits."
+                }
+              }
+            }
+          ],
+          "outcome": "human_review",
+          "likely_cause": "no rule recognises this kind of wording change, so it falls through to human review. Sent to a human although the key says it is cosmetic: avoidable review work, no rule recognises it as harmless. Claude suggested cosmetic (confidence high), which is advice only: it stays Ambiguous."
+        },
+        {
+          "id": "B6",
+          "description": "In the Safety Enclosure criteria, the older version read \"for individuals who have a risk for safety in bed\" (real text says \"that have\").",
+          "truth": "cosmetic",
+          "predicted": "ambiguous",
+          "rules_predicted": "ambiguous",
+          "via": null,
+          "rule_ids": [
+            "AMB-DEFAULT"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "ambiguous",
+              "rule_id": "AMB-DEFAULT",
+              "evidence": "removed: who | added: that",
+              "change_type": "modified",
+              "path": "Coverage Rationale > Safety Enclosure with Beds",
+              "before_text": "Safety enclosure with beds (e.g., pediatric enclosed bed, adult bed, safety enclosure) are covered as DME for individuals who have a risk for safety in bed when all of the following criteria are met:",
+              "after_text": "Safety enclosure with beds (e.g., pediatric enclosed bed, adult bed, safety enclosure) are covered as DME for individuals that have a risk for safety in bed when all of the following criteria are met:",
+              "before_page": 1,
+              "after_page": 1,
+              "final_label": "ambiguous",
+              "final_source": "rules",
+              "llm": {
+                "at": "2026-10-12T07:52:23+00:00",
+                "path": "Coverage Rationale > Safety Enclosure with Beds",
+                "change_type": "modified",
+                "model": "claude-sonnet-5-5",
+                "effort": "medium",
+                "max_tokens": 4000,
+                "prompt_version": "v2",
+                "prompt_sha256": "ea2bb30cbd16eb0134707322b08414f4ff7a7c1f3c2aca819ea1bf61a9a8ce42",
+                "request_id": "req_011CfwyoZUVjcMYL6yaDCSEK",
+                "response_model": "claude-sonnet-5-5",
+                "stop_reason": "end_turn",
+                "usage": {
+                  "input_tokens": 1113,
+                  "output_tokens": 346
+                },
+                "status": "ok",
+                "answer": {
+                  "suggested_label": "cosmetic",
+                  "confidence": "high",
+                  "what_changed": "Before: \"covered as DME for individuals who have a risk for safety in bed when all of the following criteria are met:\". After: \"covered as DME for individuals that have a risk for safety in bed when all of the following criteria are met:\". The only difference is the word \"who\" replaced by \"that\".",
+                  "interpretation": "This looks like a grammatical or stylistic substitution of a relative pronoun. The population (individuals with a risk for safety in bed), the DME coverage statement, and the 'all of the following criteria' condition appear unchanged, so it likely has no effect on coverage.",
+                  "uncertainty": "The excerpt shows only this sentence, not the criteria list that follows, so any changes there are unknown. Effective date of this specific wording and plan types affected are not stated beyond the document's 2026-01-01 date.",
+                  "suggested_next_step": "No action needed for this change; the reviewer may log it as cosmetic and check the separate criteria list for any substantive changes."
+                }
+              }
+            }
+          ],
+          "outcome": "human_review",
+          "likely_cause": "no rule recognises this kind of wording change, so it falls through to human review. Sent to a human although the key says it is cosmetic: avoidable review work, no rule recognises it as harmless. Claude suggested cosmetic (confidence high), which is advice only: it stays Ambiguous."
+        },
+        {
+          "id": "B7",
+          "description": "In the Safety Enclosure note, the older version read \"should be coded with HCPCS code E0305\" (real text says E0316).",
+          "truth": "substantive",
+          "predicted": "substantive",
+          "rules_predicted": "substantive",
+          "via": "rules",
+          "rule_ids": [
+            "SUB-NUMBER"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "substantive",
+              "rule_id": "SUB-NUMBER",
+              "evidence": "removed: e0305 | added: e0316",
+              "change_type": "modified",
+              "path": "Coverage Rationale > Safety Enclosure with Beds",
+              "before_text": "Note: Safety enclosure with beds (e.g., Posey) should be coded with HCPCS code E0305.",
+              "after_text": "Note: Safety enclosure with beds (e.g., Posey) should be coded with HCPCS code E0316.",
+              "before_page": 2,
+              "after_page": 2,
+              "final_label": "substantive",
+              "final_source": "rules",
+              "llm": null
+            }
+          ],
+          "outcome": "correct_detection"
+        }
+      ]
+    }
+  ],
+  "total": {
+    "edits": 7,
+    "scored": 7,
+    "true_substantive": 3,
+    "correct_substantive_detections": 3,
+    "detected_by_rules": 3,
+    "claude_escalations": 0,
+    "claude_escalations_correct": 0,
+    "claude_escalations_not_substantive_per_key": 0,
+    "misses": 0,
+    "false_positives": 0,
+    "false_positives_from_rules": 0,
+    "false_positives_from_claude": 0,
+    "human_review_as_intended": 1,
+    "human_review_for_true_substantive": 0,
+    "human_review_for_true_cosmetic": 2,
+    "correct_without_review": 1,
+    "claude_calls": 3,
+    "claude_answers_ok": 3,
+    "claude_suggested": {
+      "substantive": 0,
+      "cosmetic": 3,
+      "abstain": 0
+    }
+  }
+}
