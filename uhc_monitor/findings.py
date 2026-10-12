@@ -49,8 +49,10 @@ def policy_facts(extracted, simulated):
                 if re.search(r"\bapplies to\b", p["text"]):
                     applies.append({"plan": s["heading"], "text": p["text"], "page": p["page"]})
     date = extracted["effective_date"]
+    front = extracted["sections"][0]["paragraphs"] if extracted["sections"] else []
+    product = next((p["text"].replace("®", "") for p in front if p["text"].startswith("UnitedHealthcare")), None)
     return {
-        "title": extracted["title"], "policy_number": extracted["policy_number"],
+        "title": extracted["title"], "policy_number": extracted["policy_number"], "product_line": product,
         "effective_date": "Unknown (simulated version has no real effective date)" if simulated else date,
         "applies_to": applies,   # empty means the document did not say: shown as Unknown
     }

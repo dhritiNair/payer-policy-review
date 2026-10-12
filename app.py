@@ -1,9 +1,11 @@
 """UHC policy change monitor: finding view. Run with: python -m streamlit run app.py"""
+from datetime import datetime
+
 import streamlit as st
 
 from uhc_monitor.classify import AMBIGUOUS, AMBIGUOUS_SUBTITLE, COSMETIC, SUBSTANTIVE
 from uhc_monitor.demo_data import seed_demo
-from uhc_monitor.findings import all_updates, get_findings
+from uhc_monitor.findings import all_updates, get_findings, policy_facts
 from uhc_monitor.sources import load_sources
 from uhc_monitor.store import Store
 from uhc_monitor.view import excerpt_pair
@@ -124,13 +126,49 @@ def render_finding(n, f, before_sim, facts, review, store, ctx):
         render_review(store, f, review, ctx)
 
 
+def fmt_time(iso):
+    return datetime.fromisoformat(iso).strftime("%Y-%m-%d %H:%M UTC")
+
+
+def render_header(slot, source, facts, state, compared):
+    """Policy header: what policy is under review, which versions, and when it was last checked."""
+    with slot:
+        st.caption("UHC policy change monitor")
+        st.title(facts["title"] if facts else source.name)
+        st.markdown(f"**{(facts and facts['product_line']) or source.payer}**")
+        c1, c2, c3, c4 = st.columns(4)
+        c1.markdown(f"**Policy number**  \n{facts['policy_number'] if facts else 'Unknown'}")
+        c2.markdown(f"**Effective date (current)**  \n{facts['effective_date'] if facts else 'Unknown'}")
+        c3.markdown(f"**Version compared**  \n{compared}")
+        c4.markdown(f"**Last checked**  \n{fmt_time(state['last_checked_at']) if state else 'Never'}")
+
+
+def render_banner(slot, name, state):
+    with slot:
+        status, when, reason = state["last_status"], fmt_time(state["last_checked_at"]), state["last_reason"]
+        if status == "failed":
+            st.error(f"**{name}: failed** — last check at {when}: {reason}. This is not 'unchanged'. "
+                     "The last good version is kept below.")
+        elif status == "updated":
+            st.warning(f"**{name}: updated** — the document changed since the previous version (checked {when}).")
+        elif status == "unchanged":
+            st.success(f"**{name}: unchanged** — same content as the baseline (checked {when}).")
+        else:
+            st.info(f"**{name}: initialized** — baseline stored, nothing to compare yet (checked {when}).")
+
+
 store = Store()
-source = load_sources()[0]
-st.title("UHC policy change monitor")
-st.caption(f"{source.payer} · {source.name}")
+sources = load_sources()
+selector_slot, header_slot, banner_slot = st.container(), st.container(), st.container()
+if len(sources) > 1:
+    with selector_slot:
+        source = sources[st.selectbox("Policy", range(len(sources)), format_func=lambda i: sources[i].name)]
+else:
+    source = sources[0]
 
 state = store.get_state(source.id)
 if state is None:
+    render_header(header_slot, source, None, None, "none yet")
     st.info("No versions stored yet. The real UHC URL is not configured, so you can load demo data: a SIMULATED "
             "older version as the baseline, then a check of the real PDF served by a local test server.")
     if st.button("Load demo data"):
@@ -138,24 +176,19 @@ if state is None:
         st.rerun()
     st.stop()
 
-status = state["last_status"]
-when = state["last_checked_at"]
-reason = state["last_reason"]
-if status == "failed":
-    st.error(f"Last check FAILED ({when}): {reason}. This is not 'unchanged'. The last good version is kept below.")
-elif status == "updated":
-    st.warning(f"Updated ({when}): the document changed since the previous version.")
-elif status == "unchanged":
-    st.success(f"Unchanged ({when}): same content as the baseline.")
-else:
-    st.info(f"Initialized ({when}): baseline stored, nothing to compare yet.")
+current_v = store.get_version(state["baseline_version_id"])
+facts = policy_facts(store.load_extracted(current_v["id"]), bool(current_v["simulated"]))
+policy_name = facts["title"] or source.name
+render_banner(banner_slot, policy_name, state)
 
 updates = all_updates(store, source.id)
 if not updates:
+    render_header(header_slot, source, facts, state,
+                  f"v{current_v['id']} {'SIMULATED' if current_v['simulated'] else 'real'} (nothing to compare yet)")
     st.write("No update to review yet.")
     st.stop()
 if len(updates) > 1:
-    names = [f"v{u['before_version_id']} → v{u['version_id']} · checked {u['checked_at']}" for u in updates]
+    names = [f"v{u['before_version_id']} → v{u['version_id']} · checked {fmt_time(u['checked_at'])}" for u in updates]
     update = updates[st.selectbox("Update to review (newest first)", range(len(updates)),
                                   format_func=lambda i: names[i])]
 else:
@@ -167,6 +200,9 @@ before_v = store.get_version(data["before_version_id"])
 after_v = store.get_version(data["after_version_id"])
 before_sim = bool(before_v["simulated"])
 ctx = {"source_id": source.id, "before_id": data["before_version_id"], "after_id": data["after_version_id"]}
+tag = lambda v: "SIMULATED" if v["simulated"] else "real"
+render_header(header_slot, source, facts, state,
+              f"v{before_v['id']} {tag(before_v)} → v{after_v['id']} {tag(after_v)}")
 
 st.subheader("Versions compared")
 c1, c2 = st.columns(2)
