@@ -1,0 +1,95 @@
+UHC policy monitor: evaluation
+
+run at 2026-10-12T07:45:47+00:00 | code commit 3324b37
+classifier: rules-only (no model) | Claude used in this run: no (configured: claude-sonnet-5-5, prompt v2, effort medium)
+
+=== beds-mattresses-blind  (7 edits, 7 scored)
+edit  truth        predicted    rule(s)                    outcome
+B1    substantive  substantive  SUB-PARAGRAPH              correct_detection
+B2    substantive  substantive  SUB-CODE-LIST              correct_detection
+B3    ambiguous    ambiguous    AMB-MODAL                  correct
+B4    cosmetic     none         -                          correct
+B5    cosmetic     ambiguous    AMB-DEFAULT                human_review
+B6    cosmetic     ambiguous    AMB-DEFAULT                human_review
+B7    substantive  substantive  SUB-NUMBER                 correct_detection
+
+  automatic detection : 3 of 3 true-substantive edits detected as substantive
+  misses              : 0
+  false positives     : 0
+  human review        : 3 sent to a human (1 as intended for genuinely ambiguous edits, 0 true-substantive not auto-detected, 2 true-cosmetic avoidable)
+  correct, no review  : 1
+
+Errors and avoidable review (source evidence and likely cause):
+
+  B5 [human_review] truth=cosmetic predicted=ambiguous: In the FDA section, the older version read "Accessed December 19, 2023".
+     (modified, U.S. Food and Drug Administration (FDA), before p.4 -> after p.4)
+        before: … and private residences). Located at: https://www.fda.gov/medical-devices/general-hospital-devices-and-supplies/hospital-beds. ( Accessed December 19, [[2023)]]
+        after:  … and private residences). Located at: https://www.fda.gov/medical-devices/general-hospital-devices-and-supplies/hospital-beds. ( Accessed December 19, [[2024)]]
+        rule AMB-DEFAULT: removed: 2023 | added: 2024 (outside the coverage sections)
+     likely cause: no rule recognises this kind of wording change, so it falls through to human review. Sent to a human although the key says it is cosmetic: avoidable review work, no rule recognises it as harmless.
+
+  B6 [human_review] truth=cosmetic predicted=ambiguous: In the Safety Enclosure criteria, the older version read "for individuals who have a risk for safety in bed" (real text says "that have").
+     (modified, Coverage Rationale > Safety Enclosure with Beds, before p.1 -> after p.1)
+        before: … adult bed, safety enclosure) are covered as DME for individuals [[who]] have a risk for safety in bed when all of …
+        after:  … adult bed, safety enclosure) are covered as DME for individuals [[that]] have a risk for safety in bed when all of …
+        rule AMB-DEFAULT: removed: who | added: that
+     likely cause: no rule recognises this kind of wording change, so it falls through to human review. Sent to a human although the key says it is cosmetic: avoidable review work, no rule recognises it as harmless.
+
+=== beds-mattresses-independent  (12 edits, 12 scored)
+edit  truth        predicted    rule(s)                    outcome
+N1    cosmetic     cosmetic     COS-FORMAT                 correct
+N2    substantive  substantive  SUB-CODE-LIST              correct_detection
+N3    ambiguous    ambiguous    AMB-DEFAULT                correct
+N4    substantive  substantive  SUB-KEYWORD                correct_detection
+N5    substantive  substantive  SUB-PARAGRAPH              correct_detection
+N6    cosmetic     cosmetic     COS-FORMAT                 correct
+N7    substantive  substantive  SUB-NUMBER                 correct_detection
+N8    ambiguous    ambiguous    AMB-DEFAULT                correct
+N9    substantive  ambiguous    AMB-MODAL                  human_review
+N10   cosmetic     none         -                          correct
+N11   substantive  substantive  SUB-PARAGRAPH              correct_detection
+N12   ambiguous    ambiguous    AMB-DEFAULT                correct
+
+  automatic detection : 5 of 6 true-substantive edits detected as substantive
+  misses              : 0
+  false positives     : 0
+  human review        : 4 sent to a human (3 as intended for genuinely ambiguous edits, 1 true-substantive not auto-detected, 0 true-cosmetic avoidable)
+  correct, no review  : 3
+
+Errors and avoidable review (source evidence and likely cause):
+
+  N9 [human_review] truth=substantive predicted=ambiguous: In Medical Records Documentation, the older version read "Medical records documentation is required to assess whether the member meets the clinical criteria" (no "may be").
+     (modified, Medical Records Documentation Used for Reviews, before p.2 -> after p.2)
+        before: … may require coverage for a specific service. Medical records documentation [[is]] required to assess whether the member meets the clinical criteria …
+        after:  … may require coverage for a specific service. Medical records documentation [[may]] [[be]] required to assess whether the member meets the clinical criteria …
+        rule AMB-MODAL: modal words ['may']; removed: is | added: may be
+     likely cause: modal-word rule sends any may/should/must/will/can change to review, harmless or not. Sent to a human, so not missed, but the rules did not detect this substantive change on their own.
+
+=== beds-mattresses  (11 edits, 11 scored)
+edit  truth        predicted    rule(s)                    outcome
+S1    substantive  substantive  SUB-KEYWORD                correct_detection
+S2    substantive  substantive  SUB-PARAGRAPH              correct_detection
+S3    substantive  substantive  SUB-CODE-LIST              correct_detection
+S4    substantive  substantive  SUB-KEYWORD                correct_detection
+A1    ambiguous    ambiguous    AMB-DEFAULT                correct
+A2    ambiguous    ambiguous    AMB-DEFAULT                correct
+C1    cosmetic     cosmetic     COS-FORMAT                 correct
+C2    cosmetic     cosmetic     COS-FORMAT                 correct
+C3    cosmetic     cosmetic     COS-TOC                    correct
+C4    cosmetic     cosmetic     COS-FORMAT                 correct
+H1    excluded     none         -                          correct
+
+  automatic detection : 4 of 4 true-substantive edits detected as substantive
+  misses              : 0
+  false positives     : 0
+  human review        : 2 sent to a human (2 as intended for genuinely ambiguous edits, 0 true-substantive not auto-detected, 0 true-cosmetic avoidable)
+  correct, no review  : 5
+
+=== ALL SETS
+  automatic detection : 12 of 13 true-substantive edits detected as substantive
+  misses              : 0
+  false positives     : 0
+  human review        : 9 sent to a human (6 as intended for genuinely ambiguous edits, 1 true-substantive not auto-detected, 2 true-cosmetic avoidable)
+  correct, no review  : 9
+
+Small samples: these results are diagnostic only. They show where the rules behave well or badly on these examples, not how accurate the tool is in general.
