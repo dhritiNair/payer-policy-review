@@ -25,6 +25,12 @@ def word_changes(before, after):
     return removed, added
 
 
+def _similarity(a, b):
+    # autojunk=False: by default difflib ignores common characters in strings over 200 chars,
+    # which made one-word edits to long paragraphs look unrelated (ratio 0.3 instead of 0.99)
+    return SequenceMatcher(None, a.lower(), b.lower(), autojunk=False).ratio()
+
+
 def _norm(text):
     return " ".join(text.split())
 
@@ -70,9 +76,8 @@ def _diff_paragraphs(info_b, info_a):
             continue
         left, right = list(range(i1, i2)), list(range(j1, j2))
         for i in left:
-            best = max(right, key=lambda j: SequenceMatcher(None, pb[i]["text"].lower(), pa[j]["text"].lower()).ratio(),
-                       default=None)
-            if best is not None and SequenceMatcher(None, pb[i]["text"].lower(), pa[best]["text"].lower()).ratio() >= PAIR_SIMILARITY:
+            best = max(right, key=lambda j: _similarity(pb[i]["text"], pa[j]["text"]), default=None)
+            if best is not None and _similarity(pb[i]["text"], pa[best]["text"]) >= PAIR_SIMILARITY:
                 right.remove(best)
                 out.append(_change("modified", info, pb[i], pa[best]))
             else:
