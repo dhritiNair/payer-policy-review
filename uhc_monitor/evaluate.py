@@ -134,7 +134,8 @@ def score_results(results, labels):
                                                   "after_text", "before_page", "after_page", "final_label", "final_source", "llm")}
                            for c in r["changes"]],
                "outcome": outcome(truth, pred) if truth else "unscored"}
-        if row["outcome"] not in ("correct_detection", "correct", "unscored") or (row["via"] == "claude" and row["outcome"] != "correct_detection"):
+        if row["outcome"] != "unscored" and (row["outcome"] not in ("correct_detection", "correct") or
+                                             (row["via"] == "claude" and row["outcome"] != "correct_detection")):
             row["likely_cause"] = likely_cause(row)
         rows.append(row)
     return rows
@@ -147,6 +148,10 @@ def summarize(rows):
     asked = [l for l in llms if l["status"] != "skipped_no_key"]
     return {
         "edits": len(rows), "scored": len(scored),
+        "rules_flagged_substantive": sum(1 for r in rows if r["via"] == "rules"),
+        "claude_raised_substantive": sum(1 for r in rows if r["via"] == "claude"),
+        "left_ambiguous": sum(1 for r in rows if r["predicted"] == "ambiguous"),
+        "judged_cosmetic_or_quiet": sum(1 for r in rows if r["predicted"] in ("cosmetic", "none")),
         "true_substantive": count(lambda r: r["truth"] == "substantive"),
         "correct_substantive_detections": count(lambda r: r["outcome"] == "correct_detection"),
         "detected_by_rules": count(lambda r: r["outcome"] == "correct_detection" and r["via"] == "rules"),
@@ -266,6 +271,18 @@ def render(report, meta):
 
 
 def _summary_lines(m, claude=False):
+    if m["scored"] == 0:      # no ground truth yet: attribute the decisions, score nothing
+        lines = [f"  NO KEY YET: {m['edits']} edits classified, none scored",
+                 f"  flagged substantive by the RULES alone : {m['rules_flagged_substantive']}",
+                 f"  raised to substantive by CLAUDE        : {m['claude_raised_substantive']} (rules said Ambiguous)" if claude
+                 else "  (Claude not used)",
+                 f"  left Ambiguous (needs human review)    : {m['left_ambiguous']}",
+                 f"  cosmetic or quietly ignored            : {m['judged_cosmetic_or_quiet']}"]
+        if claude:
+            sg = m["claude_suggested"]
+            lines.append(f"  Claude's suggestions: {m['claude_calls']} calls, {m['claude_answers_ok']} usable: "
+                         f"{sg['substantive']} substantive, {sg['cosmetic']} cosmetic, {sg['abstain']} abstain")
+        return "\n".join(lines)
     review = m["human_review_as_intended"] + m["human_review_for_true_substantive"] + m["human_review_for_true_cosmetic"]
     lines = []
     if claude:
@@ -301,7 +318,7 @@ def _claude_section(rows):
                 continue
             shown = True
             fate = ("ESCALATED to substantive" if c.get("final_label") == "substantive" else "stays Ambiguous (advice only)")
-            out.append(f"\n  {r['id']}  key says: {r['truth']} | rules: {c['label']} ({c['rule_id']}) | final: {r['predicted']} | {r['outcome']}")
+            out.append(f"\n  {r['id']}  key says: {r['truth'] or 'no key yet'} | rules: {c['label']} ({c['rule_id']}) | final: {r['predicted']} | {r['outcome']}")
             if llm["status"] != "ok":
                 out.append(f"     Claude: no usable answer ({llm['status']}{': ' + llm['detail'] if llm.get('detail') else ''}) -> stays Ambiguous")
                 continue

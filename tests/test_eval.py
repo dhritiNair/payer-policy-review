@@ -162,3 +162,19 @@ def test_claude_mode_without_a_key_refuses_to_run(tmp_path):
     with pytest.raises(SystemExit) as e:
         evaluate.main([str(SIMS), "--claude", "--set", "beds-mattresses-independent", "--out", str(tmp_path / "r")])
     assert "needs an API key" in str(e.value)
+
+
+def test_a_set_with_no_key_attributes_decisions_without_scoring_or_listing_errors(tmp_path):
+    a = fake_assessor(tmp_path)
+    data = json.loads((SIMS / "beds-mattresses-independent.json").read_text())
+    _, results = probe_edits(data["edits"], assessor=a)                         # kind is 'unlabeled', no labels given
+    sets = [("unlabeled", results, {}, {})]
+    report = evaluate.evaluate_sets(sets)
+    m = report["total"]
+    assert m["scored"] == 0 and m["rules_flagged_substantive"] == 5 and m["claude_raised_substantive"] == 1   # N9 raised by Claude
+    assert m["left_ambiguous"] == 3 and m["judged_cosmetic_or_quiet"] == 3
+    assert not any("likely_cause" in r for r in report["sets"][0]["rows"])         # nothing to call an error without a key
+    text = evaluate.render(report, evaluate.metadata(assessor=a, sets=sets))
+    for needle in ("NO KEY YET", "flagged substantive by the RULES alone : 5", "raised to substantive by CLAUDE        : 1", "key says: no key yet"):
+        assert needle in text
+    assert "of 0 true-substantive" not in text and "Errors and avoidable review" not in text
