@@ -1,0 +1,19 @@
+{
+  "_note": "Ground-truth labels for the knee independent edits K1-K12, supplied by the user AFTER the initial run was saved. Kept apart from the edit file, which stays unchanged ('unlabeled').",
+  "labels": {"K1": "substantive", "K2": "substantive", "K3": "cosmetic", "K4": "cosmetic", "K5": "substantive", "K6": "substantive",
+             "K7": "ambiguous", "K8": "substantive", "K9": "cosmetic", "K10": "substantive", "K11": "ambiguous", "K12": "cosmetic"},
+  "reasons": {
+    "K1": "Missing information: the older version did not say the policy applies to Individual Exchange plans, so plan applicability changed.",
+    "K2": "Coverage flip: articular cartilage repair options went from proven/medically necessary to unproven/not medically necessary.",
+    "K3": "Table of Contents page number only; no policy content changed.",
+    "K4": "Capitalization of a list item; same product category.",
+    "K5": "Missing information: Collagen Meniscus Implant was added to the unproven list, a new coverage exclusion.",
+    "K6": "Numeric threshold in a defined term (WOMAC > 30 to > 40) that sets who qualifies as having Disabling Pain.",
+    "K7": "Synonym swap with a shade of meaning: 'consider' is discretionary, 'accept' commits UHC to treating three findings as sufficient.",
+    "K8": "New CPT code 0737T (xenograft implantation) added to Applicable Codes.",
+    "K9": "Spacing around a hyphen in a study summary (a PDF line-break artifact).",
+    "K10": "A study's stated conclusion reversed (supports xenografts to does not support), which changes the evidence behind the unproven xenograft bullet. Arguably evidence-only, but the meaning flipped.",
+    "K11": "Modal change ('may require' to 'require') in an informational FDA section that is not a basis for coverage.",
+    "K12": "Reference list reordered (now alphabetical); entries unchanged."
+  }
+}
