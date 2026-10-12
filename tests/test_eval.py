@@ -45,7 +45,7 @@ def summaries():
     return out
 
 
-def test_regression_numbers_for_the_three_edit_sets():
+def test_regression_numbers_for_the_four_edit_sets():
     """Pins today's behaviour. If a rule change moves these on purpose, update them in the same commit and say why."""
     s = summaries()
     pick = lambda m: {k: m[k] for k in ("edits", "true_substantive", "correct_substantive_detections", "misses", "false_positives",
@@ -60,6 +60,9 @@ def test_regression_numbers_for_the_three_edit_sets():
     assert pick(s["beds-mattresses-independent"]) == dict(edits=12, true_substantive=6, correct_substantive_detections=5, misses=0, false_positives=0,
                                                           human_review_as_intended=3, human_review_for_true_substantive=1,
                                                           human_review_for_true_cosmetic=0, correct_without_review=3)
+    assert pick(s["surgery-knee-independent"]) == dict(edits=12, true_substantive=6, correct_substantive_detections=5, misses=0, false_positives=0,
+                                                       human_review_as_intended=2, human_review_for_true_substantive=1,
+                                                       human_review_for_true_cosmetic=0, correct_without_review=4)
 
 
 def test_the_official_before_tuning_result_is_saved_and_matches():
@@ -178,3 +181,28 @@ def test_a_set_with_no_key_attributes_decisions_without_scoring_or_listing_error
     for needle in ("NO KEY YET", "flagged substantive by the RULES alone : 5", "raised to substantive by CLAUDE        : 1", "key says: no key yet"):
         assert needle in text
     assert "of 0 true-substantive" not in text and "Errors and avoidable review" not in text
+
+
+def test_knee_answer_key_is_a_labels_file_apart_from_the_unlabeled_edit_file():
+    labels = json.loads((SIMS / "surgery-knee-independent.labels.json").read_text())
+    edits = json.loads((SIMS / "surgery-knee-independent.json").read_text())["edits"]
+    assert sorted(labels["labels"], key=lambda k: int(k[1:])) == [e["id"] for e in edits] == [f"K{i}" for i in range(1, 13)]
+    assert {e["kind"] for e in edits} == {"unlabeled"}                                  # the edit file never carries the answers
+    from collections import Counter
+    assert Counter(labels["labels"].values()) == {"substantive": 6, "cosmetic": 4, "ambiguous": 2}
+    assert set(labels["reasons"]) == set(labels["labels"])
+
+
+def test_the_knee_scored_results_are_saved_before_and_after_the_definitions_change():
+    """The initial run (code a041b9d) predates the 'Definitions' rule change; the second is the current rules. Rules only."""
+    before = json.loads((ROOT / "results" / "knee-independent-initial-scored.json").read_text())
+    after = json.loads((ROOT / "results" / "knee-independent-after-definitions-scored.json").read_text())
+    assert before["meta"]["code"]["commit"].startswith("a041b9d") and after["meta"]["code"]["commit"].startswith("761caec")
+    pick = lambda t: (t["correct_substantive_detections"], t["true_substantive"], t["misses"], t["false_positives"],
+                      t["human_review_as_intended"], t["human_review_for_true_substantive"], t["human_review_for_true_cosmetic"],
+                      t["correct_without_review"])
+    assert pick(before["total"]) == (4, 6, 0, 0, 2, 2, 0, 4)
+    assert pick(after["total"]) == (5, 6, 0, 0, 2, 1, 0, 4)
+    moved = [(b["id"], b["outcome"], a["outcome"]) for b, a in zip(before["sets"][0]["rows"], after["sets"][0]["rows"]) if b["outcome"] != a["outcome"]]
+    assert moved == [("K6", "human_review", "correct_detection")]                       # the one edit the Definitions change moved
+    assert after["meta"]["claude"]["used_in_this_run"] is False and before["meta"]["real_policies_sha256"].get("surgery-knee")

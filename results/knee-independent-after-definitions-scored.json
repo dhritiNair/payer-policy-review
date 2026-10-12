@@ -1,0 +1,486 @@
+{
+  "meta": {
+    "run_at": "2026-10-12T09:59:23+00:00",
+    "code": {
+      "commit": "761caecbc6eccb81b404966752878039c5689c5d",
+      "uncommitted_changes": false,
+      "scored_with_commit": "14db8d16e2ad463033bddcae7185b94352556861"
+    },
+    "scored_saved_run": "results/knee-independent-after-definitions-run.json",
+    "classifier": {
+      "classifier": "rules-only (no model)",
+      "coverage_sections": [
+        "Applicable Codes",
+        "Application",
+        "Benefit Considerations",
+        "Coverage Rationale",
+        "Definitions",
+        "Medical Records Documentation Used for Reviews"
+      ],
+      "coverage_words": [
+        "all",
+        "any",
+        "authorization",
+        "both",
+        "covered",
+        "either",
+        "except",
+        "exclude",
+        "excluded",
+        "excludes",
+        "exclusion",
+        "exclusions",
+        "experimental",
+        "investigational",
+        "never",
+        "no",
+        "non",
+        "not",
+        "only",
+        "unless",
+        "unproven",
+        "without"
+      ],
+      "modal_words": [
+        "can",
+        "cannot",
+        "may",
+        "might",
+        "must",
+        "require",
+        "required",
+        "requires",
+        "shall",
+        "should",
+        "will"
+      ],
+      "rules": {
+        "COS-TOC": "cosmetic",
+        "COS-FORMAT": "cosmetic",
+        "SUB-CODE-LIST": "substantive",
+        "SUB-PARAGRAPH": "substantive",
+        "SUB-KEYWORD": "substantive",
+        "SUB-NUMBER": "substantive",
+        "AMB-MODAL": "ambiguous",
+        "AMB-MOVED": "ambiguous",
+        "AMB-DEFAULT": "ambiguous"
+      }
+    },
+    "claude": {
+      "used_in_this_run": false,
+      "model": "not recorded",
+      "prompt_version": "not recorded",
+      "effort": "not recorded",
+      "note": "The probe and the evaluation never call Claude (rules only). For a fresh run the configured model and prompt version are logged so a run that does use Claude can be reproduced; for a saved run they are 'not recorded' because that run did not log them."
+    },
+    "real_policies_sha256": {
+      "surgery-knee": "ce887339facae80eb6967da6d7f222a6c0310447fbbf363ae2430e2e82be3048"
+    },
+    "disclaimer": "Small samples: these results are diagnostic only. They show where the rules behave well or badly on these examples, not how accurate the tool is in general."
+  },
+  "sets": [
+    {
+      "name": "knee-independent-after-definitions-run",
+      "files": {
+        "results": "results/knee-independent-after-definitions-run.json",
+        "results_sha256": "68471c7591e55dd2e64140d4e1c910ec141fb9b7c47dc88a08780092d588e2a2",
+        "labels": "config/simulations/surgery-knee-independent.labels.json",
+        "labels_sha256": "b3c5983a860d9404132cce86cc3cd7b99e8b897f817267b2f40e1593ed2c19e9"
+      },
+      "summary": {
+        "edits": 12,
+        "scored": 12,
+        "rules_flagged_substantive": 5,
+        "claude_raised_substantive": 0,
+        "left_ambiguous": 3,
+        "judged_cosmetic_or_quiet": 4,
+        "true_substantive": 6,
+        "correct_substantive_detections": 5,
+        "detected_by_rules": 5,
+        "claude_escalations": 0,
+        "claude_escalations_correct": 0,
+        "claude_escalations_not_substantive_per_key": 0,
+        "misses": 0,
+        "false_positives": 0,
+        "false_positives_from_rules": 0,
+        "false_positives_from_claude": 0,
+        "human_review_as_intended": 2,
+        "human_review_for_true_substantive": 1,
+        "human_review_for_true_cosmetic": 0,
+        "correct_without_review": 4,
+        "claude_calls": 0,
+        "claude_answers_ok": 0,
+        "claude_suggested": {
+          "substantive": 0,
+          "cosmetic": 0,
+          "abstain": 0
+        }
+      },
+      "rows": [
+        {
+          "id": "K1",
+          "description": "The older version had no \"UnitedHealthcare Individual Exchange\" heading or its applicability sentence.",
+          "truth": "substantive",
+          "predicted": "substantive",
+          "rules_predicted": "substantive",
+          "via": "rules",
+          "rule_ids": [
+            "SUB-PARAGRAPH"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "substantive",
+              "rule_id": "SUB-PARAGRAPH",
+              "evidence": "paragraph added in 'Application > UnitedHealthcare Individual Exchange'",
+              "change_type": "added",
+              "path": "Application > UnitedHealthcare Individual Exchange",
+              "before_text": null,
+              "after_text": "This Medical Policy applies to Individual Exchange benefit plans.",
+              "before_page": null,
+              "after_page": 1,
+              "final_label": null,
+              "final_source": null,
+              "llm": null
+            }
+          ],
+          "outcome": "correct_detection"
+        },
+        {
+          "id": "K2",
+          "description": "In Coverage Rationale, the older version read \"Articular cartilage repair is proven and medically necessary for treating individuals with any of the following:\"",
+          "truth": "substantive",
+          "predicted": "substantive",
+          "rules_predicted": "substantive",
+          "via": "rules",
+          "rule_ids": [
+            "SUB-KEYWORD"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "substantive",
+              "rule_id": "SUB-KEYWORD",
+              "evidence": "coverage words ['not', 'unproven']; removed: proven | added: unproven not due to insufficient evidence of efficacy",
+              "change_type": "modified",
+              "path": "Coverage Rationale",
+              "before_text": "Articular cartilage repair is proven and medically necessary for treating individuals with any of the following:",
+              "after_text": "Articular cartilage repair is unproven and not medically necessary for treating individuals with any of the following due to insufficient evidence of efficacy:",
+              "before_page": 1,
+              "after_page": 1,
+              "final_label": null,
+              "final_source": null,
+              "llm": null
+            }
+          ],
+          "outcome": "correct_detection"
+        },
+        {
+          "id": "K3",
+          "description": "In the Table of Contents, the older version listed Clinical Evidence on page 5.",
+          "truth": "cosmetic",
+          "predicted": "cosmetic",
+          "rules_predicted": "cosmetic",
+          "via": null,
+          "rule_ids": [
+            "COS-TOC"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "cosmetic",
+              "rule_id": "COS-TOC",
+              "evidence": "change is inside the Table of Contents",
+              "change_type": "modified",
+              "path": "(Front matter)",
+              "before_text": "Table of Contents Page Application ...  1 Coverage Rationale ...  1 Medical Records Documentation Used for Reviews ...  2 Definitions ...  2 Applicable Codes ...  3 Description of Services ...  4 Clinical Evidence ...  5 U.S. Food and Drug Administration ...  8 References ...  8 Policy History/Revision Information ...  9 Instructions for Use ...  9",
+              "after_text": "Table of Contents Page Application ...  1 Coverage Rationale ...  1 Medical Records Documentation Used for Reviews ...  2 Definitions ...  2 Applicable Codes ...  3 Description of Services ...  4 Clinical Evidence ...  4 U.S. Food and Drug Administration ...  8 References ...  8 Policy History/Revision Information ...  9 Instructions for Use ...  9",
+              "before_page": 1,
+              "after_page": 1,
+              "final_label": null,
+              "final_source": null,
+              "llm": null
+            }
+          ],
+          "outcome": "correct"
+        },
+        {
+          "id": "K4",
+          "description": "In the Coverage Rationale list, the older version read \"Decellularized osteochondral allografts (e.g., Chondrofix)\" (lowercase).",
+          "truth": "cosmetic",
+          "predicted": "cosmetic",
+          "rules_predicted": "cosmetic",
+          "via": null,
+          "rule_ids": [
+            "COS-FORMAT"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "cosmetic",
+              "rule_id": "COS-FORMAT",
+              "evidence": "no word differences",
+              "change_type": "modified",
+              "path": "Coverage Rationale",
+              "before_text": "• Decellularized osteochondral allografts (e.g., Chondrofix)",
+              "after_text": "• Decellularized Osteochondral Allografts (e.g., Chondrofix)",
+              "before_page": 1,
+              "after_page": 1,
+              "final_label": null,
+              "final_source": null,
+              "llm": null
+            }
+          ],
+          "outcome": "correct"
+        },
+        {
+          "id": "K5",
+          "description": "The older version's list of unproven articular cartilage repair options had no \"Collagen Meniscus Implant\" bullet.",
+          "truth": "substantive",
+          "predicted": "substantive",
+          "rules_predicted": "substantive",
+          "via": "rules",
+          "rule_ids": [
+            "SUB-PARAGRAPH"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "substantive",
+              "rule_id": "SUB-PARAGRAPH",
+              "evidence": "paragraph added in 'Coverage Rationale'",
+              "change_type": "added",
+              "path": "Coverage Rationale",
+              "before_text": null,
+              "after_text": "• Collagen Meniscus Implant",
+              "before_page": null,
+              "after_page": 1,
+              "final_label": null,
+              "final_source": null,
+              "llm": null
+            }
+          ],
+          "outcome": "correct_detection"
+        },
+        {
+          "id": "K6",
+          "description": "In the Disabling Pain definition, the older version read \"WOMAC pain domain of > 30\" (real text says 40).",
+          "truth": "substantive",
+          "predicted": "substantive",
+          "rules_predicted": "substantive",
+          "via": "rules",
+          "rule_ids": [
+            "SUB-NUMBER"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "substantive",
+              "rule_id": "SUB-NUMBER",
+              "evidence": "removed: 30 | added: 40",
+              "change_type": "modified",
+              "path": "Definitions",
+              "before_text": "Disabling Pain: Western Ontario and McMaster Universities Arthritis Index (WOMAC) pain domain of > 30 (Quintana et al., 2009).",
+              "after_text": "Disabling Pain: Western Ontario and McMaster Universities Arthritis Index (WOMAC) pain domain of > 40 (Quintana et al., 2009).",
+              "before_page": 2,
+              "after_page": 2,
+              "final_label": null,
+              "final_source": null,
+              "llm": null
+            }
+          ],
+          "outcome": "correct_detection"
+        },
+        {
+          "id": "K7",
+          "description": "In the Radiographic Findings of Osteoarthritis note, the older version read \"UHC will consider three or more\" (real text says \"accept\").",
+          "truth": "ambiguous",
+          "predicted": "ambiguous",
+          "rules_predicted": "ambiguous",
+          "via": null,
+          "rule_ids": [
+            "AMB-DEFAULT"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "ambiguous",
+              "rule_id": "AMB-DEFAULT",
+              "evidence": "removed: consider | added: accept",
+              "change_type": "modified",
+              "path": "Definitions",
+              "before_text": "Radiographic Findings of Osteoarthritis: Narrowing of joint space, osteophyte formation, subchondral sclerosis, subchondral cysts, deformity of bony end plates, and thinning or complete loss of articular cartilage (American College of Radiology, 2025). Note: UHC will consider three or more moderate to severe radiographic findings to be sufficient to support the diagnosis of severe osteoarthritis (American College of Radiology, 2025).",
+              "after_text": "Radiographic Findings of Osteoarthritis: Narrowing of joint space, osteophyte formation, subchondral sclerosis, subchondral cysts, deformity of bony end plates, and thinning or complete loss of articular cartilage (American College of Radiology, 2025). Note: UHC will accept three or more moderate to severe radiographic findings to be sufficient to support the diagnosis of severe osteoarthritis (American College of Radiology, 2025).",
+              "before_page": 2,
+              "after_page": 2,
+              "final_label": null,
+              "final_source": null,
+              "llm": null
+            }
+          ],
+          "outcome": "correct"
+        },
+        {
+          "id": "K8",
+          "description": "The older version had no code row for 0737T.",
+          "truth": "substantive",
+          "predicted": "substantive",
+          "rules_predicted": "substantive",
+          "via": "rules",
+          "rule_ids": [
+            "SUB-CODE-LIST"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "substantive",
+              "rule_id": "SUB-CODE-LIST",
+              "evidence": "code 0737T added",
+              "change_type": "code_added",
+              "path": "Applicable Codes",
+              "before_text": null,
+              "after_text": "0737T Xenograft implantation into the articular surface",
+              "before_page": null,
+              "after_page": 3,
+              "final_label": null,
+              "final_source": null,
+              "llm": null
+            }
+          ],
+          "outcome": "correct_detection"
+        },
+        {
+          "id": "K9",
+          "description": "In the Grassi et al. (2021) summary, the older version read \"at a minimum 10-year follow-up\" (no space after the hyphen).",
+          "truth": "cosmetic",
+          "predicted": "cosmetic",
+          "rules_predicted": "cosmetic",
+          "via": null,
+          "rule_ids": [
+            "COS-FORMAT"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "cosmetic",
+              "rule_id": "COS-FORMAT",
+              "evidence": "no word differences",
+              "change_type": "modified",
+              "path": "Clinical Evidence > Collagen Meniscus Implant",
+              "before_text": "Grassi et al. (2021) assessed the clinical outcomes and failures of lateral CMI implantation at a minimum 10-year follow-up. This study included 24 consecutive participants who underwent lateral CMI implantation for partial lateral meniscal defects and who were part of a previous study that had a 2-year follow-up. The outcome measures at the latest follow-up included the Lysholm score, Knee Injury and Osteoarthritis Outcome Score (KOOS), VAS for pain, Tegner activity level, and EuroQol 5-Dimensions score. The authors concluded that lateral CMI implantation for partial lateral meniscal defects provided good long-term results, with a 10-year survival rate of 85% and a 14-year survival rate of 64%. At the final follow- up, 58% of the participants had good or excellent Lysholm scores. However, there was a general decrease in outcome scores between the short- and long-term follow-ups. According to the authors, although this represents the first study to assess the long-term outcome of lateral meniscal replacement using a scaffold, several limitations are present. These include a limited number of participants, which did not allow the performance of sophisticated statistical subanalyses to identify outcomes and failure predictors. According to the authors, additional factors such as a surgical learning curve, the time from meniscectomy to scaffold implantation, the cartilage status, and the time of the index surgery could be relevant and should be investigated in studies with a larger sample size. The study is limited by its small sample size, case-series design, and loss to follow-up, which reduce generalizability and increase the risk of bias.",
+              "after_text": "Grassi et al. (2021) assessed the clinical outcomes and failures of lateral CMI implantation at a minimum 10-year follow- up. This study included 24 consecutive participants who underwent lateral CMI implantation for partial lateral meniscal defects and who were part of a previous study that had a 2-year follow-up. The outcome measures at the latest follow-up included the Lysholm score, Knee Injury and Osteoarthritis Outcome Score (KOOS), VAS for pain, Tegner activity level, and EuroQol 5-Dimensions score. The authors concluded that lateral CMI implantation for partial lateral meniscal defects provided good long-term results, with a 10-year survival rate of 85% and a 14-year survival rate of 64%. At the final follow- up, 58% of the participants had good or excellent Lysholm scores. However, there was a general decrease in outcome scores between the short- and long-term follow-ups. According to the authors, although this represents the first study to assess the long-term outcome of lateral meniscal replacement using a scaffold, several limitations are present. These include a limited number of participants, which did not allow the performance of sophisticated statistical subanalyses to identify outcomes and failure predictors. According to the authors, additional factors such as a surgical learning curve, the time from meniscectomy to scaffold implantation, the cartilage status, and the time of the index surgery could be relevant and should be investigated in studies with a larger sample size. The study is limited by its small sample size, case-series design, and loss to follow-up, which reduce generalizability and increase the risk of bias.",
+              "before_page": 6,
+              "after_page": 6,
+              "final_label": null,
+              "final_source": null,
+              "llm": null
+            }
+          ],
+          "outcome": "correct"
+        },
+        {
+          "id": "K10",
+          "description": "In the Bracey et al. (2020) summary, the older version said the evidence supports bone xenografts in selected orthopedic procedures.",
+          "truth": "substantive",
+          "predicted": "ambiguous",
+          "rules_predicted": "ambiguous",
+          "via": null,
+          "rule_ids": [
+            "AMB-DEFAULT"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "ambiguous",
+              "rule_id": "AMB-DEFAULT",
+              "evidence": "removed: supports selected procedures | added: does not support surgery (outside the coverage sections)",
+              "change_type": "modified",
+              "path": "Clinical Evidence > Xenografts",
+              "before_text": "Bracey et al. (2020) conducted the first systematic review of orthopedic clinical studies on bone xenotransplantation and reported outcomes from a single-center case series. The authors reviewed 31 clinical studies, most commonly in spine surgery, and found mixed results overall: 44% reported favorable outcomes, while 47% reported poor outcomes and discouraged use of xenograft bone. In their own case series of bovine bone xenografts used in foot and ankle reconstruction, xenografts failed to integrate with host bone in 58% of cases and persistent pain occurred in 83% of patients. The authors concluded that existing clinical evidence supports the use of bone xenografts in selected orthopedic procedures. The study is limited by the heterogeneity and the lack of robust comparative trials to support meaningful conclusions about xenograft effectiveness.",
+              "after_text": "Bracey et al. (2020) conducted the first systematic review of orthopedic clinical studies on bone xenotransplantation and reported outcomes from a single-center case series. The authors reviewed 31 clinical studies, most commonly in spine surgery, and found mixed results overall: 44% reported favorable outcomes, while 47% reported poor outcomes and discouraged use of xenograft bone. In their own case series of bovine bone xenografts used in foot and ankle reconstruction, xenografts failed to integrate with host bone in 58% of cases and persistent pain occurred in 83% of patients. The authors concluded that existing clinical evidence does not support the use of bone xenografts in orthopedic surgery. The study is limited by the heterogeneity and the lack of robust comparative trials to support meaningful conclusions about xenograft effectiveness.",
+              "before_page": 8,
+              "after_page": 8,
+              "final_label": null,
+              "final_source": null,
+              "llm": null
+            }
+          ],
+          "outcome": "human_review",
+          "likely_cause": "no rule recognises this kind of wording change, so it falls through to human review. Sent to a human, so not missed, but the rules did not detect this substantive change on their own."
+        },
+        {
+          "id": "K11",
+          "description": "In the FDA section, the older version read \"devices and instruments used during the surgery may require FDA approval\".",
+          "truth": "ambiguous",
+          "predicted": "ambiguous",
+          "rules_predicted": "ambiguous",
+          "via": null,
+          "rule_ids": [
+            "AMB-DEFAULT"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "ambiguous",
+              "rule_id": "AMB-DEFAULT",
+              "evidence": "removed: may | added: - (outside the coverage sections)",
+              "change_type": "modified",
+              "path": "U.S. Food and Drug Administration (FDA)",
+              "before_text": "Surgeries of the knee are procedures and therefore not regulated by the FDA. However, devices and instruments used during the surgery may require FDA approval. Refer to the following website for additional information: http://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfPMN/pmn.cfm. (Accessed January 26, 2026)",
+              "after_text": "Surgeries of the knee are procedures and therefore not regulated by the FDA. However, devices and instruments used during the surgery require FDA approval. Refer to the following website for additional information: http://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfPMN/pmn.cfm. (Accessed January 26, 2026)",
+              "before_page": 8,
+              "after_page": 8,
+              "final_label": null,
+              "final_source": null,
+              "llm": null
+            }
+          ],
+          "outcome": "correct"
+        },
+        {
+          "id": "K12",
+          "description": "In References, the Johnson and Kohli entries were in the opposite order.",
+          "truth": "cosmetic",
+          "predicted": "none",
+          "rules_predicted": "none",
+          "via": null,
+          "rule_ids": [],
+          "notes": [
+            "1 paragraph(s) reordered within 'References' (wording unchanged; not reported as a change)"
+          ],
+          "changes": [],
+          "outcome": "correct"
+        }
+      ]
+    }
+  ],
+  "total": {
+    "edits": 12,
+    "scored": 12,
+    "rules_flagged_substantive": 5,
+    "claude_raised_substantive": 0,
+    "left_ambiguous": 3,
+    "judged_cosmetic_or_quiet": 4,
+    "true_substantive": 6,
+    "correct_substantive_detections": 5,
+    "detected_by_rules": 5,
+    "claude_escalations": 0,
+    "claude_escalations_correct": 0,
+    "claude_escalations_not_substantive_per_key": 0,
+    "misses": 0,
+    "false_positives": 0,
+    "false_positives_from_rules": 0,
+    "false_positives_from_claude": 0,
+    "human_review_as_intended": 2,
+    "human_review_for_true_substantive": 1,
+    "human_review_for_true_cosmetic": 0,
+    "correct_without_review": 4,
+    "claude_calls": 0,
+    "claude_answers_ok": 0,
+    "claude_suggested": {
+      "substantive": 0,
+      "cosmetic": 0,
+      "abstain": 0
+    }
+  }
+}

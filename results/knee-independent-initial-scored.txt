@@ -1,0 +1,50 @@
+UHC policy monitor: evaluation
+
+run at 2026-10-12T09:59:22+00:00 | code commit a041b9d | scoring saved run results/knee-independent-initial-run.json
+classifier: rules-only (no model) | Claude used in this run: no (configured: not recorded, prompt not recorded, effort not recorded)
+
+=== knee-independent-initial-run  (12 edits, 12 scored)
+edit  truth        predicted    rule(s)                    outcome
+K1    substantive  substantive  SUB-PARAGRAPH              correct_detection
+K2    substantive  substantive  SUB-KEYWORD                correct_detection
+K3    cosmetic     cosmetic     COS-TOC                    correct
+K4    cosmetic     cosmetic     COS-FORMAT                 correct
+K5    substantive  substantive  SUB-PARAGRAPH              correct_detection
+K6    substantive  ambiguous    AMB-DEFAULT                human_review
+K7    ambiguous    ambiguous    AMB-DEFAULT                correct
+K8    substantive  substantive  SUB-CODE-LIST              correct_detection
+K9    cosmetic     cosmetic     COS-FORMAT                 correct
+K10   substantive  ambiguous    AMB-DEFAULT                human_review
+K11   ambiguous    ambiguous    AMB-DEFAULT                correct
+K12   cosmetic     none         -                          correct
+
+  automatic detection : 4 of 6 true-substantive edits detected as substantive
+  misses              : 0
+  false positives     : 0
+  human review        : 4 left for a human (2 as intended for genuinely ambiguous edits, 2 true-substantive not auto-detected, 0 true-cosmetic avoidable)
+  correct, no review  : 4
+
+Errors and avoidable review (source evidence and likely cause):
+
+  K6 [human_review] truth=substantive final=ambiguous: In the Disabling Pain definition, the older version read "WOMAC pain domain of > 30" (real text says 40).
+     (modified, Definitions, before p.2 -> after p.2)
+        before: … and McMaster Universities Arthritis Index (WOMAC) pain domain of > [[30]] (Quintana et al., 2009).
+        after:  … and McMaster Universities Arthritis Index (WOMAC) pain domain of > [[40]] (Quintana et al., 2009).
+        rule AMB-DEFAULT: removed: 30 | added: 40 (outside the coverage sections)
+     likely cause: no rule recognises this kind of wording change, so it falls through to human review. Sent to a human, so not missed, but the rules did not detect this substantive change on their own.
+
+  K10 [human_review] truth=substantive final=ambiguous: In the Bracey et al. (2020) summary, the older version said the evidence supports bone xenografts in selected orthopedic procedures.
+     (modified, Clinical Evidence > Xenografts, before p.8 -> after p.8)
+        before: … 83% of patients. The authors concluded that existing clinical evidence [[supports]] the use of bone xenografts in [[selected]] orthopedic [[procedures.]] The study is limited by the heterogeneity and the lack …
+        after:  … 83% of patients. The authors concluded that existing clinical evidence [[does]] [[not]] [[support]] the use of bone xenografts in orthopedic [[surgery.]] The study is limited by the heterogeneity and the lack …
+        rule AMB-DEFAULT: removed: supports selected procedures | added: does not support surgery (outside the coverage sections)
+     likely cause: no rule recognises this kind of wording change, so it falls through to human review. Sent to a human, so not missed, but the rules did not detect this substantive change on their own.
+
+=== ALL SETS
+  automatic detection : 4 of 6 true-substantive edits detected as substantive
+  misses              : 0
+  false positives     : 0
+  human review        : 4 left for a human (2 as intended for genuinely ambiguous edits, 2 true-substantive not auto-detected, 0 true-cosmetic avoidable)
+  correct, no review  : 4
+
+Small samples: these results are diagnostic only. They show where the rules behave well or badly on these examples, not how accurate the tool is in general.

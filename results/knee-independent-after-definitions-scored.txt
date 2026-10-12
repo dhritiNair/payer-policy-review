@@ -1,0 +1,43 @@
+UHC policy monitor: evaluation
+
+run at 2026-10-12T09:59:23+00:00 | code commit 761caec | scoring saved run results/knee-independent-after-definitions-run.json
+classifier: rules-only (no model) | Claude used in this run: no (configured: not recorded, prompt not recorded, effort not recorded)
+
+=== knee-independent-after-definitions-run  (12 edits, 12 scored)
+edit  truth        predicted    rule(s)                    outcome
+K1    substantive  substantive  SUB-PARAGRAPH              correct_detection
+K2    substantive  substantive  SUB-KEYWORD                correct_detection
+K3    cosmetic     cosmetic     COS-TOC                    correct
+K4    cosmetic     cosmetic     COS-FORMAT                 correct
+K5    substantive  substantive  SUB-PARAGRAPH              correct_detection
+K6    substantive  substantive  SUB-NUMBER                 correct_detection
+K7    ambiguous    ambiguous    AMB-DEFAULT                correct
+K8    substantive  substantive  SUB-CODE-LIST              correct_detection
+K9    cosmetic     cosmetic     COS-FORMAT                 correct
+K10   substantive  ambiguous    AMB-DEFAULT                human_review
+K11   ambiguous    ambiguous    AMB-DEFAULT                correct
+K12   cosmetic     none         -                          correct
+
+  automatic detection : 5 of 6 true-substantive edits detected as substantive
+  misses              : 0
+  false positives     : 0
+  human review        : 3 left for a human (2 as intended for genuinely ambiguous edits, 1 true-substantive not auto-detected, 0 true-cosmetic avoidable)
+  correct, no review  : 4
+
+Errors and avoidable review (source evidence and likely cause):
+
+  K10 [human_review] truth=substantive final=ambiguous: In the Bracey et al. (2020) summary, the older version said the evidence supports bone xenografts in selected orthopedic procedures.
+     (modified, Clinical Evidence > Xenografts, before p.8 -> after p.8)
+        before: … 83% of patients. The authors concluded that existing clinical evidence [[supports]] the use of bone xenografts in [[selected]] orthopedic [[procedures.]] The study is limited by the heterogeneity and the lack …
+        after:  … 83% of patients. The authors concluded that existing clinical evidence [[does]] [[not]] [[support]] the use of bone xenografts in orthopedic [[surgery.]] The study is limited by the heterogeneity and the lack …
+        rule AMB-DEFAULT: removed: supports selected procedures | added: does not support surgery (outside the coverage sections)
+     likely cause: no rule recognises this kind of wording change, so it falls through to human review. Sent to a human, so not missed, but the rules did not detect this substantive change on their own.
+
+=== ALL SETS
+  automatic detection : 5 of 6 true-substantive edits detected as substantive
+  misses              : 0
+  false positives     : 0
+  human review        : 3 left for a human (2 as intended for genuinely ambiguous edits, 1 true-substantive not auto-detected, 0 true-cosmetic avoidable)
+  correct, no review  : 4
+
+Small samples: these results are diagnostic only. They show where the rules behave well or badly on these examples, not how accurate the tool is in general.

@@ -117,7 +117,10 @@ by accident. For independent examples: run them, save the results, commit them, 
 | Blind B1-B7 | before the three classifier fixes / after them | `results/blind-initial-score.txt`, `results/blind-after-fixes-score.txt` |
 | Original S/A/C/H 1-11 | before / after the fixes | `results/original-initial-score.txt`, `results/original-after-fixes-score.txt` |
 | All three sets | current rules | `results/eval-current-rules.txt` |
+| Knee K1-K12 | before / after the "Definitions" rule change | `results/knee-independent-initial-scored.txt`, `results/knee-independent-after-definitions-scored.txt` |
 
 These samples are tiny and the rules were tuned against some of them (the blind set after the fact), so treat the
-numbers as a diagnostic of where the rules behave well or badly, not as an accuracy figure. Only the independent set
-was scored before any tuning.
+numbers as a diagnostic of where the rules behave well or badly, not as an accuracy figure. Only the Beds independent set
+was scored before any tuning. The knee set was run first without a key and scored afterwards; one rule change ("Definitions" is
+now a coverage section) was made in between, after seeing the unscored result for K6, so its initial run (before that change)
+and its current run are both saved.
