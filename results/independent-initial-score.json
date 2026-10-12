@@ -1,0 +1,392 @@
+{
+  "meta": {
+    "run_at": "2026-10-12T07:41:23+00:00",
+    "code": {
+      "commit": "7c2cdbaeff8b46e5d7db2a5d621c72d3b56ef497",
+      "uncommitted_changes": false,
+      "scored_with_commit": "83de44c9f9b8a8adbd49c8448acd06f330b6fd85"
+    },
+    "scored_saved_run": "results/independent-initial-run.json",
+    "classifier": {
+      "classifier": "rules-only (no model)",
+      "coverage_sections": [
+        "Applicable Codes",
+        "Application",
+        "Benefit Considerations",
+        "Coverage Rationale",
+        "Medical Records Documentation Used for Reviews"
+      ],
+      "coverage_words": [
+        "all",
+        "any",
+        "authorization",
+        "both",
+        "covered",
+        "either",
+        "except",
+        "exclude",
+        "excluded",
+        "excludes",
+        "exclusion",
+        "exclusions",
+        "experimental",
+        "investigational",
+        "never",
+        "no",
+        "non",
+        "not",
+        "only",
+        "unless",
+        "unproven",
+        "without"
+      ],
+      "modal_words": [
+        "can",
+        "cannot",
+        "may",
+        "might",
+        "must",
+        "require",
+        "required",
+        "requires",
+        "shall",
+        "should",
+        "will"
+      ],
+      "rules": {
+        "COS-TOC": "cosmetic",
+        "COS-FORMAT": "cosmetic",
+        "SUB-CODE-LIST": "substantive",
+        "SUB-PARAGRAPH": "substantive",
+        "SUB-KEYWORD": "substantive",
+        "SUB-NUMBER": "substantive",
+        "AMB-MODAL": "ambiguous",
+        "AMB-MOVED": "ambiguous",
+        "AMB-DEFAULT": "ambiguous"
+      }
+    },
+    "claude": {
+      "used_in_this_run": false,
+      "model": "not recorded",
+      "prompt_version": "not recorded",
+      "effort": "not recorded",
+      "note": "The probe and the evaluation never call Claude (rules only). For a fresh run the configured model and prompt version are logged so a run that does use Claude can be reproduced; for a saved run they are 'not recorded' because that run did not log them."
+    },
+    "real_policy_sha256": "b75d96a022655310752406ca21a3e9a53452b26ef1aa93cee5f65f8978167568",
+    "disclaimer": "Small samples: these results are diagnostic only. They show where the rules behave well or badly on these examples, not how accurate the tool is in general."
+  },
+  "sets": [
+    {
+      "name": "independent-initial-run",
+      "files": {
+        "results": "results/independent-initial-run.json",
+        "results_sha256": "7b967617708380e7a84349f322406f9ae7aa64c1d8e34507a854e158cdfa0f8f",
+        "labels": "config/simulations/beds-mattresses-independent.labels.json",
+        "labels_sha256": "8a228837193235712ba5a1b43701391b58fd365b828c6ec6193d2bff09cffa33"
+      },
+      "summary": {
+        "edits": 12,
+        "scored": 12,
+        "true_substantive": 6,
+        "correct_substantive_detections": 5,
+        "misses": 0,
+        "false_positives": 0,
+        "human_review_as_intended": 3,
+        "human_review_for_true_substantive": 1,
+        "human_review_for_true_cosmetic": 0,
+        "correct_without_review": 3
+      },
+      "rows": [
+        {
+          "id": "N1",
+          "description": "In the Applicable Codes intro, the older version read \"is a covered or non-covered health service\" (no space after the hyphen).",
+          "truth": "cosmetic",
+          "predicted": "cosmetic",
+          "rule_ids": [
+            "COS-FORMAT"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "cosmetic",
+              "rule_id": "COS-FORMAT",
+              "evidence": "no word differences",
+              "change_type": "modified",
+              "path": "Applicable Codes",
+              "before_text": "The following list(s) of procedure and/or diagnosis codes is provided for reference purposes only and may not be all inclusive. Listing of a code in this guideline does not imply that the service described by the code is a covered or non-covered health service. Benefit coverage for health services is determined by the member specific benefit plan document and applicable laws that may require coverage for a specific service. The inclusion of a code does not imply any right to reimbursement or guarantee claim payment. Other Policies and Guidelines may apply.",
+              "after_text": "The following list(s) of procedure and/or diagnosis codes is provided for reference purposes only and may not be all inclusive. Listing of a code in this guideline does not imply that the service described by the code is a covered or non- covered health service. Benefit coverage for health services is determined by the member specific benefit plan document and applicable laws that may require coverage for a specific service. The inclusion of a code does not imply any right to reimbursement or guarantee claim payment. Other Policies and Guidelines may apply.",
+              "before_page": 2,
+              "after_page": 2
+            }
+          ],
+          "outcome": "correct"
+        },
+        {
+          "id": "N2",
+          "description": "The older version had no code row for E0911.",
+          "truth": "substantive",
+          "predicted": "substantive",
+          "rule_ids": [
+            "SUB-CODE-LIST"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "substantive",
+              "rule_id": "SUB-CODE-LIST",
+              "evidence": "code E0911 added",
+              "change_type": "code_added",
+              "path": "Applicable Codes",
+              "before_text": null,
+              "after_text": "E0911 Trapeze bar, heavy-duty, for patient weight capacity greater than 250 pounds, attached to bed, with grab bar",
+              "before_page": null,
+              "after_page": 3
+            }
+          ],
+          "outcome": "correct_detection"
+        },
+        {
+          "id": "N3",
+          "description": "In Description of Services, the older version read \"For members at risk for skin breakdown\" (real text says \"individuals\").",
+          "truth": "ambiguous",
+          "predicted": "ambiguous",
+          "rule_ids": [
+            "AMB-DEFAULT"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "ambiguous",
+              "rule_id": "AMB-DEFAULT",
+              "evidence": "removed: members | added: individuals (outside the coverage sections)",
+              "change_type": "modified",
+              "path": "Description of Services",
+              "before_text": "Support surfaces include mattress overlays applied on top of a mattress, mattresses, and specialty beds, and can be preventative or therapeutic. For members at risk for skin breakdown, preventive support surfaces are often incorporated into treatment. Therapeutic support surfaces are employed to assist individuals with advanced pressure injuries (i.e., stage 3, stage 4, or unstageable pressure injuries).",
+              "after_text": "Support surfaces include mattress overlays applied on top of a mattress, mattresses, and specialty beds, and can be preventative or therapeutic. For individuals at risk for skin breakdown, preventive support surfaces are often incorporated into treatment. Therapeutic support surfaces are employed to assist individuals with advanced pressure injuries (i.e., stage 3, stage 4, or unstageable pressure injuries).",
+              "before_page": 3,
+              "after_page": 3
+            }
+          ],
+          "outcome": "correct"
+        },
+        {
+          "id": "N4",
+          "description": "In Indications for Coverage, the older version read \"Hospital beds and accessories are unproven and not medically necessary.\"",
+          "truth": "substantive",
+          "predicted": "substantive",
+          "rule_ids": [
+            "SUB-KEYWORD"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "substantive",
+              "rule_id": "SUB-KEYWORD",
+              "evidence": "coverage words ['not', 'unproven']; removed: unproven not | added: proven in certain circumstances",
+              "change_type": "modified",
+              "path": "Coverage Rationale > Indications for Coverage",
+              "before_text": "Hospital beds and accessories are unproven and not medically necessary. For medical necessity clinical coverage criteria, refer to the InterQual® CP: Durable Medical Equipment: Support Surfaces Hospital Beds, Cribs, and Accessories",
+              "after_text": "Hospital beds and accessories are proven and medically necessary in certain circumstances. For medical necessity clinical coverage criteria, refer to the InterQual® CP: Durable Medical Equipment: Support Surfaces Hospital Beds, Cribs, and Accessories",
+              "before_page": 1,
+              "after_page": 1
+            }
+          ],
+          "outcome": "correct_detection"
+        },
+        {
+          "id": "N5",
+          "description": "The older version had no \"UnitedHealthcare Individual Exchange\" heading or its applicability sentence.",
+          "truth": "substantive",
+          "predicted": "substantive",
+          "rule_ids": [
+            "SUB-PARAGRAPH"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "substantive",
+              "rule_id": "SUB-PARAGRAPH",
+              "evidence": "paragraph added in 'Application > UnitedHealthcare Individual Exchange'",
+              "change_type": "added",
+              "path": "Application > UnitedHealthcare Individual Exchange",
+              "before_text": null,
+              "after_text": "This Medical Policy applies to Individual Exchange benefit plans.",
+              "before_page": null,
+              "after_page": 1
+            }
+          ],
+          "outcome": "correct_detection"
+        },
+        {
+          "id": "N6",
+          "description": "In Benefit Considerations, the older version read \"under the durable medical equipment benefit\" (lowercase).",
+          "truth": "cosmetic",
+          "predicted": "cosmetic",
+          "rule_ids": [
+            "COS-FORMAT"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "cosmetic",
+              "rule_id": "COS-FORMAT",
+              "evidence": "no word differences",
+              "change_type": "modified",
+              "path": "Benefit Considerations",
+              "before_text": "Most benefit plans include coverage for proven and medically necessary hospital beds and mattresses under the durable medical equipment benefit.",
+              "after_text": "Most benefit plans include coverage for proven and medically necessary hospital beds and mattresses under the Durable Medical Equipment benefit.",
+              "before_page": 3,
+              "after_page": 3
+            }
+          ],
+          "outcome": "correct"
+        },
+        {
+          "id": "N7",
+          "description": "In the E0301 row, the older version read \"weight capacity greater than 300 pounds\" (real text says 350).",
+          "truth": "substantive",
+          "predicted": "substantive",
+          "rule_ids": [
+            "SUB-NUMBER"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "substantive",
+              "rule_id": "SUB-NUMBER",
+              "evidence": "removed: 300 | added: 350",
+              "change_type": "code_modified",
+              "path": "Applicable Codes",
+              "before_text": "E0301 Hospital bed, heavy-duty, extra wide, with weight capacity greater than 300 pounds, but less than or equal to 600 pounds, with any type side rails, without mattress",
+              "after_text": "E0301 Hospital bed, heavy-duty, extra wide, with weight capacity greater than 350 pounds, but less than or equal to 600 pounds, with any type side rails, without mattress",
+              "before_page": 2,
+              "after_page": 2
+            }
+          ],
+          "outcome": "correct_detection"
+        },
+        {
+          "id": "N8",
+          "description": "In Description of Services, the older version read \"preventive support surfaces are generally incorporated into treatment\" (real text says \"often\").",
+          "truth": "ambiguous",
+          "predicted": "ambiguous",
+          "rule_ids": [
+            "AMB-DEFAULT"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "ambiguous",
+              "rule_id": "AMB-DEFAULT",
+              "evidence": "removed: generally | added: often (outside the coverage sections)",
+              "change_type": "modified",
+              "path": "Description of Services",
+              "before_text": "Support surfaces include mattress overlays applied on top of a mattress, mattresses, and specialty beds, and can be preventative or therapeutic. For individuals at risk for skin breakdown, preventive support surfaces are generally incorporated into treatment. Therapeutic support surfaces are employed to assist individuals with advanced pressure injuries (i.e., stage 3, stage 4, or unstageable pressure injuries).",
+              "after_text": "Support surfaces include mattress overlays applied on top of a mattress, mattresses, and specialty beds, and can be preventative or therapeutic. For individuals at risk for skin breakdown, preventive support surfaces are often incorporated into treatment. Therapeutic support surfaces are employed to assist individuals with advanced pressure injuries (i.e., stage 3, stage 4, or unstageable pressure injuries).",
+              "before_page": 3,
+              "after_page": 3
+            }
+          ],
+          "outcome": "correct"
+        },
+        {
+          "id": "N9",
+          "description": "In Medical Records Documentation, the older version read \"Medical records documentation is required to assess whether the member meets the clinical criteria\" (no \"may be\").",
+          "truth": "substantive",
+          "predicted": "ambiguous",
+          "rule_ids": [
+            "AMB-MODAL"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "ambiguous",
+              "rule_id": "AMB-MODAL",
+              "evidence": "modal words ['may']; removed: is | added: may be",
+              "change_type": "modified",
+              "path": "Medical Records Documentation Used for Reviews",
+              "before_text": "Benefit coverage for health services is determined by the member specific benefit plan document and applicable laws that may require coverage for a specific service. Medical records documentation is required to assess whether the member meets the clinical criteria for coverage but does not guarantee coverage of the service requested; refer to the guidelines titled Medical Records Documentation Used for Reviews.",
+              "after_text": "Benefit coverage for health services is determined by the member specific benefit plan document and applicable laws that may require coverage for a specific service. Medical records documentation may be required to assess whether the member meets the clinical criteria for coverage but does not guarantee coverage of the service requested; refer to the guidelines titled Medical Records Documentation Used for Reviews.",
+              "before_page": 2,
+              "after_page": 2
+            }
+          ],
+          "outcome": "human_review",
+          "likely_cause": "modal-word rule sends any may/should/must/will/can change to review, harmless or not. Sent to a human, so not missed, but the rules did not detect this substantive change on their own."
+        },
+        {
+          "id": "N10",
+          "description": "In References, the Nawaz and Sherburne entries were in the opposite order.",
+          "truth": "cosmetic",
+          "predicted": "none",
+          "rule_ids": [],
+          "notes": [
+            "1 paragraph(s) reordered within 'References' (wording unchanged; not reported as a change)"
+          ],
+          "changes": [],
+          "outcome": "correct"
+        },
+        {
+          "id": "N11",
+          "description": "The older version had no sentence excluding support services such as sheepskin pads.",
+          "truth": "substantive",
+          "predicted": "substantive",
+          "rule_ids": [
+            "SUB-PARAGRAPH"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "substantive",
+              "rule_id": "SUB-PARAGRAPH",
+              "evidence": "paragraph added in 'Benefit Considerations'",
+              "change_type": "added",
+              "path": "Benefit Considerations",
+              "before_text": null,
+              "after_text": "Coverage does not include certain support services (e.g., sheepskin pad).",
+              "before_page": null,
+              "after_page": 3
+            }
+          ],
+          "outcome": "correct_detection"
+        },
+        {
+          "id": "N12",
+          "description": "The older version had no paragraph about applying the policy to Medicare Advantage plans.",
+          "truth": "ambiguous",
+          "predicted": "ambiguous",
+          "rule_ids": [
+            "AMB-DEFAULT"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "ambiguous",
+              "rule_id": "AMB-DEFAULT",
+              "evidence": "paragraph added outside the coverage sections ('Instructions for Use')",
+              "change_type": "added",
+              "path": "Instructions for Use",
+              "before_text": null,
+              "after_text": "This Medical Policy may also be applied to Medicare Advantage plans in certain instances. In the absence of a Medicare National Coverage Determination (NCD), Local Coverage Determination (LCD), or other Medicare coverage guidance, CMS allows a Medicare Advantage Organization (MAO) to create its own coverage determinations, using objective evidence-based rationale relying on authoritative evidence ( Medicare IOM Pub. No. 100-16, Ch. 4, §90.5).",
+              "before_page": null,
+              "after_page": 4
+            }
+          ],
+          "outcome": "correct"
+        }
+      ]
+    }
+  ],
+  "total": {
+    "edits": 12,
+    "scored": 12,
+    "true_substantive": 6,
+    "correct_substantive_detections": 5,
+    "misses": 0,
+    "false_positives": 0,
+    "human_review_as_intended": 3,
+    "human_review_for_true_substantive": 1,
+    "human_review_for_true_cosmetic": 0,
+    "correct_without_review": 3
+  }
+}

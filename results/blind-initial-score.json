@@ -1,0 +1,243 @@
+{
+  "meta": {
+    "run_at": "2026-10-12T07:41:25+00:00",
+    "code": {
+      "commit": "b9a132fbc5b525d4bab8202808e04f9f497b6ac3",
+      "uncommitted_changes": false,
+      "scored_with_commit": "83de44c9f9b8a8adbd49c8448acd06f330b6fd85"
+    },
+    "scored_saved_run": "results/blind-initial-run.json",
+    "classifier": {
+      "classifier": "rules-only (config not recorded by that run)"
+    },
+    "claude": {
+      "used_in_this_run": false,
+      "model": "not recorded",
+      "prompt_version": "not recorded",
+      "effort": "not recorded",
+      "note": "The probe and the evaluation never call Claude (rules only). For a fresh run the configured model and prompt version are logged so a run that does use Claude can be reproduced; for a saved run they are 'not recorded' because that run did not log them."
+    },
+    "real_policy_sha256": "b75d96a022655310752406ca21a3e9a53452b26ef1aa93cee5f65f8978167568",
+    "disclaimer": "Small samples: these results are diagnostic only. They show where the rules behave well or badly on these examples, not how accurate the tool is in general."
+  },
+  "sets": [
+    {
+      "name": "blind-initial-run",
+      "files": {
+        "results": "results/blind-initial-run.json",
+        "results_sha256": "68a254a4ce41eea373eb958f936cf2331d15aa693f3b417ba66bd29670ca1430",
+        "labels": "config/simulations/beds-mattresses-blind.labels.json",
+        "labels_sha256": "d2995dd9dfc7ca53402c186b9bc981a3506faf1491ffbb4141d9e67023e0e83d"
+      },
+      "summary": {
+        "edits": 7,
+        "scored": 7,
+        "true_substantive": 3,
+        "correct_substantive_detections": 3,
+        "misses": 0,
+        "false_positives": 1,
+        "human_review_as_intended": 0,
+        "human_review_for_true_substantive": 0,
+        "human_review_for_true_cosmetic": 3,
+        "correct_without_review": 0
+      },
+      "rows": [
+        {
+          "id": "B1",
+          "description": "The older version had no \"Weighted blankets\" bullet in the list of less intensive alternatives.",
+          "truth": "substantive",
+          "predicted": "substantive",
+          "rule_ids": [
+            "SUB-PARAGRAPH"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "substantive",
+              "rule_id": "SUB-PARAGRAPH",
+              "evidence": "paragraph added in 'Coverage Rationale > Safety Enclosure with Beds'",
+              "change_type": "added",
+              "path": "Coverage Rationale > Safety Enclosure with Beds",
+              "before_text": null,
+              "after_text": "o Weighted blankets",
+              "before_page": null,
+              "after_page": 2
+            }
+          ],
+          "outcome": "correct_detection"
+        },
+        {
+          "id": "B2",
+          "description": "The older version had no code row for E0328.",
+          "truth": "substantive",
+          "predicted": "substantive",
+          "rule_ids": [
+            "SUB-CODE-LIST"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "substantive",
+              "rule_id": "SUB-CODE-LIST",
+              "evidence": "code E0328 added",
+              "change_type": "code_added",
+              "path": "Applicable Codes",
+              "before_text": null,
+              "after_text": "E0328 Hospital bed, pediatric, manual, 360 degree side enclosures, top of headboard, footboard and side rails up to 24 in above the spring, includes mattress",
+              "before_page": null,
+              "after_page": 3
+            }
+          ],
+          "outcome": "correct_detection"
+        },
+        {
+          "id": "B3",
+          "description": "In Benefit Considerations, the older version read \"Additional coverage limitations and exclusions apply.\" (no \"may\").",
+          "truth": "ambiguous",
+          "predicted": "substantive",
+          "rule_ids": [
+            "SUB-KEYWORD"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "substantive",
+              "rule_id": "SUB-KEYWORD",
+              "evidence": "coverage words ['may']; removed: - | added: may",
+              "change_type": "modified",
+              "path": "Benefit Considerations",
+              "before_text": "Additional coverage limitations and exclusions apply. Refer to the member’s specific plan for details.",
+              "after_text": "Additional coverage limitations and exclusions may apply. Refer to the member’s specific plan for details.",
+              "before_page": 3,
+              "after_page": 3
+            }
+          ],
+          "outcome": "false_positive",
+          "likely_cause": "keyword rule fires on the word itself, not on whether the meaning changed. Labelled substantive with confidence on a change the key says is genuinely unclear."
+        },
+        {
+          "id": "B4",
+          "description": "In Description of Services, the two paragraphs were in the opposite order.",
+          "truth": "cosmetic",
+          "predicted": "ambiguous",
+          "rule_ids": [
+            "AMB-DEFAULT"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "ambiguous",
+              "rule_id": "AMB-DEFAULT",
+              "evidence": "paragraph added outside the coverage sections ('Description of Services')",
+              "change_type": "added",
+              "path": "Description of Services",
+              "before_text": null,
+              "after_text": "Support surfaces include mattress overlays applied on top of a mattress, mattresses, and specialty beds, and can be preventative or therapeutic. For individuals at risk for skin breakdown, preventive support surfaces are often incorporated into treatment. Therapeutic support surfaces are employed to assist individuals with advanced pressure injuries (i.e., stage 3, stage 4, or unstageable pressure injuries).",
+              "before_page": null,
+              "after_page": 3
+            },
+            {
+              "label": "ambiguous",
+              "rule_id": "AMB-DEFAULT",
+              "evidence": "paragraph removed outside the coverage sections ('Description of Services')",
+              "change_type": "removed",
+              "path": "Description of Services",
+              "before_text": "Support surfaces include mattress overlays applied on top of a mattress, mattresses, and specialty beds, and can be preventative or therapeutic. For individuals at risk for skin breakdown, preventive support surfaces are often incorporated into treatment. Therapeutic support surfaces are employed to assist individuals with advanced pressure injuries (i.e., stage 3, stage 4, or unstageable pressure injuries).",
+              "after_text": null,
+              "before_page": 3,
+              "after_page": null
+            }
+          ],
+          "outcome": "human_review",
+          "likely_cause": "no rule recognises this kind of wording change, so it falls through to human review. Sent to a human although the key says it is cosmetic: avoidable review work, no rule recognises it as harmless."
+        },
+        {
+          "id": "B5",
+          "description": "In the FDA section, the older version read \"Accessed December 19, 2023\".",
+          "truth": "cosmetic",
+          "predicted": "ambiguous",
+          "rule_ids": [
+            "AMB-DEFAULT"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "ambiguous",
+              "rule_id": "AMB-DEFAULT",
+              "evidence": "removed: 2023 | added: 2024 (outside the coverage sections)",
+              "change_type": "modified",
+              "path": "U.S. Food and Drug Administration (FDA)",
+              "before_text": "The collaborative efforts of the FDA and the Hospital Bed Safety Workgroup have led to the release of the Hospital Bed System Dimensional and Assessment Guidance to Reduce Entrapment. This guidance provides recommendations for manufacturers of new hospital beds and for facilities with existing beds (including hospitals, nursing homes, and private residences). Located at: https://www.fda.gov/medical-devices/general-hospital-devices-and-supplies/hospital-beds. ( Accessed December 19, 2023)",
+              "after_text": "The collaborative efforts of the FDA and the Hospital Bed Safety Workgroup have led to the release of the Hospital Bed System Dimensional and Assessment Guidance to Reduce Entrapment. This guidance provides recommendations for manufacturers of new hospital beds and for facilities with existing beds (including hospitals, nursing homes, and private residences). Located at: https://www.fda.gov/medical-devices/general-hospital-devices-and-supplies/hospital-beds. ( Accessed December 19, 2024)",
+              "before_page": 4,
+              "after_page": 4
+            }
+          ],
+          "outcome": "human_review",
+          "likely_cause": "no rule recognises this kind of wording change, so it falls through to human review. Sent to a human although the key says it is cosmetic: avoidable review work, no rule recognises it as harmless."
+        },
+        {
+          "id": "B6",
+          "description": "In the Safety Enclosure criteria, the older version read \"for individuals who have a risk for safety in bed\" (real text says \"that have\").",
+          "truth": "cosmetic",
+          "predicted": "ambiguous",
+          "rule_ids": [
+            "AMB-DEFAULT"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "ambiguous",
+              "rule_id": "AMB-DEFAULT",
+              "evidence": "removed: who | added: that",
+              "change_type": "modified",
+              "path": "Coverage Rationale > Safety Enclosure with Beds",
+              "before_text": "Safety enclosure with beds (e.g., pediatric enclosed bed, adult bed, safety enclosure) are covered as DME for individuals who have a risk for safety in bed when all of the following criteria are met:",
+              "after_text": "Safety enclosure with beds (e.g., pediatric enclosed bed, adult bed, safety enclosure) are covered as DME for individuals that have a risk for safety in bed when all of the following criteria are met:",
+              "before_page": 1,
+              "after_page": 1
+            }
+          ],
+          "outcome": "human_review",
+          "likely_cause": "no rule recognises this kind of wording change, so it falls through to human review. Sent to a human although the key says it is cosmetic: avoidable review work, no rule recognises it as harmless."
+        },
+        {
+          "id": "B7",
+          "description": "In the Safety Enclosure note, the older version read \"should be coded with HCPCS code E0305\" (real text says E0316).",
+          "truth": "substantive",
+          "predicted": "substantive",
+          "rule_ids": [
+            "SUB-NUMBER"
+          ],
+          "notes": [],
+          "changes": [
+            {
+              "label": "substantive",
+              "rule_id": "SUB-NUMBER",
+              "evidence": "removed: e0305 | added: e0316",
+              "change_type": "modified",
+              "path": "Coverage Rationale > Safety Enclosure with Beds",
+              "before_text": "Note: Safety enclosure with beds (e.g., Posey) should be coded with HCPCS code E0305.",
+              "after_text": "Note: Safety enclosure with beds (e.g., Posey) should be coded with HCPCS code E0316.",
+              "before_page": 2,
+              "after_page": 2
+            }
+          ],
+          "outcome": "correct_detection"
+        }
+      ]
+    }
+  ],
+  "total": {
+    "edits": 7,
+    "scored": 7,
+    "true_substantive": 3,
+    "correct_substantive_detections": 3,
+    "misses": 0,
+    "false_positives": 1,
+    "human_review_as_intended": 0,
+    "human_review_for_true_substantive": 0,
+    "human_review_for_true_cosmetic": 3,
+    "correct_without_review": 0
+  }
+}

@@ -135,15 +135,24 @@ def evaluate_sets(sets):
     return report
 
 
-def metadata(sets_files, saved_from=None):
+def metadata(saved_from=None, saved=None):
     llm = load_llm_config()
+    git = _git()
+    if saved:   # describe the run that is being scored, not today's code
+        classifier = saved.get("config") or {"classifier": "rules-only (config not recorded by that run)"}
+        code = {"commit": saved.get("code_commit", "unknown"), "uncommitted_changes": False,
+                "scored_with_commit": git["commit"]}
+        llm = {"model": "not recorded", "prompt_version": "not recorded", "effort": "not recorded"}
+    else:
+        classifier, code = rules_config(), git
     return {
         "run_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "code": _git(), "scored_saved_run": saved_from,
-        "classifier": rules_config(),
+        "code": code, "scored_saved_run": saved_from,
+        "classifier": classifier,
         "claude": {"used_in_this_run": False, "model": llm["model"], "prompt_version": llm["prompt_version"],
-                   "effort": llm["effort"], "note": "Claude is not called by the evaluation; model and prompt version "
-                   "are logged so a run that does use it can be reproduced."},
+                   "effort": llm["effort"], "note": "The probe and the evaluation never call Claude (rules only). For a fresh run the configured "
+                   "model and prompt version are logged so a run that does use Claude can be reproduced; for a saved "
+                   "run they are 'not recorded' because that run did not log them."},
         "real_policy_sha256": _sha(ROOT / "sources" / "original" / "beds-mattresses.pdf"),
         "disclaimer": DISCLAIMER,
     }
@@ -232,7 +241,7 @@ def main(argv=None):
     if not sets:
         sys.exit(f"no edit sets (*.json) found in {a.folder}")
     report = evaluate_sets(sets)
-    meta = metadata(None, saved_from=a.saved)
+    meta = metadata(saved_from=a.saved, saved=saved if a.saved else None)
     out = a.out or str(ROOT / "results" / f"eval-{Path(a.folder).name}-{datetime.now(timezone.utc):%Y%m%dT%H%M%S}")
     js, tx = _write(out, report, meta, a.force)
     print(tx.read_text())

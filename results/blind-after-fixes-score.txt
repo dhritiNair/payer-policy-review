@@ -1,0 +1,45 @@
+UHC policy monitor: evaluation
+
+run at 2026-10-12T07:41:27+00:00 | code commit 0548365 | scoring saved run results/blind-after-fixes.json
+classifier: rules-only (no model) | Claude used in this run: no (configured: not recorded, prompt not recorded, effort not recorded)
+
+=== blind-after-fixes  (7 edits, 7 scored)
+edit  truth        predicted    rule(s)                    outcome
+B1    substantive  substantive  SUB-PARAGRAPH              correct_detection
+B2    substantive  substantive  SUB-CODE-LIST              correct_detection
+B3    ambiguous    ambiguous    AMB-MODAL                  correct
+B4    cosmetic     none         -                          correct
+B5    cosmetic     ambiguous    AMB-DEFAULT                human_review
+B6    cosmetic     ambiguous    AMB-DEFAULT                human_review
+B7    substantive  substantive  SUB-NUMBER                 correct_detection
+
+  automatic detection : 3 of 3 true-substantive edits detected as substantive
+  misses              : 0
+  false positives     : 0
+  human review        : 3 sent to a human (1 as intended for genuinely ambiguous edits, 0 true-substantive not auto-detected, 2 true-cosmetic avoidable)
+  correct, no review  : 1
+
+Errors and avoidable review (source evidence and likely cause):
+
+  B5 [human_review] truth=cosmetic predicted=ambiguous: In the FDA section, the older version read "Accessed December 19, 2023".
+     (modified, U.S. Food and Drug Administration (FDA), before p.4 -> after p.4)
+        before: … and private residences). Located at: https://www.fda.gov/medical-devices/general-hospital-devices-and-supplies/hospital-beds. ( Accessed December 19, [[2023)]]
+        after:  … and private residences). Located at: https://www.fda.gov/medical-devices/general-hospital-devices-and-supplies/hospital-beds. ( Accessed December 19, [[2024)]]
+        rule AMB-DEFAULT: removed: 2023 | added: 2024 (outside the coverage sections)
+     likely cause: no rule recognises this kind of wording change, so it falls through to human review. Sent to a human although the key says it is cosmetic: avoidable review work, no rule recognises it as harmless.
+
+  B6 [human_review] truth=cosmetic predicted=ambiguous: In the Safety Enclosure criteria, the older version read "for individuals who have a risk for safety in bed" (real text says "that have").
+     (modified, Coverage Rationale > Safety Enclosure with Beds, before p.1 -> after p.1)
+        before: … adult bed, safety enclosure) are covered as DME for individuals [[who]] have a risk for safety in bed when all of …
+        after:  … adult bed, safety enclosure) are covered as DME for individuals [[that]] have a risk for safety in bed when all of …
+        rule AMB-DEFAULT: removed: who | added: that
+     likely cause: no rule recognises this kind of wording change, so it falls through to human review. Sent to a human although the key says it is cosmetic: avoidable review work, no rule recognises it as harmless.
+
+=== ALL SETS
+  automatic detection : 3 of 3 true-substantive edits detected as substantive
+  misses              : 0
+  false positives     : 0
+  human review        : 3 sent to a human (1 as intended for genuinely ambiguous edits, 0 true-substantive not auto-detected, 2 true-cosmetic avoidable)
+  correct, no review  : 1
+
+Small samples: these results are diagnostic only. They show where the rules behave well or badly on these examples, not how accurate the tool is in general.

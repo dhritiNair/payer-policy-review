@@ -1,0 +1,43 @@
+UHC policy monitor: evaluation
+
+run at 2026-10-12T07:41:23+00:00 | code commit 7c2cdba | scoring saved run results/independent-initial-run.json
+classifier: rules-only (no model) | Claude used in this run: no (configured: not recorded, prompt not recorded, effort not recorded)
+
+=== independent-initial-run  (12 edits, 12 scored)
+edit  truth        predicted    rule(s)                    outcome
+N1    cosmetic     cosmetic     COS-FORMAT                 correct
+N2    substantive  substantive  SUB-CODE-LIST              correct_detection
+N3    ambiguous    ambiguous    AMB-DEFAULT                correct
+N4    substantive  substantive  SUB-KEYWORD                correct_detection
+N5    substantive  substantive  SUB-PARAGRAPH              correct_detection
+N6    cosmetic     cosmetic     COS-FORMAT                 correct
+N7    substantive  substantive  SUB-NUMBER                 correct_detection
+N8    ambiguous    ambiguous    AMB-DEFAULT                correct
+N9    substantive  ambiguous    AMB-MODAL                  human_review
+N10   cosmetic     none         -                          correct
+N11   substantive  substantive  SUB-PARAGRAPH              correct_detection
+N12   ambiguous    ambiguous    AMB-DEFAULT                correct
+
+  automatic detection : 5 of 6 true-substantive edits detected as substantive
+  misses              : 0
+  false positives     : 0
+  human review        : 4 sent to a human (3 as intended for genuinely ambiguous edits, 1 true-substantive not auto-detected, 0 true-cosmetic avoidable)
+  correct, no review  : 3
+
+Errors and avoidable review (source evidence and likely cause):
+
+  N9 [human_review] truth=substantive predicted=ambiguous: In Medical Records Documentation, the older version read "Medical records documentation is required to assess whether the member meets the clinical criteria" (no "may be").
+     (modified, Medical Records Documentation Used for Reviews, before p.2 -> after p.2)
+        before: … may require coverage for a specific service. Medical records documentation [[is]] required to assess whether the member meets the clinical criteria …
+        after:  … may require coverage for a specific service. Medical records documentation [[may]] [[be]] required to assess whether the member meets the clinical criteria …
+        rule AMB-MODAL: modal words ['may']; removed: is | added: may be
+     likely cause: modal-word rule sends any may/should/must/will/can change to review, harmless or not. Sent to a human, so not missed, but the rules did not detect this substantive change on their own.
+
+=== ALL SETS
+  automatic detection : 5 of 6 true-substantive edits detected as substantive
+  misses              : 0
+  false positives     : 0
+  human review        : 4 sent to a human (3 as intended for genuinely ambiguous edits, 1 true-substantive not auto-detected, 0 true-cosmetic avoidable)
+  correct, no review  : 3
+
+Small samples: these results are diagnostic only. They show where the rules behave well or badly on these examples, not how accurate the tool is in general.
