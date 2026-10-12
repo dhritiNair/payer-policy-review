@@ -30,6 +30,18 @@ CREATE TABLE IF NOT EXISTS source_state (
     last_checked_at TEXT NOT NULL,
     last_reason TEXT
 );
+CREATE TABLE IF NOT EXISTS reviews (
+    finding_key TEXT PRIMARY KEY,
+    source_id TEXT NOT NULL,
+    before_version_id INTEGER NOT NULL,
+    after_version_id INTEGER NOT NULL,
+    status TEXT NOT NULL CHECK (status IN ('reviewed', 'dismissed')),
+    note TEXT NOT NULL DEFAULT '',
+    reviewer_label TEXT CHECK (reviewer_label IS NULL OR reviewer_label IN ('substantive', 'cosmetic', 'unsure')),
+    tool_label TEXT,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS checks (
     id INTEGER PRIMARY KEY,
     source_id TEXT NOT NULL,
@@ -123,3 +135,26 @@ class Store:
                 " VALUES (?,?,?,?,?) ON CONFLICT(source_id) DO UPDATE SET baseline_version_id=excluded.baseline_version_id,"
                 " last_status=excluded.last_status, last_checked_at=excluded.last_checked_at, last_reason=excluded.last_reason",
                 (source_id, baseline, status, now, reason))
+
+    def get_reviews(self, finding_keys):
+        """finding_key -> saved review row, for the keys that have one."""
+        keys = list(finding_keys)
+        if not keys:
+            return {}
+        marks = ",".join("?" * len(keys))
+        rows = self.db.execute(f"SELECT * FROM reviews WHERE finding_key IN ({marks})", keys).fetchall()
+        return {r["finding_key"]: r for r in rows}
+
+    def save_review(self, finding_key, source_id, before_version_id, after_version_id, status, note="",
+                    reviewer_label=None, tool_label=None):
+        """Record or change the decision on one finding. One row per finding key, so never a duplicate."""
+        now = _now()
+        with self.db:
+            self.db.execute(
+                "INSERT INTO reviews (finding_key, source_id, before_version_id, after_version_id, status, note,"
+                " reviewer_label, tool_label, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?)"
+                " ON CONFLICT(finding_key) DO UPDATE SET status=excluded.status, note=excluded.note,"
+                " reviewer_label=excluded.reviewer_label, tool_label=excluded.tool_label,"
+                " updated_at=excluded.updated_at",
+                (finding_key, source_id, before_version_id, after_version_id, status, note.strip(),
+                 reviewer_label, tool_label, now, now))

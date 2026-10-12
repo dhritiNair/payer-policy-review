@@ -3,7 +3,7 @@ import streamlit as st
 
 from uhc_monitor.classify import AMBIGUOUS, AMBIGUOUS_SUBTITLE, COSMETIC, SUBSTANTIVE
 from uhc_monitor.demo_data import seed_demo
-from uhc_monitor.findings import get_findings, latest_update
+from uhc_monitor.findings import all_updates, get_findings
 from uhc_monitor.sources import load_sources
 from uhc_monitor.store import Store
 from uhc_monitor.view import excerpt_pair
@@ -43,6 +43,7 @@ def render_excerpts(f, before_sim):
 def render_claude(llm):
     st.markdown("**Claude's suggestion** (advice only; it can raise a change to substantive but never dismiss one)")
     if llm is None:
+        st.caption("Not asked: the rules decided this one.")
         return
     status = llm["status"]
     if status == "skipped_no_key":
@@ -57,9 +58,43 @@ def render_claude(llm):
         st.markdown(f"What the two texts say (Claude's restatement): {ans['what_changed']}")
 
 
-def render_finding(n, f, before_sim, facts):
+LABEL_CHOICES = {"Still unsure": "unsure", "Substantive": "substantive", "Cosmetic": "cosmetic"}
+LABEL_NAMES = {v: k for k, v in LABEL_CHOICES.items()}
+
+
+def review_badge(review):
+    if review is None:
+        return "· **OPEN** (not yet reviewed)"
+    mark = ":green[**REVIEWED**]" if review["status"] == "reviewed" else ":gray[**DISMISSED**]"
+    return f"· {mark}"
+
+
+def render_review(store, f, review, ctx):
+    st.markdown("##### Your review")
+    if review:
+        label = f" · your label: **{LABEL_NAMES[review['reviewer_label']]}**" if review["reviewer_label"] else ""
+        st.markdown(f"Saved as **{review['status']}** on {review['updated_at']}{label}" +
+                    (f"  \nNote: {review['note']}" if review["note"] else ""))
+    with st.form(f"form-{f['key']}"):
+        note = st.text_area("Note", value=review["note"] if review else "", key=f"note-{f['key']}")
+        label = None
+        if f["label"] == AMBIGUOUS:   # only changes the rules could not decide get a reviewer label
+            names = list(LABEL_CHOICES)
+            current = LABEL_NAMES.get(review["reviewer_label"], "Still unsure") if review else "Still unsure"
+            label = LABEL_CHOICES[st.selectbox("Your label", names, index=names.index(current),
+                                               key=f"label-{f['key']}")]
+        left, right = st.columns(2)
+        reviewed = left.form_submit_button("Mark reviewed")
+        dismissed = right.form_submit_button("Dismiss")
+    if reviewed or dismissed:
+        store.save_review(f["key"], ctx["source_id"], ctx["before_id"], ctx["after_id"],
+                          "reviewed" if reviewed else "dismissed", note, label, f["final_label"])
+        st.rerun()
+
+
+def render_finding(n, f, before_sim, facts, review, store, ctx):
     with st.container(border=True):
-        st.markdown(f"#### {n}. {badge(f['final_label'], f['final_source'])}")
+        st.markdown(f"#### {n}. {badge(f['final_label'], f['final_source'])} {review_badge(review)}")
         st.markdown(f"**{f['path']}** · {pages(f, before_sim)}")
 
         st.markdown("##### Source facts")
@@ -86,6 +121,7 @@ def render_finding(n, f, before_sim, facts):
             st.markdown(f"- **Claude's interpretation:** {ans['interpretation']}\n"
                         f"- **Claude's suggested next step:** {ans['suggested_next_step']}\n"
                         f"- **Claude's stated uncertainty:** {ans['uncertainty']}")
+        render_review(store, f, review, ctx)
 
 
 store = Store()
@@ -114,16 +150,23 @@ elif status == "unchanged":
 else:
     st.info(f"Initialized ({when}): baseline stored, nothing to compare yet.")
 
-update = latest_update(store, source.id)
-if update is None:
+updates = all_updates(store, source.id)
+if not updates:
     st.write("No update to review yet.")
     st.stop()
+if len(updates) > 1:
+    names = [f"v{u['before_version_id']} → v{u['version_id']} · checked {u['checked_at']}" for u in updates]
+    update = updates[st.selectbox("Update to review (newest first)", range(len(updates)),
+                                  format_func=lambda i: names[i])]
+else:
+    update = updates[0]
 
 with st.spinner("Preparing findings (asks Claude about ambiguous changes once, then caches)..."):
     data = get_findings(store, source.id, update["before_version_id"], update["version_id"])
 before_v = store.get_version(data["before_version_id"])
 after_v = store.get_version(data["after_version_id"])
 before_sim = bool(before_v["simulated"])
+ctx = {"source_id": source.id, "before_id": data["before_version_id"], "after_id": data["after_version_id"]}
 
 st.subheader("Versions compared")
 c1, c2 = st.columns(2)
@@ -142,6 +185,16 @@ m1.metric("Substantive", len(subst))
 m2.metric(f"Ambiguous — {AMBIGUOUS_SUBTITLE}", len(amb))
 m3.metric("Cosmetic", len(cos))
 
+to_review = subst + amb
+reviews = store.get_reviews(f["key"] for f in to_review)
+n_open = sum(f["key"] not in reviews for f in to_review)
+n_rev = sum(r["status"] == "reviewed" for r in reviews.values())
+n_dis = sum(r["status"] == "dismissed" for r in reviews.values())
+r1, r2, r3 = st.columns(3)
+r1.metric("Open", n_open)
+r2.metric("Reviewed", n_rev)
+r3.metric("Dismissed", n_dis)
+
 cl = data["claude"]
 st.caption(f"Claude fallback: {cl['model']}, prompt {cl['prompt_version']} — " +
            (f"asked about {cl['calls']} of {data['ambiguous_count']} ambiguous changes." if cl["available"]
@@ -150,11 +203,11 @@ for note in data["notes"]:
     st.caption(f"Note: {note}")
 
 st.subheader("Findings to review")
-n = 0
-for f in subst + amb:
-    n += 1
-    render_finding(n, f, before_sim, data["after_facts"])
-if not (subst or amb):
+# open findings first; reviewed and dismissed ones stay on the page, marked, so nothing disappears
+ordered = [f for f in to_review if f["key"] not in reviews] + [f for f in to_review if f["key"] in reviews]
+for n, f in enumerate(ordered, 1):
+    render_finding(n, f, before_sim, data["after_facts"], reviews.get(f["key"]), store, ctx)
+if not ordered:
     st.write("No substantive or ambiguous findings.")
 
 with st.expander(f"Cosmetic changes ({len(cos)}) — listed for transparency"):

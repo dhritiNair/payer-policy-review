@@ -68,6 +68,12 @@ def latest_update(store, source_id):
         "SELECT * FROM checks WHERE source_id=? AND status='updated' ORDER BY id DESC LIMIT 1", (source_id,)).fetchone()
 
 
+def all_updates(store, source_id):
+    """Every 'updated' check for the source, newest first."""
+    return store.db.execute(
+        "SELECT * FROM checks WHERE source_id=? AND status='updated' ORDER BY id DESC", (source_id,)).fetchall()
+
+
 def get_findings(store, source_id, before_id, after_id, assessor=None):
     """Findings for before->after. Built once (calling Claude on ambiguous changes if available), then cached."""
     cache = store.root / "findings" / f"{source_id}_{before_id}_{after_id}.json"
@@ -77,8 +83,12 @@ def get_findings(store, source_id, before_id, after_id, assessor=None):
     changes, notes = compare_with_notes(before, after)
     assessor = assessor or ClaudeAssessor()
     changes = apply_assessments(changes, assessor, after)
+    seen = {}
     for c in changes:
         c["key"] = finding_key(source_id, before_id, after_id, c)
+        seen[c["key"]] = seen.get(c["key"], 0) + 1
+        if seen[c["key"]] > 1:   # two identical changes in one update must not share a key
+            c["key"] += f"#{seen[c['key']]}"
         c["guidance"] = {"explanation": RULE_GUIDANCE[c["rule_id"]][0], "next_step": RULE_GUIDANCE[c["rule_id"]][1],
                          "uncertainty": RULE_UNCERTAINTY}
     result = {
