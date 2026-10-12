@@ -1,0 +1,68 @@
+UHC policy monitor: evaluation (rules + Claude)
+
+run at 2026-10-12T08:19:57+00:00 | code commit 06d7e18
+classifier: rules, then Claude on ambiguous changes only (advisory; it can escalate to substantive, never dismiss)
+Claude: model claude-sonnet-5-5 (served by claude-sonnet-5-5) | prompt v2 (sha256 ea2bb30cbd16) | effort medium | max_tokens 4000 | no temperature/thinking set
+calls: 4 (4 usable answers) | tokens: 5140 in, 1862 out
+
+=== surgery-knee-independent  (12 edits, 0 scored)
+edit  truth        rules said   final        rule(s)                outcome
+K1    None         substantive  substantive  SUB-PARAGRAPH          unscored [rules]
+K2    None         substantive  substantive  SUB-KEYWORD            unscored [rules]
+K3    None         cosmetic     cosmetic     COS-TOC                unscored
+K4    None         cosmetic     cosmetic     COS-FORMAT             unscored
+K5    None         substantive  substantive  SUB-PARAGRAPH          unscored [rules]
+K6    None         ambiguous    substantive  AMB-DEFAULT            unscored [Claude escalation]
+K7    None         ambiguous    ambiguous    AMB-DEFAULT            unscored
+K8    None         substantive  substantive  SUB-CODE-LIST          unscored [rules]
+K9    None         cosmetic     cosmetic     COS-FORMAT             unscored
+K10   None         ambiguous    substantive  AMB-DEFAULT            unscored [Claude escalation]
+K11   None         ambiguous    ambiguous    AMB-DEFAULT            unscored
+K12   None         none         none         -                      unscored
+
+  NO KEY YET: 12 edits classified, none scored
+  flagged substantive by the RULES alone : 4
+  raised to substantive by CLAUDE        : 2 (rules said Ambiguous)
+  left Ambiguous (needs human review)    : 2
+  cosmetic or quietly ignored            : 4
+  Claude's suggestions: 4 calls, 4 usable: 2 substantive, 2 cosmetic, 0 abstain
+
+Claude on the ambiguous items (reasoning and confidence):
+
+  K6  key says: no key yet | rules: ambiguous (AMB-DEFAULT) | final: substantive | unscored
+     Claude suggests: SUBSTANTIVE | Claude's self-reported confidence: medium -> ESCALATED to substantive
+     what the texts say : The definition of 'Disabling Pain' changed the WOMAC pain domain threshold from "> 30" to "> 40". The rest of the sentence, including the citation "(Quintana et al., 2009)", is unchanged. The word counts reported (30 removed, 40 added) do not match the short excerpt shown, so the excerpt may not capture the full change.
+     interpretation     : If 'Disabling Pain' is used as a criterion in the coverage rationale for knee procedures, raising the threshold could make the criterion harder to meet and so narrow who qualifies. That depends on how the term is used elsewhere in the policy. A numeric threshold change is unlikely to be only wording.
+     uncertainty        : The text does not show which procedures or coverage criteria use this definition, or whether the threshold change is a correction or a deliberate change. The excerpt does not state the plan types or populations affected. The reported word counts suggest more text may have changed than is shown here.
+     suggested next step: Check where 'Disabling Pain' is referenced in the coverage sections of the new policy and compare against the prior version. Confirm the threshold in the cited source. Update clinical documentation requirements (WOMAC pain scores) for affected procedures if needed.
+
+  K7  key says: no key yet | rules: ambiguous (AMB-DEFAULT) | final: ambiguous | unscored
+     Claude suggests: COSMETIC | Claude's self-reported confidence: medium -> stays Ambiguous (advice only)
+     what the texts say : The note changed from "UHC will consider three or more moderate to severe radiographic findings to be sufficient to support the diagnosis of severe osteoarthritis" to "UHC will accept three or more moderate to severe radiographic findings to be sufficient to support the diagnosis of severe osteoarthritis". Only the verb "consider" was replaced by "accept". The threshold (three or more), severity (moderate to severe) and citation (American College of Radiology, 2025) are unchanged.
+     interpretation     : The two verbs probably carry the same meaning in this sentence, so the change is likely stylistic. "Accept" could be read as slightly firmer than "consider", suggesting less reviewer discretion, but the surrounding words "sufficient to support" already state a sufficiency standard, so any practical difference seems small.
+     uncertainty        : I cannot tell from this excerpt whether the change was meant to alter how reviewers apply the criterion. I also cannot see how this definition is used in the coverage sections for knee procedures, or whether other parts of the policy changed in ways that interact with it.
+     suggested next step: Check how the definition is referenced in the coverage criteria for knee arthroplasty and related procedures. Also check the policy's change summary for any stated reason. If neither shows a change in how the radiographic criterion is applied, treat the edit as cosmetic.
+
+  K10  key says: no key yet | rules: ambiguous (AMB-DEFAULT) | final: substantive | unscored
+     Claude suggests: SUBSTANTIVE | Claude's self-reported confidence: medium -> ESCALATED to substantive
+     what the texts say : In the Clinical Evidence > Xenografts summary of Bracey et al. (2020), the sentence changed from "existing clinical evidence supports the use of bone xenografts in selected orthopedic procedures" to "existing clinical evidence does not support the use of bone xenografts in orthopedic surgery." The rest of the paragraph is unchanged.
+     interpretation     : The change reverses the stated conclusion of the cited study, from supportive of selected uses to not supportive. It may be a correction to match the study's data in the paragraph (poor outcomes, 58% failure to integrate, 83% persistent pain), which is more consistent with the new wording. A reversed evidence conclusion could plausibly feed into the policy's coverage position on xenografts, so it may matter for coverage or medical necessity review. It is in a clinical evidence section, not a coverage rationale section.
+     uncertainty        : The excerpt does not show whether the policy's coverage rules on xenografts changed, so any effect on coverage, billing or documentation is unknown. It is also unknown which plan types or populations are affected. It is unclear whether the older wording was an error in the policy's summary of the study or whether the change reflects a new reading of the evidence.
+     suggested next step: Check the Coverage Rationale and any xenograft or bone graft statements in the same policy version for changes in coverage position. Compare with the Bracey et al. abstract to confirm which conclusion is accurate.
+
+  K11  key says: no key yet | rules: ambiguous (AMB-DEFAULT) | final: ambiguous | unscored
+     Claude suggests: COSMETIC | Claude's self-reported confidence: medium -> stays Ambiguous (advice only)
+     what the texts say : The sentence "devices and instruments used during the surgery may require FDA approval" became "devices and instruments used during the surgery require FDA approval". The word "may" was removed. The rest of the section, including the URL and the "(Accessed January 26, 2026)" citation, is identical.
+     interpretation     : This is a regulatory-information section, not a coverage criterion. The change makes the statement about FDA approval of devices more categorical. It probably does not alter coverage, billing, or documentation rules on its own. It could be read as a slightly firmer expectation that devices be FDA approved, but nothing in the text ties this to a coverage condition.
+     uncertainty        : I cannot tell from this excerpt whether other sections of the policy (for example coverage rationale or device-specific criteria) rely on FDA approval status as a condition, or whether the change reflects an intended tightening. Whether it affects claim review is unknown. Plan types and populations affected are not stated.
+     suggested next step: Quickly check whether the coverage sections of this policy condition coverage on FDA-approved or cleared devices. If they do not, treat this as a wording change with no operational impact.
+
+=== ALL SETS
+  NO KEY YET: 12 edits classified, none scored
+  flagged substantive by the RULES alone : 4
+  raised to substantive by CLAUDE        : 2 (rules said Ambiguous)
+  left Ambiguous (needs human review)    : 2
+  cosmetic or quietly ignored            : 4
+  Claude's suggestions: 4 calls, 4 usable: 2 substantive, 2 cosmetic, 0 abstain
+
+Small samples: these results are diagnostic only. They show where the rules behave well or badly on these examples, not how accurate the tool is in general.
