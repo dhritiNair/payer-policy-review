@@ -222,13 +222,12 @@ tag = lambda v: "SIMULATED" if v["simulated"] else "real"
 render_header(header_slot, source, facts, state,
               f"v{before_v['id']} {tag(before_v)} → v{after_v['id']} {tag(after_v)}")
 
-st.subheader("Versions compared")
-c1, c2 = st.columns(2)
-c1.markdown(f"**Before:** v{before_v['id']} — " + ("**SIMULATED older version** (derived from the real text; not a UHC "
-            "publication)" if before_sim else "real document") + f"  \nPolicy {before_v['policy_number']} · effective date: "
-            f"{data['before_facts']['effective_date']}")
-c2.markdown(f"**After:** v{after_v['id']} — real document, stored {after_v['created_at']}  \n"
-            f"Policy {after_v['policy_number']} · effective date: {data['after_facts']['effective_date']}")
+if before_sim:
+    st.markdown(f"**Older (simulated):** v{before_v['id']} · derived from the real text, not a UHC publication · "
+                f"created {fmt_time(before_v['created_at'])} · effective date unknown")
+else:
+    st.markdown(f"**Older (real):** v{before_v['id']} · stored {fmt_time(before_v['created_at'])}")
+st.markdown(f"**Current (real):** v{after_v['id']} · stored {fmt_time(after_v['created_at'])}")
 
 findings = data["findings"]
 tool_subst = [f for f in findings if f["final_label"] == SUBSTANTIVE]
@@ -244,22 +243,25 @@ show_subst = [f for f in tool_subst if resolution[f["key"]] != COSMETIC] + [f fo
 show_amb = [f for f in tool_amb if resolution[f["key"]] is None]
 n_cos = len(tool_cos) + len(res_cos)
 
+n_open = sum(f["key"] not in reviews for f in to_review)
+n_rev = sum(r["status"] == "reviewed" for r in reviews.values())
+n_dis = sum(r["status"] == "dismissed" for r in reviews.values())
+
+st.markdown("**By type**")
 m1, m2, m3, m4 = st.columns(4)
 m1.metric("Substantive", len(show_subst))
 m2.metric(f"Ambiguous — {AMBIGUOUS_SUBTITLE}", len(show_amb))
 m3.metric("Cosmetic", n_cos)
-m4.metric("Resolved by reviewer", len(res_sub) + len(res_cos))
-if res_sub or res_cos:
-    st.caption(f"Resolved by reviewer: {len(res_sub)} → Substantive, {len(res_cos)} → Cosmetic. "
-               "The tool's own label stays on each finding.")
+m4.metric("Resolved by reviewer", len(res_sub) + len(res_cos),
+          help=f"{len(res_sub)} → Substantive, {len(res_cos)} → Cosmetic. The tool's own label stays on each finding.")
 
-n_open = sum(f["key"] not in reviews for f in to_review)
-n_rev = sum(r["status"] == "reviewed" for r in reviews.values())
-n_dis = sum(r["status"] == "dismissed" for r in reviews.values())
-r1, r2, r3 = st.columns(3)
+st.markdown("**Review progress**")
+r1, r2, r3, r4 = st.columns(4)
 r1.metric("Open", n_open)
 r2.metric("Reviewed", n_rev)
 r3.metric("Dismissed", n_dis)
+r4.metric("Total findings", len(to_review),
+          help="Findings put up for review (substantive and ambiguous). Cosmetic changes need no review.")
 
 cl = data["claude"]
 st.caption(f"Claude fallback: {cl['model']}, prompt {cl['prompt_version']} — " +

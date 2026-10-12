@@ -26,6 +26,16 @@ at = open_app(); at.button[0].click().run()                       # seed demo
 m = metrics(at); print("metrics after seed:", m)
 check("fresh: 6 open, 0 reviewed, 0 dismissed", (m["Open"], m["Reviewed"], m["Dismissed"]) == ("6", "0", "0"))
 
+check("summary: two rows of four numbers, in order",
+      [m.label for m in at.metric] == ["Substantive", "Ambiguous — Needs human review", "Cosmetic", "Resolved by reviewer",
+                                       "Open", "Reviewed", "Dismissed", "Total findings"])
+check("summary: Total findings = Open + Reviewed + Dismissed", int(m["Total findings"]) == int(m["Open"]) + int(m["Reviewed"]) + int(m["Dismissed"]))
+check("summary rows are labelled", [x.value for x in at.markdown if x.value in ("**By type**", "**Review progress**")] == ["**By type**", "**Review progress**"])
+vers = [x.value for x in at.markdown if x.value.startswith(("**Older", "**Current"))]
+check("two short version lines, no repeat of what the header says",
+      len(vers) == 2 and vers[0].startswith("**Older (simulated):** v1") and vers[1].startswith("**Current (real):** v2")
+      and "MP.028.14" not in "".join(vers) and "2026-01-01" not in "".join(vers) and "T0" not in "".join(vers))
+check("old 'Versions compared' heading is gone", "Versions compared" not in [x.value for x in at.subheader])
 findings = json.load(open(f"{root}/findings/beds-mattresses_1_2.json"))["findings"]
 order = [f for f in findings if f["final_label"] == "substantive"] + [f for f in findings if f["final_label"] == "ambiguous"]
 keys = [f["key"] for f in order]
